@@ -2,12 +2,12 @@ import * as React from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import App from './components/App';
-import Insights from './pages/Insights';
 
+/**
+ * The main routing component which our application starts from.
+ */
 export default (
   <Switch>
-    <Route component={App} >
-      <Route component={Insights} />
-    </Route>
+    <Route component={App} />
   </Switch>
 );

@@ -3,6 +3,7 @@
 $md-primary-color: #465C72;
 $md-secondary-color: $md-pink-a-200;
 $md-font-regular: 300;
+$md-navigation-drawer-enforce-height: true;
 
 @include react-md-everything;
 
@@ -12,6 +13,12 @@ body {
   font-family: sans-serif;
 }
 
+// Remove the default a-href style
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 // Making sure titles are less bold
 h2, .md-subheading-2 {
   font-weight: $md-font-regular;
@@ -19,6 +26,60 @@ h2, .md-subheading-2 {
 
 .md-dialog.md-transition-in {
     transform: translate3d(0px, 0px, 0px) scale(1);
+}
+
+/*===============*/
+/* Shared Styles */
+/*===============*/
+.sub-menu-container {
+  background: #262626;
+  height: 40px;
+  margin-top: -40px;
+
+  .sub-menu-item {
+    margin-right: 6px;
+    margin-left: 6px;
+    border: 1px solid rgba(243, 242, 242, 0.5);
+    height: 80%;
+    border-radius: 10px;
+    font-weight: 300;
+    font-size: 13px;
+  }
+}
+
+.panel {
+  background: #ECF0F1;
+  height: 100%;
+  padding-top: 40px;
+}
+
+.right-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+    & > .no-insight-to-show {
+      font-family: "Segoe UI";
+      font-size: large;
+      color: gray;
+      margin-bottom: 200px;
+      font-weight: 400;
+    }
+
+    & > .details-container {
+      width: 100%;
+      align-self: flex-start;
+      font-family: "Segoe UI";
+      font-weight: 400;
+      margin-top: 17px;
+      margin-left: 60px;
+
+        .title {
+          font-size: 25px;
+          font-weight: 400;
+        }
+    }
 }
 
 /**
@@ -37,45 +98,27 @@ h2, .md-subheading-2 {
 }
 
 /*=============*/
-/* Menu Icons Style */
-/*=============*/
-@media screen and (min-width: 1025px) {
-  .material-icons.md-icon {
-    font-size: 24px; 
-    color: white;
-  }
-}
-
-/*=============*/
-/* Chips Style */
-/*=============*/
-.chip-list {
-  .md-chip {
-    margin: 1em 1em 0 0;
-  }
-}
-
-/*=============*/
-/* Grid Layout */
-/*=============*/
-
-/* Need this to ensure react-grid-leyout streches on the screen*/
-.layout {
-  width: 100%;
-}
-
-
-/*=============*/
 /* Card Styles */
 /*=============*/
 
 .md-card {
   position: relative;
-  height: 100%;
+
+  .md-card-title:last-child {
+    padding-bottom: 4px;
+  }
 
   &.hide-borders {
     box-shadow: none; 
   }
+}
+
+.md-card-text:last-child {
+  padding-bottom: 0px; 
+}
+
+.md-card-text {
+  padding: 0px 0px 16px 10px;
 }
 
 .md-card-title {
@@ -88,6 +131,10 @@ h2, .md-subheading-2 {
     display: flex;
     justify-content: space-between;
   }
+}
+
+.md-card-title--title {
+  font-size: 12px;
 }
 
 .md-card .md-media {
@@ -113,6 +160,7 @@ h2, .md-subheading-2 {
 .templates .md-card-title--title-block {
   width: 100%;
   overflow: hidden;
+  font-weight: bold;
 }
 
 .templates h2.md-card-title--title,
@@ -178,6 +226,30 @@ div.templates:hover > section > div.preview {
 }
 
 /*=============*/
+/* Navigation List Styles */
+/*=============*/
+
+.md-list.md-toolbar-relative {
+  padding-top: 59px;
+}
+
+@media screen and (min-width: 768px) {
+  .md-list-tile--mini.md-list-tile--mini {
+    padding-left: 5px;
+    padding-right: 26px;
+  }
+
+  // Responsible for the navigation drawer to be thiner
+  .md-drawer--mini.md-drawer--mini {
+    width: 40px;
+  }
+
+  .md-drawer-relative--mini.md-drawer-relative--mini {
+    margin-left: 40px;
+  }
+}
+
+/*=============*/
 /* Recharts    */
 /*=============*/
 
@@ -200,123 +272,13 @@ div.templates:hover > section > div.preview {
   vertical-align: middle;
 }
 
-/*=============*/
-/* Data Tables */
-/*=============*/
-
-.md-data-table {
-
-
-  &.table-compact {
-    .md-table-column--header {
-      height: 47px;
-    }
-    .md-table-column {
-      vertical-align: middle;
-      padding-top: 7px;
-      padding-bottom: 7px;
-      padding-right: 16px;
-      height: 51px;
-    }
-  }
-
-  .md-table-row {
-    .md-btn--icon {
-      color: $md-secondary-color;
-      height: 30px;
-      padding: 3px 0 10px 0;
-      width: 30px;
-      visibility: hidden;
-    }
-
-    &:hover {
-      .md-btn--icon {
-        visibility: visible;
-      }
-    }
-  }
-
-  td.message {
-    span {
-      width: 100%;
-      word-wrap: break-word;
-      white-space: normal;
-    }
-  }
-
-  .MBFEvent-BotMessage, tr.Customer { 
-    background-color: $md-blue-50;
-
-    td.message, td.text {
-      text-align: right;
-    }
-  }
-
-  tr.intent td.message .indicator {
-    //background-color: $md-red-50;
-
-    display:inline-block;
-    width: .5em;
-    height: .8em;
-    position:relative;
-
-    &:before,
-    &:after {
-      display:block;
-      content:"";
-      width:10px;
-      height:0em;
-      border-style:solid;
-      position:absolute;
-    }
-    &:before {
-      top: 2px;
-      right:0;
-      border-width:.4em 0 .4em .4em;
-      border-color:transparent transparent transparent $md-secondary-color;    
-    }
-    &:after {
-      left:0;
-      border-width:.4em 0 .4em .4em;
-      border-color:transparent transparent transparent transparent;    
-    }
-  }
-}
-
-/*==============*/
-/* Drawer Style */
-/*==============*/
-.md-drawer {
-  .md-media {
-    b {
-      font-weight: 500;
-    }
-  }
-}
-
-.split-view {
-  .md-avatar-content {
-    font-size: 14px;
-  }
-}
-
-ul.aligned {
-  margin: 16px;
-  padding: 0;
-  list-style-position: 'outside';
-}
-
-header .md-btn, section .md-btn {
-  z-index: 1;
-}
-
 /*================*/
 /* Minimal Design */
 /*================*/
 
 .md-card {
   .md-text--secondary {
-    font-weight: 500;
+    font-weight: 400;
   }
 
   .md-media {
@@ -329,90 +291,28 @@ header .md-btn, section .md-btn {
   }
 }
 
-
-/*======*/
-/* Map  */
-/*======*/
-
-.leaflet-control-attribution {
-  display: none;
-}
-
-.leaflet-popup-content {
-  b {
-    font-weight: 600;
-  }
-}
-
-
 /*================*/
-/* Dialogs with toolbar */
+/* Select Fields Style    */
 /*================*/
 
-.dialog-toolbar-no-padding .md-dialog-content--padded{
-  padding: 0px;
-}
-.dialog-toolbar-no-padding footer{
-  position: absolute;
-  bottom:0px;
-  right:0px;
-  width:100%;
+.md-icon-text {
+  color: white;
+  font-family: "Segoe UI";
 }
 
-
-.vertical-menu .active-item{
-  background: $md-cyan-500;
-}
-.vertical-menu .md-text--theme-primary{
-  color: $md-cyan-50;
+.md-icon-text:first-child {
+  padding-left: 8px;
 }
 
-#testerForm footer {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
+.md-select-field--btn.md-select-field--btn {
+  padding-left: 8px;
+  padding-right: 0px;
+  padding-bottom: 16px;
+  padding-top: 3px;
+}  
 
-/*===================*/
-/* Dialogs full page */
-/*===================*/
-
-html.md-no-scroll {
-  overflow-y: hidden;
-}
-
-/*================*/
-/* Code editor    */
-/*================*/
-
-.ace_editor > *, .ace_layer > *, .ace_content, .ace_line > *, .ace_text-input {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-  font-size: 12px;
-  font-weight: normal;
-}
-
-/*================*/
-/* Toast          */
-/*================*/
-
-.md-snackbar-container {
-  z-index: 111;
-}
-
-/*================*/
-/* Layout         */
-/*================*/
-
-.layout {
-  display: table;
-  width: 100%;
-  height: 100%;
-}
-
-.layout > .center {
-  display: table-cell;
-  text-align: center;
-  vertical-align: middle;
+.md-list--menu-contained {
+  width: auto; 
 }
 
 /*================*/

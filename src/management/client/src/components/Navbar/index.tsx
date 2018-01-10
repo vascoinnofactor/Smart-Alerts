@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------
+// <copyright file="index.tsx" company="Microsoft Corporation">
+//        Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 import * as React from 'react';
 
 import { withRouter } from 'react-router';
@@ -7,78 +13,80 @@ import NavigationDrawer from 'react-md/lib/NavigationDrawers';
 import ListItem from 'react-md/lib/Lists/ListItem';
 import FontIcon from 'react-md/lib/FontIcons';
 
-import InsightsPage from '../../pages/Insights';
+import SignalResultsPage from '../../pages/SignalResults';
+import SignalsPage from '../../pages/Signals';
 
-import './index.css';
+import './indexStyle.css';
 
-const TO_PREFIX = '/';
-
-const navItems = [{
-    label: 'Inbox',
-    to: TO_PREFIX,
-    exact: true,
-    icon: 'inbox',
-  }, {
-    label: 'Starred',
-    to: `${TO_PREFIX}/starred`,
-    icon: 'star',
-  }, {
-    label: 'Send mail',
-    to: `${TO_PREFIX}/send-mail`,
-    icon: 'send',
-  }, {
-    label: 'Drafts',
-    to: `${TO_PREFIX}/drafts`,
-    icon: 'drafts',
-  }];
-
-  const navigationItems = [
+/**
+ * Define the navigation items which will be presented in the navigation bar
+ */
+const navigationItems = [
     (
       <ListItem
         key={1001}
         component={Link}
-        to='/'
-        leftIcon={<FontIcon>{'lightbulb_outline'}</FontIcon>}
+        to="/signalResults"
+        leftIcon={<FontIcon className="item-icon">{'lightbulb_outline'}</FontIcon>}
         tileClassName="md-list-tile--mini"
         primaryText={name || 'Dashboard'}
+        className="navbar-item-list"
       />
     ),
     (
         <ListItem
-        key={1002}
-        component={Link}
-        to='something2'
-        leftIcon={<FontIcon>{'settings'}</FontIcon>}
-        tileClassName="md-list-tile--mini"
-        primaryText={name || 'Dashboard'}
-      />
+          key={1002}
+          component={Link}
+          to="/signals"
+          leftIcon={<FontIcon className="item-icon">{'settings'}</FontIcon>}
+          tileClassName="md-list-tile--mini"
+          primaryText={name || 'Dashboard'}
+          className="navbar-item-list"
+        />
     )
   ];
 
+/**
+ * The component represents the navigation bar
+ */
 export class Navbar extends React.PureComponent {
-    constructor(props: any) {
-        super(props);
-    }
-
-    render() {
+    public render() {
         return (
             <NavigationDrawer
-            toolbarTitle="Azure Smart Alerts"
-            mobileDrawerType={NavigationDrawer.DrawerTypes.TEMPORARY_MINI}
-            tabletDrawerType={NavigationDrawer.DrawerTypes.PERSISTENT_MINI}
-            desktopDrawerType={NavigationDrawer.DrawerTypes.PERSISTENT_MINI}
-            navItems={navigationItems}
-            contentId="main-demo-content"
-            drawerClassName="backgroundColor"
+              toolbarTitle={this.getToolbarTitle()}
+              mobileDrawerType={NavigationDrawer.DrawerTypes.TEMPORARY_MINI}
+              tabletDrawerType={NavigationDrawer.DrawerTypes.PERSISTENT_MINI}
+              desktopDrawerType={NavigationDrawer.DrawerTypes.PERSISTENT_MINI}
+              navItems={navigationItems}
+              contentId="main-demo-content"
+              drawerClassName="backgroundColor"
+              temporaryIcon={<img src="/Azure.png" className="logo"/>}
+              visible={false}
             >
                 <Switch>
-                    <Route path={navItems[0].to} exact component={InsightsPage} />
-                    <Route path={navItems[1].to} component={InsightsPage} />
-                    <Route path={navItems[2].to} component={InsightsPage} />
-                    <Route path={navItems[3].to} component={InsightsPage} />
+                    <Route 
+                      path="/signalResults/:id?" 
+                      render={(props) => 
+                        <SignalResultsPage selectedSignalResultNumber={props.match.params.id} />
+                      }
+                    />
+                    <Route 
+                      path="/signals/:id?" 
+                      render={(props) => 
+                        <SignalsPage selectedSignalNumber={props.match.params.id}/>
+                      }
+                    />
                 </Switch>
-        </NavigationDrawer>
+            </NavigationDrawer>
         );
+    }
+
+    private getToolbarTitle(): JSX.Element {
+      return (
+        <div className="toolbar-title">
+          Azure Smart Alerts  <div className="preview-style">preview</div>
+        </div>
+      );
     }
 }
 
