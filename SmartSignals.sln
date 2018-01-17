@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{114AB921-11E0-472F-B30D-73850169098D}"
 EndProject
@@ -31,7 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scheduler", "scheduler", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{33F08307-4325-4557-9D0B-DE57DD7DE249}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalsShared", "src\SmartSignalsShared\SmartSignalsShared.csproj", "{03628C28-B52D-4785-8F70-A5191F0AAA04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalsRuntimeShared", "src\SmartSignalsRuntimeShared\SmartSignalsRuntimeShared.csproj", "{03628C28-B52D-4785-8F70-A5191F0AAA04}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalSchedulerTests", "test\scheduler\SmartSignalSchedulerTests\SmartSignalSchedulerTests.csproj", "{700FD1D5-A401-47F2-8C0A-50F64447B660}"
 EndProject
@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalScheduler", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalsAnalysis", "src\analysis\SmartSignalsAnalysis\SmartSignalsAnalysis.csproj", "{B3955795-6CBB-4E4E-907B-7C541E1DFFC2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalSharedTests", "test\SmartSignalSharedTests\SmartSignalSharedTests.csproj", "{01EA0E0C-2EC2-4CAC-A1F9-5F53778F7D00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalsRuntimeSharedTests", "test\SmartSignalsRuntimeSharedTests\SmartSignalsRuntimeSharedTests.csproj", "{01EA0E0C-2EC2-4CAC-A1F9-5F53778F7D00}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A84DBB4A-265B-4ADA-9916-2DDD70022411} = {A84DBB4A-265B-4ADA-9916-2DDD70022411}
 		{39FADBA7-6B24-4755-A3F4-F9E7FF5E7ACA} = {39FADBA7-6B24-4755-A3F4-F9E7FF5E7ACA}
@@ -89,6 +89,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTask", "build\buildTask\BuildTask.csproj", "{AFECE1D3-21A5-4850-8536-7903901685A8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalsPackage", "src\SDK\SmartSignalsPackage\SmartSignalsPackage.csproj", "{5DD1F9BF-48E5-46AD-BF7E-36C9602E0D15}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalsShared", "src\SmartSignalsShared\SmartSignalsShared.csproj", "{47068C5A-9C65-41F6-B8D4-318C11FB9F42}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalsSharedTests", "test\SmartSignalsSharedTests\SmartSignalsSharedTests.csproj", "{2EEC00B8-9B32-486A-B4EB-781492FFCD8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -176,6 +180,14 @@ Global
 		{5DD1F9BF-48E5-46AD-BF7E-36C9602E0D15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DD1F9BF-48E5-46AD-BF7E-36C9602E0D15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DD1F9BF-48E5-46AD-BF7E-36C9602E0D15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47068C5A-9C65-41F6-B8D4-318C11FB9F42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47068C5A-9C65-41F6-B8D4-318C11FB9F42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47068C5A-9C65-41F6-B8D4-318C11FB9F42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47068C5A-9C65-41F6-B8D4-318C11FB9F42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EEC00B8-9B32-486A-B4EB-781492FFCD8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EEC00B8-9B32-486A-B4EB-781492FFCD8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EEC00B8-9B32-486A-B4EB-781492FFCD8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EEC00B8-9B32-486A-B4EB-781492FFCD8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -216,6 +228,8 @@ Global
 		{04E5BEF7-CA4E-44C4-85C8-B9F7477FD205} = {114AB921-11E0-472F-B30D-73850169098D}
 		{AFECE1D3-21A5-4850-8536-7903901685A8} = {BFAA36B9-8426-4C44-AD67-BB905F6472E3}
 		{5DD1F9BF-48E5-46AD-BF7E-36C9602E0D15} = {8EB82F44-C8BC-49D7-8E86-285C7C846211}
+		{47068C5A-9C65-41F6-B8D4-318C11FB9F42} = {114AB921-11E0-472F-B30D-73850169098D}
+		{2EEC00B8-9B32-486A-B4EB-781492FFCD8D} = {9E37DBE4-994A-47EC-892E-92743D64769E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {07D047F4-DA5D-48AA-82EA-55DA2452F3C3}

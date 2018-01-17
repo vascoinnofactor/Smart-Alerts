@@ -13,8 +13,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls;
-    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
-    using Microsoft.IdentityModel.Clients.ActiveDirectory;
+    using Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient;
     using Unity.Attributes;
 
     /// <summary>
@@ -52,15 +51,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="SignalsControlViewModel"/> class.
         /// </summary>
-        /// <param name="authenticationServices">The authentication services that were used to log in</param>
         /// <param name="azureResourceManagerClient">The Azure resources manager client</param>
         [InjectionConstructor]
-        public SignalsControlViewModel(AuthenticationServices authenticationServices, AzureResourceManagerClient azureResourceManagerClient)
+        public SignalsControlViewModel(AzureResourceManagerClient azureResourceManagerClient)
         {
-            // Init Azure resources manager client with authentocated user's credentials
-            AuthenticationResult authResult = authenticationServices.AuthenticationResult;
-            var activeDirectoryCredentials = new ActiveDirectoryCredentials(authResult.AccessToken);
-            azureResourceManagerClient.Credentials = activeDirectoryCredentials;
             this.azureResourceManagerClient = azureResourceManagerClient;
 
             this.ReadSubscriptionsTask = new ObservableTask<ObservableCollection<AzureSubscription>>(
@@ -236,8 +230,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <returns>A task that returns the subscriptions</returns>
         private async Task<ObservableCollection<AzureSubscription>> GetSubscriptionsAsync()
         {
-            var subscriptionsList = (await this.azureResourceManagerClient.GetAllSubscriptionsAsync()).ToList()
-                .Select(sub => new AzureSubscription(sub.SubscriptionId, sub.DisplayName)).ToList();
+            var subscriptionsList = (await this.azureResourceManagerClient.GetAllSubscriptionsAsync()).ToList();
 
             return new ObservableCollection<AzureSubscription>(subscriptionsList);
         }
