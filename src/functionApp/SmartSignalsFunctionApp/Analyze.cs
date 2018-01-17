@@ -14,8 +14,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.Analysis;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Shared;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.SignalResultPresentation;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Azure.WebJobs.Host;
@@ -40,9 +41,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
             ThreadPool.SetMinThreads(100, 100);
 
             Container = DependenciesInjector.GetContainer()
-                .RegisterType<IAnalysisServicesFactory, AnalysisServicesFactory>()
-                .RegisterType<ISmartSignalLoader, SmartSignalLoader>()
-                .RegisterType<ISmartSignalRunner, SmartSignalRunnerInChildProcess>();
+                    .InjectAnalysisDependencies(withChildProcessRunner: true);
         }
 
         /// <summary>

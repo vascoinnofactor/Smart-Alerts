@@ -11,11 +11,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.AlertRules;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient;
 
     /// <summary>
     /// This class is responsible for discovering which signal should be executed and sends them to the analysis flow
@@ -28,6 +29,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
         private readonly IAnalysisExecuter analysisExecuter;
         private readonly ISmartSignalResultPublisher smartSignalResultPublisher;
         private readonly IAzureResourceManagerClient azureResourceManagerClient;
+        private readonly IEmailSender emailSender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScheduleFlow"/> class.
@@ -37,6 +39,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
         /// <param name="signalRunsTracker">The signal run tracker</param>
         /// <param name="analysisExecuter">The analysis executer instance</param>
         /// <param name="smartSignalResultPublisher">The signal results publisher instance</param>
+        /// <param name="emailSender">The email sender</param>
         /// <param name="azureResourceManagerClient">The azure resource manager client</param>
         public ScheduleFlow(
             ITracer tracer,
@@ -44,6 +47,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
             ISignalRunsTracker signalRunsTracker,
             IAnalysisExecuter analysisExecuter,
             ISmartSignalResultPublisher smartSignalResultPublisher,
+            IEmailSender emailSender,
             IAzureResourceManagerClient azureResourceManagerClient)
         {
             this.tracer = Diagnostics.EnsureArgumentNotNull(() => tracer);
@@ -51,6 +55,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
             this.signalRunsTracker = Diagnostics.EnsureArgumentNotNull(() => signalRunsTracker);
             this.analysisExecuter = Diagnostics.EnsureArgumentNotNull(() => analysisExecuter);
             this.smartSignalResultPublisher = Diagnostics.EnsureArgumentNotNull(() => smartSignalResultPublisher);
+            this.emailSender = Diagnostics.EnsureArgumentNotNull(() => emailSender);
             this.azureResourceManagerClient = Diagnostics.EnsureArgumentNotNull(() => azureResourceManagerClient);
         }
 
@@ -73,8 +78,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
                 {
                     IList<SmartSignalResultItemPresentation> signalResultItems = await this.analysisExecuter.ExecuteSignalAsync(signalExecution, resourceIds);
                     this.tracer.TraceInformation($"Found {signalResultItems.Count} signal result items");
-                    this.smartSignalResultPublisher.PublishSignalResultItems(signalExecution.SignalId, signalResultItems);
+                    await this.smartSignalResultPublisher.PublishSignalResultItemsAsync(signalExecution.SignalId, signalResultItems);
                     await this.signalRunsTracker.UpdateSignalRunAsync(signalExecution);
+
+                    // We send the mail after we mark the run as successful so if it will fail then the signal will not run again
+                    await this.emailSender.SendSignalResultEmailAsync(signalExecution.SignalId, signalResultItems);
                 }
                 catch (Exception exception)
                 {

@@ -10,9 +10,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     using System.Net;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.AlertRules;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
     using NCrontab;
 
     /// <summary>

@@ -12,6 +12,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     using System.Net;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Models;
     using Responses;
     using Shared;

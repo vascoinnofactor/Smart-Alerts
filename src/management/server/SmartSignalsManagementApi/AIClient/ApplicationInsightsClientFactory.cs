@@ -6,7 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
 {
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
 
     /// <summary>
     /// An implementation of the <see cref="IApplicationInsightsClientFactory"/> interface.
