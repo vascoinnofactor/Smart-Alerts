@@ -9,9 +9,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Extensions;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Shared;
@@ -24,6 +24,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
     {
         private readonly IHttpClientWrapper httpClient;
         private readonly string applicationId;
+        private readonly string applicationKey;
         private readonly Uri applicationInsightUri = new Uri("https://api.applicationinsights.io/beta/apps");
 
         /// <summary>
@@ -33,6 +34,18 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
         public ApplicationInsightsClient(string applicationId)
         {
             this.applicationId = applicationId;
+            this.httpClient = new HttpClientWrapper();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationInsightsClient"/> class.
+        /// </summary>
+        /// <param name="applicationId">The AI application id.</param>
+        /// <param name="applicationKey">The AI application key.</param>
+        public ApplicationInsightsClient(string applicationId, string applicationKey)
+        {
+            this.applicationId = applicationId;
+            this.applicationKey = applicationKey;
             this.httpClient = new HttpClientWrapper();
         }
 
@@ -75,22 +88,24 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
                 // Add timestamp filters in case it's required
                 if (startTime.HasValue && endTime.HasValue)
                 {
-                    appInsightsRelativeUrl += $" AND timestamp ge {startTime} AND timestamp le {endTime}";
+                    appInsightsRelativeUrl += $" and timestamp ge {startTime.Value.ToQueryTimeFormat()} and timestamp le {endTime.Value.ToQueryTimeFormat()}";
                 }
                 else if (startTime.HasValue)
                 {
-                    appInsightsRelativeUrl += $" AND timestamp ge {startTime}";
+                    appInsightsRelativeUrl += $" and timestamp ge {startTime.Value.ToQueryTimeFormat()}";
                 }
                 else if (endTime.HasValue)
                 {
-                    appInsightsRelativeUrl += $" AND timestamp le {endTime}";
+                    appInsightsRelativeUrl += $" and timestamp le {endTime.Value.ToQueryTimeFormat()}";
                 }
 
                 // TODO - generate a token for talking with AI
                 // Send the AI Rest API request
                 using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(this.applicationInsightUri, appInsightsRelativeUrl)))
                 {
-                    httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "TokenWillBeHere");
+                    // Add the authorization token
+                    Tuple<string, string> authorizationHeader = this.GetAuthorizationHeader();
+                    httpRequestMessage.Headers.Add(authorizationHeader.Item1, new List<string>() { authorizationHeader.Item2 });
 
                     using (HttpResponseMessage response = await this.httpClient.SendAsync(httpRequestMessage, cancellationToken))
                     {
@@ -115,6 +130,21 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
             {
                 throw new ApplicationInsightsClientException($"Failed to de-serialize the returned AI data", e);
             }
+        }
+
+        /// <summary>
+        /// Get an authorization header for the Application Insight request.
+        /// </summary>
+        /// <returns>The authorization token.</returns>
+        private Tuple<string, string> GetAuthorizationHeader()
+        {
+            // In case application key was providere - use it first
+            if (!string.IsNullOrWhiteSpace(this.applicationKey))
+            {
+                return new Tuple<string, string>("x-api-key", this.applicationKey);
+            }
+
+            return new Tuple<string, string>("Authorization", "bearer someTokenWillBeHere");
         }
     }
 }

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="index.ts" company="Microsoft Corporation">
+// <copyright file="index.tsx" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -7,13 +7,13 @@
 import * as React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-import Visualization from '../VisualizationBase';
+import Visualization, { VisualizationProps } from '../VisualizationBase';
 import FormatUtils from '../../../utils/FormatUtils';
 
 /**
  * This component represents the bars visualization rendering
  */
-export default class Timeline extends Visualization {
+export default class Timeline extends Visualization<VisualizationProps> {
     public render() {
         const { data, hideLegend, hideYAxis, hideXAxis, className } = this.props;
         

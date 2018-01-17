@@ -28,10 +28,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         /// <summary>
         /// Initializes a new instance of the <see cref="SignalResultApi"/> class.
         /// </summary>
-        /// <param name="applicationInsightsClient">The application insights client.</param>
-        public SignalResultApi(IApplicationInsightsClient applicationInsightsClient)
+        /// <param name="applicationInsightsClientFactory">The application insights client factory.</param>
+        public SignalResultApi(IApplicationInsightsClientFactory applicationInsightsClientFactory)
         {
-            this.applicationInsightsClient = applicationInsightsClient;
+            this.applicationInsightsClient = applicationInsightsClientFactory.GetApplicationInsightsClient();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         /// <param name="endTime">The query end time.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The Smart Signals results response.</returns>
-        public async Task<ListSmartSignalsResultsResponse> GetAllSmartSignalResultsAsync(DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+        public async Task<ListSmartSignalsResultsResponse> GetAllSmartSignalResultsAsync(DateTime startTime, DateTime? endTime = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             try
             {

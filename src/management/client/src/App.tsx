@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------
+// <copyright file="App.tsx" company="Microsoft Corporation">
+//        Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 import * as React from 'react';
 import './App.css';
 

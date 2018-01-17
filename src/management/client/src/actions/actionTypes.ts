@@ -22,6 +22,11 @@ import {
     AddAlertRuleFailAction,
     AddAlertRuleSuccessAction
 } from './alertRule/add';
+import {
+    GetQueryResultInProgressAction,
+    GetQueryResultSuccessAction,
+    GetQueryResultFailAction
+} from './queryResult/get';
 
 type ActionTypes = GetSignalResultFailAction | 
                    GetSignalResultInProgressAction | 
@@ -31,6 +36,9 @@ type ActionTypes = GetSignalResultFailAction |
                    GetSignalFailAction |
                    AddAlertRuleSuccessAction |
                    AddAlertRuleInProgressAction | 
-                   AddAlertRuleFailAction;
+                   AddAlertRuleFailAction |
+                   GetQueryResultInProgressAction |
+                   GetQueryResultSuccessAction |
+                   GetQueryResultFailAction;
 
 export default ActionTypes;

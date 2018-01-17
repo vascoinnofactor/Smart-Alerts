@@ -8,11 +8,13 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 {
     using System;
     using System.Collections.Specialized;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
+    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
@@ -42,6 +44,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
             Container = new UnityContainer()
                 .RegisterType<ICloudStorageProviderFactory, CloudStorageProviderFactory>()
                 .RegisterType<ISmartSignalRepository, SmartSignalRepository>()
+                .RegisterType<IApplicationInsightsClientFactory, ApplicationInsightsClientFactory>()
                 .RegisterType<ISignalApi, SignalApi>()
                 .RegisterType<IAlertRuleApi, AlertRuleApi>()
                 .RegisterType<ISignalResultApi, SignalResultApi>();
@@ -63,6 +66,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
                 try
                 {
+                    ListSmartSignalsResultsResponse smartSignalsResultsResponse;
+
                     // Extract the url parameters
                     NameValueCollection queryParameters = req.RequestUri.ParseQueryString();
 
@@ -72,13 +77,24 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                         return req.CreateErrorResponse(HttpStatusCode.BadRequest, "Given start time is not in valid format");
                     }
 
-                    DateTime endTime;
-                    if (!DateTime.TryParse(queryParameters.Get("endTime"), out endTime))
+                    // Endtime parameter is optional
+                    DateTime endTime = new DateTime();
+                    string endTimeValue = queryParameters.Get("endTime");
+                    bool hasEndTime = !string.IsNullOrWhiteSpace(endTimeValue);
+                    if (hasEndTime && !DateTime.TryParse(endTimeValue, out endTime))
                     {
                         return req.CreateErrorResponse(HttpStatusCode.BadRequest, "Given end time is not in valid format");
                     }
 
-                    ListSmartSignalsResultsResponse smartSignalsResultsResponse = await signalResultApi.GetAllSmartSignalResultsAsync(startTime, endTime, CancellationToken.None);
+                    // Get all the smart signal results based on the given time range
+                    if (hasEndTime)
+                    {
+                        smartSignalsResultsResponse = await signalResultApi.GetAllSmartSignalResultsAsync(startTime, endTime);
+                    }
+                    else
+                    {
+                        smartSignalsResultsResponse = await signalResultApi.GetAllSmartSignalResultsAsync(startTime);
+                    }
 
                     return req.CreateResponse(smartSignalsResultsResponse);
                 }
@@ -104,7 +120,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// <param name="log">The logger.</param>
         /// <returns>The smart signals encoded as JSON.</returns>
         [FunctionName("signal")]
-        public static async Task<HttpResponseMessage> GetAllSmartSignals([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> GetAllSmartSignals([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestMessage req, TraceWriter log)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {
@@ -139,7 +155,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// <param name="log">The logger.</param>
         /// <returns>200 if request was successful, 500 if not.</returns>
         [FunctionName("alertRule")]
-        public static async Task<HttpResponseMessage> AddAlertRule([HttpTrigger(AuthorizationLevel.Function, "put")] HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> AddAlertRule([HttpTrigger(AuthorizationLevel.Anonymous, "put")] HttpRequestMessage req, TraceWriter log)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {

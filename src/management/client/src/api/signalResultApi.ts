@@ -4,15 +4,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import SignalResult from '../models/SignalResult';
 import baseUrl from './baseUrl';
 import ApiError from './apiError';
+import ListSmartSignalResultResponse from './models/ListSmartSignalResultResponse';
 
 /**
  * Gets a list of signals results without any flitering
  */
-export async function GetSignalsResults(): Promise<SignalResult[]> {
-    const requestUrl = `${baseUrl}/api/signalResult`;
+export async function getSignalsResultsAsync(): Promise<ListSmartSignalResultResponse> {
+    const requestUrl = `${baseUrl}/api/signalResult?startTime=1/15/2018 5:00 AM`;
 
     // Throws TypeError for network error. 
     // See for details: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch

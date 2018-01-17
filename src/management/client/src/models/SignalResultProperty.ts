@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------
 
 /**
- * This class model represents a signal result property.
+ * This model represents a signal result property
  */
 export default interface SignalResultProperty {
     /**
@@ -21,7 +21,7 @@ export default interface SignalResultProperty {
     /**
      * Gets the signal result property category.
      */
-    category: PropertyCategory;
+    displayCategory: PropertyCategory;
 
     /**
      * Gets the signal result property info ballon (optional).
@@ -33,7 +33,23 @@ export default interface SignalResultProperty {
  * List all the possible property category values.
  */
 export enum PropertyCategory {
-    Summary,
-    Chart,
-    Analysis
+    /**
+     * Indicates a property belonging to the properties section.
+     */
+    Property = 0,
+
+    /**
+     * Indicates a property belonging to the analysis section.
+     */
+    Analysis = 1,
+
+    /**
+     * Indicates a property belonging to the charts section.
+     */
+    Chart = 2,
+
+    /**
+     * Indicates a property belonging to the additional queries section.
+     */
+    AdditionalQuery = 3
 }

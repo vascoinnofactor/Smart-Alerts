@@ -7,21 +7,21 @@
 import ResourceType from './ResourceType';
 
 /**
- * This class represents the model of an alert rule 
+ * This model represents an alert rule 
  */
-export default class AlertRule {
-    /// <summary>
-    /// Gets or sets the signal ID.
-    /// </summary>
-    public signalId: string;
+export default interface AlertRule {
+    /**
+     * Gets the signal id.
+     */
+    signalId: string;
 
-    /// <summary>
-    /// Gets or sets the resource type supported by the signal.
-    /// </summary>
-    public resourceType: ResourceType;
+    /**
+     * Gets the resource type supported by the signal.
+     */
+    resourceType: ResourceType;
 
-    /// <summary>
-    /// Gets or sets the scheduling configuration (in CRON format).
-    /// </summary>
-    public schedule: string;
+    /**
+     * Gets the scheduling configuration (in CRON format).
+     */
+    schedule: string;
 }

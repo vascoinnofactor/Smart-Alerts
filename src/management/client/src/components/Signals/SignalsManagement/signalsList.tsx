@@ -28,16 +28,22 @@ export default class SignalsList extends React.Component<SignalsListProps> {
     }
 
     public render() {
-        const signalsList = this.props.signals.map((signal, index) => (
-            <div className="signal">
-                <FontIcon className="signal-status">done</FontIcon>
-                <div className="signal-name">
-                    <Link to={'/signals/' + index}>
-                        {signal.name}
-                    </Link>
+        let signalsList: JSX.Element[];
+        
+        if (!this.props.signals || this.props.signals.length === 0) {
+            signalsList = Element[0];
+        } else {
+            signalsList = this.props.signals.map((signal, index) => (
+                <div className="signal">
+                    <FontIcon className="signal-status">done</FontIcon>
+                    <div className="signal-name">
+                        <Link to={'/signals/' + index}>
+                            {signal.name}
+                        </Link>
+                    </div>
                 </div>
-            </div>
-        ));
+            ));
+        }
 
         return (
             <div>

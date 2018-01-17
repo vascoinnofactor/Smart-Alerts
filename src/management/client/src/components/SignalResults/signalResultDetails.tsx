@@ -5,27 +5,66 @@
 // -----------------------------------------------------------------------
 
 import * as React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
 import { Grid, Col, Row } from 'react-flexbox-grid';
+import * as moment from 'moment';
 
 import { DateUtils } from '../../utils/DateUtils';
 import SignalResult from '../../models/SignalResult';
+import { SignalResultUtils } from '../../utils/SignalResultUtils';
+import SignalResultProperty from '../../models/SignalResultProperty';
+import StoreState from '../../store/StoreState';
+import DataTable from '../../models/DataTable';
+import ChartMetadata from '../../models/ChartMetadata';
 import VisualizationFactory from '../../factories/VisualizationsFactory';
+import { getQueryResult } from '../../actions/queryResult/queryResultActions';
 
 import './signalResultDetailsStyle.css';
 
 /**
- * Represents the SignalResultDetails component props
+ * Represents the SignalResultDetails component props for the dispatch functions
  */
-interface SignalResultDetailsProps {
-    signalResult: SignalResult;
+interface SignalResultDetailsDispatchProps {
+    executeQuery: (queryId: string, applicationId: string, query: string, apiKey: string) =>
+                  (dispatch: Dispatch<StoreState>) => Promise<void>;
 }
+
+/**
+ * Represents the Card component props for the component inner state  
+ */
+interface SignalResultDetailsStateProps {
+    chartsData: Map<string, DataTable>;
+}
+
+/**
+ * Represents the SignalResultDetails component props for the incoming properties
+ */
+interface SignalResultDetailsOwnProps {
+    signalResult: SignalResult;
+    chartsMetadata: ChartMetadata[];
+}
+
+// Create a type combined from all the props
+type SignalResultDetailsProps = SignalResultDetailsDispatchProps &
+                                SignalResultDetailsStateProps & 
+                                SignalResultDetailsOwnProps;
 
 /**
  * This component represents the Signal Result details view page
  */
-export default class SignalResultDetails extends React.PureComponent<SignalResultDetailsProps> {
+class SignalResultDetails extends React.PureComponent<SignalResultDetailsProps> {
     constructor(props: SignalResultDetailsProps) {
         super(props);
+    }
+
+    public componentDidMount() {
+        this.props.chartsMetadata.forEach(async chart => {
+            await this.props.executeQuery(chart.id,
+                                          chart.applicationId,
+                                          chart.query,
+                                          chart.apiKey);
+        });
     }
 
     public render() {
@@ -46,8 +85,7 @@ export default class SignalResultDetails extends React.PureComponent<SignalResul
                                 Subscription
                             </Col>
                             <Col xs={10}>
-                                {!this.props.signalResult.subscriptionId ?
-                                        'N/A' : this.props.signalResult.subscriptionId}
+                                {SignalResultUtils.getSubscriptionId(this.props.signalResult.resourceId)}
                             </Col>
                         </Row>
                         <Row className="property-row">
@@ -55,7 +93,7 @@ export default class SignalResultDetails extends React.PureComponent<SignalResul
                                 Resource group
                             </Col>
                             <Col xs={10}>
-                                {!this.props.signalResult.resourceGroup ? 'N/A' : this.props.signalResult.resourceGroup}
+                                {SignalResultUtils.getResourceGroup(this.props.signalResult.resourceId)}
                             </Col>
                         </Row>
                         <Row className="property-row">
@@ -63,7 +101,7 @@ export default class SignalResultDetails extends React.PureComponent<SignalResul
                                 Resource
                             </Col>
                             <Col xs={10}>
-                                {this.props.signalResult.resourceName}
+                                {SignalResultUtils.getResourceName(this.props.signalResult.resourceId)}    
                             </Col>
                         </Row>
                         <Row className="property-row">
@@ -71,7 +109,7 @@ export default class SignalResultDetails extends React.PureComponent<SignalResul
                                 Rule name
                             </Col>
                             <Col xs={10}>
-                                {this.props.signalResult.name}
+                                {this.props.signalResult.title}
                             </Col>
                         </Row>
                         <Row className="property-row">
@@ -79,16 +117,10 @@ export default class SignalResultDetails extends React.PureComponent<SignalResul
                                 When
                             </Col>
                             <Col xs={10}>
-                                {DateUtils.getStartTimeAndEndTimeAsRange(this.props.signalResult.startTime,
-                                                                         this.props.signalResult.endTime)}
-                            </Col>
-                        </Row>
-                        <Row className="property-row">
-                            <Col xs={2}>
-                                Metric
-                            </Col>
-                            <Col xs={10}>
-                                {this.props.signalResult.summaryProperty.value}
+                                {DateUtils.getStartTimeAndEndTimeAsRange(
+                                    moment(this.props.signalResult.analysisTimestamp)
+                                                           .add(-this.props.signalResult.analysisWindowSizeInMinutes),
+                                    moment(this.props.signalResult.analysisTimestamp))}
                             </Col>
                         </Row>
                     </Grid>
@@ -102,10 +134,7 @@ export default class SignalResultDetails extends React.PureComponent<SignalResul
                     <Grid fluid>
                         <Row className="chart-container">
                             {
-                                this.props.signalResult.chartType && this.props.signalResult.chartData &&
-                                VisualizationFactory.create(this.props.signalResult.chartType,
-                                                            this.props.signalResult.chartData,
-                                                            'analysis-chart')
+                                this.getChartsElements()
                             }
                         </Row>
                     </Grid>
@@ -122,6 +151,20 @@ export default class SignalResultDetails extends React.PureComponent<SignalResul
         );
     }
 
+    private getChartsElements(): (JSX.Element | undefined)[] {
+        return this.props.chartsMetadata.map(chartMetadata => {
+            // Get the chart data
+            let chartData = this.props.chartsData.get(chartMetadata.id);
+
+            return (
+                chartData &&
+                VisualizationFactory.create(chartMetadata.chartType,
+                                            chartData,
+                                            'analysis-chart')
+            );
+        });
+    }
+
     /**
      * Get the custom analysis properties section
      * @param signalResult The signal result
@@ -129,11 +172,13 @@ export default class SignalResultDetails extends React.PureComponent<SignalResul
     private customAnalysisProperties(signalResult: SignalResult): JSX.Element {
         let result: JSX.Element = (<div/>);
 
-        if (signalResult.analysisProperties) {
+        let analysisProperties: SignalResultProperty[] = SignalResultUtils.getAllAnalysisProperties(signalResult);
+        
+        if (analysisProperties) {
             result = (
                 <Grid fluid className="gridStyle properies-list">
                     {
-                        signalResult.analysisProperties.map((property, index) => (
+                        analysisProperties.map((property, index) => (
                             <Row className="property-row">
                                 <Col xs={2}>
                                     {property.name}
@@ -171,3 +216,37 @@ export default class SignalResultDetails extends React.PureComponent<SignalResul
         );
     }
 }
+
+/**
+ * Map between the given state to this component props.
+ * @param state The current state
+ * @param ownProps the component's props
+ */
+function mapStateToProps(state: StoreState, ownProps: SignalResultDetailsOwnProps): SignalResultDetailsStateProps {
+    let chartsData: Map<string, DataTable> = new Map<string, DataTable>();
+
+    if (ownProps.chartsMetadata) {
+        ownProps.chartsMetadata.forEach(chart => {
+            let queryResult = state.queryResults.get(chart.id);
+            if (queryResult) {
+                chartsData.set(chart.id, queryResult.result);
+            }
+        });
+    }
+
+    return {
+        chartsData: chartsData
+    };
+}
+
+/**
+ * Map between the given dispatch to this component props actions.
+ * @param dispatch the dispatch
+ */
+function mapDispatchToProps(dispatch: Dispatch<StoreState>): SignalResultDetailsDispatchProps {
+    return {
+        executeQuery: bindActionCreators(getQueryResult, dispatch)
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignalResultDetails);

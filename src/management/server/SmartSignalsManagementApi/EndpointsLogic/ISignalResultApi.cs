@@ -20,9 +20,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         /// Gets all the Smart Signals results.
         /// </summary>
         /// <param name="startTime">The query start time.</param>
-        /// <param name="endTime">The query end time.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="endTime">(optional) The query end time.</param>
+        /// <param name="cancellationToken">(optional) The cancellation token.</param>
         /// <returns>The Smart Signals results response.</returns>
-        Task<ListSmartSignalsResultsResponse> GetAllSmartSignalResultsAsync(DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+        Task<ListSmartSignalsResultsResponse> GetAllSmartSignalResultsAsync(DateTime startTime, DateTime? endTime = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

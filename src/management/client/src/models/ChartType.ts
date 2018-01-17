@@ -8,9 +8,10 @@
  * List all the possible supported chart types
  */
 export enum ChartType {
+    None     = 0,
     Timeline = 1,
-    bars     = 2,
-    pie      = 3
+    Bars     = 2,
+    Pie      = 3
 }
 
 export default ChartType;

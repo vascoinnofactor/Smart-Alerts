@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="index.ts" company="Microsoft Corporation">
+// <copyright file="index.tsx" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -7,13 +7,17 @@
 import * as React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-import Visualization from '../VisualizationBase';
+import Visualization, { VisualizationProps } from '../VisualizationBase';
 import FormatUtils from '../../../utils/FormatUtils';
+
+interface TimelineProps extends VisualizationProps {
+    timestampDataKey: string;
+}
 
 /**
  * This component represents the timeline visualization rendering
  */
-export default class Timeline extends Visualization {
+export default class Timeline extends Visualization<TimelineProps> {
     public render() {
         const { data } = this.props;
 
@@ -25,7 +29,7 @@ export default class Timeline extends Visualization {
                            className={this.props.className}
                 >
                     <XAxis 
-                        dataKey="time" 
+                        dataKey={this.props.timestampDataKey} 
                         tickFormatter={this.hourFormat} 
                         minTickGap={20} 
                         hide={this.props.hideXAxis}

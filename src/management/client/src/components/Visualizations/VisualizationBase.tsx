@@ -1,11 +1,19 @@
+// -----------------------------------------------------------------------
+// <copyright file="VisualizationBase.tsx" company="Microsoft Corporation">
+//        Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 import * as React from 'react';
 import * as moment from 'moment';
+
+import ChartRawData from './Models/ChartRawData';
 
 /**
  * This component represents the visualization components global properties
  */
-interface VisualizationProps {
-    data: object[];
+export interface VisualizationProps {
+    data: ChartRawData[];
     className?: string;
     hideXAxis?: boolean;
     hideYAxis?: boolean;
@@ -15,8 +23,8 @@ interface VisualizationProps {
 /**
  * This component represents the visualization base class
  */
-export default abstract class Visualization extends React.Component<VisualizationProps> {
-    constructor(props: VisualizationProps) {
+export default abstract class Visualization<T> extends React.Component<T> {
+    constructor(props: T) {
         super(props);
     }
 

@@ -1,11 +1,14 @@
 // -----------------------------------------------------------------------
-// <copyright file="storeState.ts" company="Microsoft Corporation">
+// <copyright file="StoreState.ts" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
+import { Moment } from 'moment';
+
 import Signal from '../models/Signal';
 import SignalResult from '../models/SignalResult';
+import DataTable from '../models/DataTable';
 
 /**
  * Defines the store structure
@@ -13,6 +16,7 @@ import SignalResult from '../models/SignalResult';
 export default interface StoreState {
     readonly signals: SignalsStoreState;
     readonly signalsResults: SignalsResultsStoreState;
+    readonly queryResults: Map<string, QueryResultStoreState>;
 }
 
 /**
@@ -21,7 +25,7 @@ export default interface StoreState {
 export interface SignalsStoreState {
     isFetching: boolean;
     items: ReadonlyArray<Signal>;
-    lastUpdated: Date | null;
+    lastUpdated: Moment | null;
 }
 
 /**
@@ -30,5 +34,11 @@ export interface SignalsStoreState {
 export interface SignalsResultsStoreState {
     isFetching: boolean;
     items: ReadonlyArray<SignalResult>;
-    lastUpdated: Date | null;
+    lastUpdated: Moment | null;
+}
+
+export interface QueryResultStoreState {
+    isFetching: boolean;
+    result: DataTable;
+    lastUpdated: Moment | null;
 }

@@ -11,7 +11,7 @@ import ListSmartSignalResponse from './models/ListSmartSignalResponse';
 /**
  * Get a list of signals without any filtering
  */
-export async function GetSignals(): Promise<ListSmartSignalResponse> {
+export async function getSignalsAsync(): Promise<ListSmartSignalResponse> {
     const requestUrl = `${baseUrl}/api/signal`;
 
     // Throws TypeError for network error. 

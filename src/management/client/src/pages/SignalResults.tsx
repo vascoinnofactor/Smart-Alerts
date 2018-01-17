@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------
+// <copyright file="SignalResults.tsx" company="Microsoft Corporation">
+//        Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 import * as React from 'react';
 
 import SignalResults from '../components/SignalResults';

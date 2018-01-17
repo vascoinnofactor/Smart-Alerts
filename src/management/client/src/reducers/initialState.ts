@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import StoreState from '../store/StoreState';
+import StoreState, { QueryResultStoreState } from '../store/StoreState';
 
 /**
  * The initial (default) store state
@@ -19,7 +19,8 @@ const defaultState: StoreState = {
         isFetching: false,
         items: [],
         lastUpdated: null
-    }
+    },
+    queryResults: new Map<string, QueryResultStoreState>()
 };
   
 export default defaultState;

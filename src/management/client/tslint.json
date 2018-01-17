@@ -1,6 +1,9 @@
 {
+    "rulesDirectory": "./src/ts-rules",
     "extends": ["tslint-react"],
     "rules": {
+        "file-should-contains-header": true,
+        
         "align": [
             true,
             "parameters",

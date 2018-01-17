@@ -6,106 +6,65 @@
 
 import { Moment } from 'moment';
 
-import Property from './SignalResultProperty';
-import ChartType from './ChartType';
+import SignalResultSummaryProperty from './SignalResultSummaryProperty';
+import SignalResultProperty from './SignalResultProperty';
 
-export default class SignalResult {
+/**
+ * This model represents the signal result entity
+ */
+export default interface SignalResult {
     /**
-     * Gets the insight id
+     * Gets the signal result id
      */
-    public id: string;
-
-    /**
-     * Gets the signal title
-     */
-    public title: string;
+    id: string;
 
     /**
-     * Gets the insight name
+     * Gets the signal result title
      */
-    public name: string;
+    title: string;
 
     /**
-     * Gets the insight start time timestamp (Mandatory)
+     * Gets the signal result summary
      */
-    public startTime: Moment;
+    summary: SignalResultSummaryProperty;
 
     /**
-     * Gets the insight end time timestamp (Not mandatory)
+     * Gets the signal result resource id
      */
-    public endTime: Moment;
+    resourceId: string;
 
     /**
-     * Gets the insight's subscription id
+     * Gets the signal result correlation hash
      */
-    public subscriptionId?: string;
+    correlationHash: string;
 
     /**
-     * Gets the insight's resource group
+     * Gets the signal id related to this signal result
      */
-    public resourceGroup?: string;
+    signalId: string;
 
     /**
-     * Gets the insights's resource name
+     * Gets the signal name related to this signal result
      */
-    public resourceName: string;
+    signalName: string;
 
     /**
-     * Gets the signal chart property
+     * Gets the signal result end time of the analysis window
      */
-    public chartProperty: Property;
-    
-    /**
-     * Gets the signal chart data
-     */
-    public chartData?: { time: string, number: number }[];
+    analysisTimestamp: Moment;
 
     /**
-     * Gets the signal chart type
+     * Gets the signal result analysis window size (in minutes)
      */
-    public chartType?: ChartType;
+    analysisWindowSizeInMinutes: number;
 
     /**
-     * Gets the summary part properties 
+     * Gets the signal result properties
      */
-    public summaryProperty: Property;
+    properties: ReadonlyArray<SignalResultProperty>;
 
     /**
-     * Gets the analysis part properties
+     * Gets the raw signal result properties
      */
-    public analysisProperties?: Property[];
-
-    /**
-     * Initializes a new instance of the SignalResult class
-     * @param name The signal result name.
-     * @param title The signal result title.
-     * @param resourceName The signal result resource name.
-     * @param startTime The signal result start time.
-     * @param endTime The signal result end time.
-     * @param chartProperty The signal result chart property.
-     * @param summaryProperty The signal result summary property.
-     * @param subscriptionId The signal result subscription id.
-     * @param resourceGroup The signal result resource group.
-     * @param analysisProperties The signal result analysis properties.
-     * @param chartData The signal result chart data.
-     * @param chartType The signal result chart type.
-     */
-    public constructor(name: string, title: string, resourceName: string, 
-                       startTime: Moment, endTime: Moment, chartProperty: Property,
-                       summaryProperty: Property, subscriptionId?: string, resourceGroup?: string,
-                       analysisProperties?: Property[], chartData?: { time: string, number: number }[],
-                       chartType?: ChartType) {
-        this.name = name;
-        this.title = title;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.resourceName = resourceName;
-        this.subscriptionId = subscriptionId;
-        this.resourceGroup = resourceGroup;
-        this.summaryProperty = summaryProperty;
-        this.analysisProperties = analysisProperties;
-        this.chartProperty = chartProperty;
-        this.chartData = chartData;
-        this.chartType = chartType;
-    }
+    rawProperties: Map<string, string>;
 }

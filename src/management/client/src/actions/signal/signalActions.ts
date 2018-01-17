@@ -14,7 +14,7 @@ import {
 } from './get';
 import Signal from '../../models/Signal';
 import StoreState from '../../store/StoreState';
-import { GetSignals } from '../../api/signalApi';
+import { getSignalsAsync } from '../../api/signalApi';
 
 /**
  * Create an action for getting the signals
@@ -25,9 +25,9 @@ export function getSignals(): (dispatch: Dispatch<StoreState>) => Promise<void> 
         dispatch(getSignalInProgressAction());
 
         try {
-            const signalsResults = await GetSignals();
+            const response = await getSignalsAsync();
             
-            dispatch(getSignalSuccessAction(signalsResults.signals));
+            dispatch(getSignalSuccessAction(response.signals));
           } catch (error) {
             dispatch(getSignalFailAction(error));
           }

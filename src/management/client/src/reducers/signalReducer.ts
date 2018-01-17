@@ -49,7 +49,7 @@ function onGetSignalSuccess(action: GetSignalSuccessAction, currentState: Signal
     : SignalsStoreState {
     return {
         ...currentState,
-        items: {...action.payload.results},
+        items: action.payload.results,
         isFetching: false,
         lastUpdated: null
     };

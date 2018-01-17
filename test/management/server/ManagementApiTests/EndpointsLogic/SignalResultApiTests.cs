@@ -16,7 +16,6 @@ namespace ManagementApiTests.EndpointsLogic
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.Shared.SignalResultPresentation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -29,13 +28,18 @@ namespace ManagementApiTests.EndpointsLogic
         private readonly DateTime endTime = new DateTime(2018, 1, 2);
 
         private Mock<IApplicationInsightsClient> applicationInsightClientMock;
+        private Mock<IApplicationInsightsClientFactory> applicationInsightsFactoryMock;
         private ISignalResultApi signalResultApi;
 
         [TestInitialize]
         public void Initialize()
         {
             this.applicationInsightClientMock = new Mock<IApplicationInsightsClient>();
-            this.signalResultApi = new SignalResultApi(this.applicationInsightClientMock.Object);
+            this.applicationInsightsFactoryMock = new Mock<IApplicationInsightsClientFactory>();
+
+            this.applicationInsightsFactoryMock.Setup(factory => factory.GetApplicationInsightsClient()).Returns(this.applicationInsightClientMock.Object);
+
+            this.signalResultApi = new SignalResultApi(this.applicationInsightsFactoryMock.Object);
         }
 
         [TestMethod]
