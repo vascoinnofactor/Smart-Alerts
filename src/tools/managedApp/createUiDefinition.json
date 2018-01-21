@@ -1,0 +1,59 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json",
+  "handler": "Microsoft.Compute.MultiVm",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "basics": [
+      {
+        "name": "siraPrefix",
+        "type": "Microsoft.Common.TextBox",
+        "label": "The prefix of The SiRA's name",
+        "defaultValue": "",
+        "toolTip": "The SiRA and all of its resources will have this prefix",
+        "constraints": {
+          "required": true,
+          "regex": "^[a-z0-9A-Z]{1,30}$",
+          "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long."
+        },
+        "visible": true
+      }
+    ],
+    "steps": [
+      {
+        "name": "emailSettings",
+        "label": "Email Settings",
+        "subLabel": {
+          "preValidation": "Configure the Email settings",
+          "postValidation": "Done"
+        },
+        "bladeTitle": "Email Settings",
+        "elements": [
+          {
+            "name": "sendgridApiKey",
+            "type": "Microsoft.Common.TextBox",
+            "label": "The SendGrid API Key to be used to send Emails",
+            "defaultValue": "",
+            "toolTip": "The SendGrid API Key will be used to send Emails",
+            "constraints": { "required": false },
+            "visible": true
+          },
+          {
+            "name": "emailRecipient",
+            "type": "Microsoft.Common.TextBox",
+            "label": "The recipient to send alerts to",
+            "defaultValue": "",
+            "toolTip": "The alerts will be sent via Emails to this receipent",
+            "constraints": { "required": false },
+            "visible": true
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "siraPrefix": "[basics('siraPrefix')]",
+      "sendgridApiKey": "[steps('emailSettings').sendgridApiKey]",
+      "emailRecipient": "[steps('emailSettings').emailRecipient]",
+      "applicationResourceName": "[concat(basics('siraPrefix'), 'SiRA')]"
+    }
+  }
+}
