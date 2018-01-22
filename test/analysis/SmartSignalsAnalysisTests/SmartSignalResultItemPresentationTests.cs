@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace SmartSignalsAnalysisSharedTests
+namespace SmartSignalsAnalysisTests
 {
     using System;
     using System.Collections.Generic;
@@ -36,11 +36,7 @@ namespace SmartSignalsAnalysisSharedTests
         [TestMethod]
         public void WhenProcessingSmartSignalResultItemThenThePresentationIsCreatedCorrectly()
         {
-            DateTime lastExecutionTime = DateTime.Now.Date.AddDays(-1);
-            string resourceId = "resourceId";
-            var request = new SmartSignalRequest(new List<string>() { resourceId }, "signalId", lastExecutionTime, TimeSpan.FromDays(1), new SmartSignalSettings());
-            var signalResultItem = new TestResultItem();
-            var presentation = SmartSignalResultItemPresentation.CreateFromResultItem(request, SignalName, signalResultItem, this.azureResourceManagerClientMock.Object);
+            var presentation = this.CreatePresentation(new TestResultItem());
             Assert.IsTrue(presentation.AnalysisTimestamp <= DateTime.UtcNow, "Unexpected analysis timestamp in the future");
             Assert.IsTrue(presentation.AnalysisTimestamp >= DateTime.UtcNow.AddMinutes(-1), "Unexpected analysis timestamp - too back in the past");
             Assert.AreEqual(24 * 60, presentation.AnalysisWindowSizeInMinutes, "Unexpected analysis window size");
@@ -57,6 +53,8 @@ namespace SmartSignalsAnalysisSharedTests
             this.VerifyProperty(presentation.Properties, "Analysis 2", ResultItemPresentationSection.Analysis, "analysis2", "Info balloon for analysis 2");
             this.VerifyProperty(presentation.Properties, "Analysis 3", ResultItemPresentationSection.Analysis, (new DateTime(2012, 11, 12, 17, 22, 37)).ToString("u"), "Info balloon for analysis 3");
             Assert.AreEqual("no show", presentation.RawProperties["NoPresentation"]);
+            Assert.AreEqual(TelemetryDbType.LogAnalytics, presentation.QueryRunInfo.Type, "Unexpected telemetry DB type");
+            CollectionAssert.AreEqual(new[] { "resourceId1", "resourceId2" }, presentation.QueryRunInfo.ResourceIds.ToArray(), "Unexpected resource IDs");
         }
 
         [TestMethod]
@@ -114,12 +112,33 @@ namespace SmartSignalsAnalysisSharedTests
             Assert.AreNotEqual(presentation1.CorrelationHash, presentation2.CorrelationHash);
         }
 
-        private SmartSignalResultItemPresentation CreatePresentation(SmartSignalResultItem resultItem)
+        [TestMethod]
+        public void WhenProcessingSmartSignalResultItemWithoutQueriesAndNullRunInfoThenThePresentationIsCreatedSuccessfully()
         {
+            this.CreatePresentation(new TestResultItemNoQueries(), nullQueryRunInfo: true);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidSmartSignalResultItemPresentationException))]
+        public void WhenProcessingSmartSignalResultItemWithQueriesAndNullRunInfoThenAnExceptionIsThrown()
+        {
+            this.CreatePresentation(new TestResultItem(), nullQueryRunInfo: true);
+        }
+
+        private SmartSignalResultItemPresentation CreatePresentation(SmartSignalResultItem resultItem, bool nullQueryRunInfo = false)
+        {
+            SmartSignalResultItemQueryRunInfo queryRunInfo = null;
+            if (!nullQueryRunInfo)
+            {
+                queryRunInfo = new SmartSignalResultItemQueryRunInfo(
+                    resultItem.ResourceIdentifier.ResourceType == ResourceType.ApplicationInsights ? TelemetryDbType.ApplicationInsights : TelemetryDbType.LogAnalytics,
+                    new List<string>() { "resourceId1", "resourceId2" });
+            }
+
             DateTime lastExecutionTime = DateTime.Now.Date.AddDays(-1);
             string resourceId = "resourceId";
             var request = new SmartSignalRequest(new List<string>() { resourceId }, "signalId", lastExecutionTime, TimeSpan.FromDays(1), new SmartSignalSettings());
-            return SmartSignalResultItemPresentation.CreateFromResultItem(request, SignalName, resultItem, this.azureResourceManagerClientMock.Object);
+            return SmartSignalResultItemPresentation.CreateFromResultItem(request, SignalName, resultItem, this.azureResourceManagerClientMock.Object, queryRunInfo);
         }
 
         private void VerifyProperty(List<SmartSignalResultItemPresentationProperty> properties, string name, ResultItemPresentationSection displayCategory, string value, string infoBalloon)
@@ -133,7 +152,8 @@ namespace SmartSignalsAnalysisSharedTests
 
         private class TestResultItemNoSummary : SmartSignalResultItem
         {
-            public TestResultItemNoSummary() : base("Test title", default(ResourceIdentifier))
+            public TestResultItemNoSummary()
+                : base("Test title", default(ResourceIdentifier))
             {
             }
 
@@ -144,6 +164,13 @@ namespace SmartSignalsAnalysisSharedTests
             [ResultItemPredicate]
             [ResultItemPresentation(ResultItemPresentationSection.Property, "Machine name", InfoBalloon = "The machine on which the CPU had increased")]
             public string MachineName => "strongOne";
+        }
+
+        private class TestResultItemNoQueries : TestResultItemNoSummary
+        {
+            [ResultItemPredicate]
+            [ResultItemPresentation(ResultItemPresentationSection.Property, "CPU increased", InfoBalloon = "CPU increase on machine {MachineName}", Component = ResultItemPresentationComponent.Details | ResultItemPresentationComponent.Summary)]
+            public new double Value => 22.4;
         }
 
         private class TestResultItemNoSummaryProperty : TestResultItemNoSummary

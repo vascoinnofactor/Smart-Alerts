@@ -130,7 +130,7 @@ namespace SmartSignalSchedulerTests
 
         private class TestResultItem : SmartSignalResultItemPresentation
         {
-            public TestResultItem(string title) : base(title, title, null, null, null, null, null, DateTime.UtcNow, 0, null, null)
+            public TestResultItem(string title) : base(title, title, null, null, null, null, null, DateTime.UtcNow, 0, null, null, null)
             {
             }
         }

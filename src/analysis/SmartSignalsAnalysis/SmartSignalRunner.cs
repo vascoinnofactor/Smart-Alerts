@@ -27,6 +27,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         private readonly ISmartSignalLoader smartSignalLoader;
         private readonly IAnalysisServicesFactory analysisServicesFactory;
         private readonly IAzureResourceManagerClient azureResourceManagerClient;
+        private readonly IQueryRunInfoProvider queryRunInfoProvider;
         private readonly ITracer tracer;
 
         /// <summary>
@@ -36,18 +37,21 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         /// <param name="smartSignalLoader">The smart signals loader</param>
         /// <param name="analysisServicesFactory">The analysis services factory</param>
         /// <param name="azureResourceManagerClient">The azure resource manager client</param>
+        /// <param name="queryRunInfoProvider">The query run information provider</param>
         /// <param name="tracer">The tracer</param>
         public SmartSignalRunner(
             ISmartSignalRepository smartSignalRepository,
             ISmartSignalLoader smartSignalLoader,
             IAnalysisServicesFactory analysisServicesFactory,
             IAzureResourceManagerClient azureResourceManagerClient,
+            IQueryRunInfoProvider queryRunInfoProvider,
             ITracer tracer)
         {
             this.smartSignalRepository = Diagnostics.EnsureArgumentNotNull(() => smartSignalRepository);
             this.smartSignalLoader = Diagnostics.EnsureArgumentNotNull(() => smartSignalLoader);
             this.analysisServicesFactory = Diagnostics.EnsureArgumentNotNull(() => analysisServicesFactory);
             this.azureResourceManagerClient = Diagnostics.EnsureArgumentNotNull(() => azureResourceManagerClient);
+            this.queryRunInfoProvider = Diagnostics.EnsureArgumentNotNull(() => queryRunInfoProvider);
             this.tracer = tracer;
         }
 
@@ -105,10 +109,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
                 this.tracer.ReportMetric("SignalResultItemType", resultItemType.Count(), new Dictionary<string, string>() { { "ResultItemType", resultItemType.Key } });
             }
 
-            // And return the result
-            List<SmartSignalResultItemPresentation> result = signalResult.ResultItems.Select(item => SmartSignalResultItemPresentation.CreateFromResultItem(request, signalManifest.Name, item, this.azureResourceManagerClient)).ToList();
-            this.tracer.TraceInformation($"Returning {result.Count} results");
-            return result;
+            // Create results
+            List<SmartSignalResultItemPresentation> results = new List<SmartSignalResultItemPresentation>();
+            foreach (var resultItem in signalResult.ResultItems)
+            {
+                SmartSignalResultItemQueryRunInfo queryRunInfo = await this.queryRunInfoProvider.GetQueryRunInfoAsync(new List<ResourceIdentifier>() { resultItem.ResourceIdentifier }, cancellationToken);
+                results.Add(SmartSignalResultItemPresentation.CreateFromResultItem(request, signalManifest.Name, resultItem, this.azureResourceManagerClient, queryRunInfo));
+            }
+
+            this.tracer.TraceInformation($"Returning {results.Count} results");
+            return results;
         }
 
         #endregion

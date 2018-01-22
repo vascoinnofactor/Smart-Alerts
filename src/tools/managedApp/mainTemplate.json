@@ -35,7 +35,8 @@
     "functionsLogsStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionsLogsStorageAccountName'))]",
     "storageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
     "resourceGroupName": "[resourceGroup().name]",
-    "functionBaseUrl": "[concat('https://', variables('functionsAppName'), '.azurewebsites.net')]"
+    "functionBaseUrl": "[concat('https://', variables('functionsAppName'), '.azurewebsites.net')]",
+    "packageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignals.zip"
   },
   "resources": [
     {
@@ -97,16 +98,43 @@
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('functionsHostingPlanName'))]",
         "siteConfig": {
           "use32BitWorkerProcess": false,
-          "siteAuthEnabled": true
+          "siteAuthEnabled": true,
+          "appSettings": [
+            { "name": "FUNCTIONS_EXTENSION_VERSION", "value": "~1" },
+            { "name": "MSDEPLOY_RENAME_LOCKED_FILES", "value": "1" },
+            { "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING", "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]" },
+            { "name": "WEBSITE_CONTENTSHARE", "value": "[toLower(variables('functionsAppName'))]" }
+          ]
         }
       },
       "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('functionsAppName'))]"
+          ],
+          "tags": {
+            "displayName": "deploy"
+          },
+          "properties": {
+            "packageUri": "[variables('packageLink')]",
+            "dbType": "None",
+            "connectionString": "",
+            "setParameters": {
+              "IIS Web Application Name": "[variables('functionsAppName')]"
+            }
+          }
+        },
         {
           "apiVersion": "2015-08-01",
           "type": "config",
           "name": "appsettings",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/sites', variables('functionsAppName'))]"
+            "[resourceId('Microsoft.Web/sites', variables('functionsAppName'))]",
+            "[concat('Microsoft.Web/Sites/', variables('functionsAppName'), '/Extensions/MSDeploy')]"
           ],
           "tags": {
             "displayName": "appsettings"
@@ -114,9 +142,6 @@
           "properties": {
             "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]",
             "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]",
-            "FUNCTIONS_EXTENSION_VERSION": "~1",
-            "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]",
-            "WEBSITE_CONTENTSHARE": "[toLower(variables('functionsAppName'))]",
             "SendVerboseTracesToAI": "[parameters('logVerboseTraces')]",
             "TelemetryInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName')), '2014-04-01').InstrumentationKey]",
             "ResourceGroupName": "[variables('resourceGroupName')]",
@@ -135,7 +160,8 @@
           "name": "connectionstrings",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('functionsAppName'))]",
-            "[resourceId('Microsoft.Web/sites/config', variables('functionsAppName'), 'appsettings')]"
+            "[resourceId('Microsoft.Web/sites/config', variables('functionsAppName'), 'appsettings')]",
+            "[concat('Microsoft.Web/Sites/', variables('functionsAppName'), '/Extensions/MSDeploy')]"
           ],
           "tags": {
             "displayName": "connectionstrings"

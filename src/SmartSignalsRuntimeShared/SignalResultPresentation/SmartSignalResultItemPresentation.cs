@@ -36,7 +36,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
         /// <param name="analysisWindowSizeInMinutes">The analysis window size (in minutes)</param>
         /// <param name="properties">The result item properties</param>
         /// <param name="rawProperties">The raw result item properties</param>
-        public SmartSignalResultItemPresentation(string id, string title, SmartSignalResultItemPresentationSummary summary, string resourceId, string correlationHash, string signalId, string signalName, DateTime analysisTimestamp, int analysisWindowSizeInMinutes, List<SmartSignalResultItemPresentationProperty> properties, IReadOnlyDictionary<string, string> rawProperties)
+        /// <param name="queryRunInfo">The query run information</param>
+        public SmartSignalResultItemPresentation(string id, string title, SmartSignalResultItemPresentationSummary summary, string resourceId, string correlationHash, string signalId, string signalName, DateTime analysisTimestamp, int analysisWindowSizeInMinutes, List<SmartSignalResultItemPresentationProperty> properties, IReadOnlyDictionary<string, string> rawProperties, SmartSignalResultItemQueryRunInfo queryRunInfo)
         {
             this.Id = id;
             this.Title = title;
@@ -49,6 +50,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
             this.AnalysisWindowSizeInMinutes = analysisWindowSizeInMinutes;
             this.Properties = properties;
             this.RawProperties = rawProperties;
+            this.QueryRunInfo = queryRunInfo;
         }
 
         /// <summary>
@@ -118,14 +120,21 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
         public IReadOnlyDictionary<string, string> RawProperties { get; }
 
         /// <summary>
+        /// Gets the query run information
+        /// </summary>
+        [JsonProperty("queryRunInfo")]
+        public SmartSignalResultItemQueryRunInfo QueryRunInfo { get; }
+
+        /// <summary>
         /// Creates a presentation from a result item
         /// </summary>
         /// <param name="request">The smart signal request</param>
         /// <param name="signalName">The signal name</param>
         /// <param name="smartSignalResultItem">The result item</param>
         /// <param name="azureResourceManagerClient">The azure resource manager client</param>
+        /// <param name="queryRunInfo">The query run information</param>
         /// <returns>The presentation</returns>
-        public static SmartSignalResultItemPresentation CreateFromResultItem(SmartSignalRequest request, string signalName, SmartSignalResultItem smartSignalResultItem, IAzureResourceManagerClient azureResourceManagerClient)
+        public static SmartSignalResultItemPresentation CreateFromResultItem(SmartSignalRequest request, string signalName, SmartSignalResultItem smartSignalResultItem, IAzureResourceManagerClient azureResourceManagerClient, SmartSignalResultItemQueryRunInfo queryRunInfo)
         {
             // A null result item has null presentation
             if (smartSignalResultItem == null)
@@ -135,7 +144,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
 
             // Create presentation elements for each result item property
             Dictionary<string, string> predicates = new Dictionary<string, string>();
-            List<SmartSignalResultItemPresentationProperty> properties = new List<SmartSignalResultItemPresentationProperty>();
+            List<SmartSignalResultItemPresentationProperty> presentationProperties = new List<SmartSignalResultItemPresentationProperty>();
             SmartSignalResultItemPresentationProperty summaryChart = null;
             string summaryValue = null;
             string summaryDetails = null;
@@ -156,6 +165,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
                 ResultItemPresentationAttribute attribute = property.GetCustomAttribute<ResultItemPresentationAttribute>();
                 if (attribute != null)
                 {
+                    // Verify that if the entity is a chart or query, then query run information was provided
+                    if (queryRunInfo == null && (attribute.Section == ResultItemPresentationSection.Chart || attribute.Section == ResultItemPresentationSection.AdditionalQuery))
+                    {
+                        throw new InvalidSmartSignalResultItemPresentationException($"The presentation contains an item for the {attribute.Section} section, but no telemetry data client was provided");
+                    }
+
                     // Get the attribute title and information balloon - support interpolated strings
                     string attributeTitle = Smart.Format(attribute.Title, smartSignalResultItem);
                     string attributeInfoBalloon = Smart.Format(attribute.InfoBalloon, smartSignalResultItem);
@@ -195,7 +210,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
                     // Add presentation to the details component
                     if (attribute.Component.HasFlag(ResultItemPresentationComponent.Details))
                     {
-                        properties.Add(new SmartSignalResultItemPresentationProperty(attributeTitle, propertyValue, attribute.Section, attributeInfoBalloon));
+                        presentationProperties.Add(new SmartSignalResultItemPresentationProperty(attributeTitle, propertyValue, attribute.Section, attributeInfoBalloon));
                     }
                 }
             }
@@ -221,8 +236,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
                 signalName,
                 DateTime.UtcNow,
                 (int)request.Cadence.TotalMinutes,
-                properties,
-                rawProperties);
+                presentationProperties,
+                rawProperties,
+                queryRunInfo);
         }
 
         /// <summary>

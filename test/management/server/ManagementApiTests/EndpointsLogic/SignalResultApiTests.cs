@@ -124,7 +124,8 @@ namespace ManagementApiTests.EndpointsLogic
                                     analysisTimestamp: DateTime.UtcNow,
                                     analysisWindowSizeInMinutes: 5,
                                     properties: new List<SmartSignalResultItemPresentationProperty>(),
-                                    rawProperties: new Dictionary<string, string>());
+                                    rawProperties: new Dictionary<string, string>(),
+                                    queryRunInfo: null);
 
             return new List<ApplicationInsightsEvent>()
             {

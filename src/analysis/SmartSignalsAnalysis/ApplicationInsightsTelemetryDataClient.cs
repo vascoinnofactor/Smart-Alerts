@@ -8,9 +8,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Shared;
     using Newtonsoft.Json.Linq;
 
@@ -20,9 +19,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     public class ApplicationInsightsTelemetryDataClient : TelemetryDataClientBase
     {
         private const string UriFormat = "https://api.applicationinsights.io/v1/apps/{0}/query";
-
-        private readonly string applicationId;
-        private readonly IReadOnlyList<string> applicationsResourceIds;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationInsightsTelemetryDataClient"/> class.
@@ -38,10 +34,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         /// </param>
         /// <param name="queryTimeout">The query timeout.</param>
         public ApplicationInsightsTelemetryDataClient(ITracer tracer, IHttpClientWrapper httpClientWrapper, ICredentialsFactory credentialsFactory, string applicationId, IEnumerable<string> applicationsResourceIds, TimeSpan queryTimeout)
-            : base(tracer, httpClientWrapper, credentialsFactory, new Uri(string.Format(UriFormat, applicationId)), queryTimeout, "ApplicationInsights")
+            : base(
+                tracer,
+                httpClientWrapper,
+                credentialsFactory,
+                new Uri(string.Format(UriFormat, applicationId)),
+                queryTimeout,
+                TelemetryDbType.ApplicationInsights,
+                applicationId,
+                applicationsResourceIds)
         {
-            this.applicationId = Diagnostics.EnsureStringNotNullOrWhiteSpace(() => applicationId);
-            this.applicationsResourceIds = applicationsResourceIds?.ToList() ?? new List<string>();
         }
 
         /// <summary>
@@ -50,9 +52,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         /// <param name="requestContent">The request content.</param>
         protected override void UpdateRequestContent(JObject requestContent)
         {
-            if (this.applicationsResourceIds.Count > 1)
+            if (this.TelemetryResourceIds.Count > 1)
             {
-                requestContent["applications"] = new JArray(this.applicationsResourceIds);
+                requestContent["applications"] = new JArray(this.TelemetryResourceIds);
             }
         }
     }
