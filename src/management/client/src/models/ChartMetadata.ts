@@ -4,7 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import ChartType from './ChartType';
+import { DataSource } from '../enums/DataSource';
+import ChartType from '../enums/ChartType';
 
 export default interface ChartMetadata {
     /**
@@ -28,7 +29,7 @@ export default interface ChartMetadata {
     applicationId: string;
 
     /**
-     * Gets the api key (in case query is against AI)
+     * Gets the data source where the data is placed (currently Application Insights / Log Analytics)
      */
-    apiKey: string;
+    dataSource: DataSource;
 }

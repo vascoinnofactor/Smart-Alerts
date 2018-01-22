@@ -21,6 +21,7 @@ import DataTable from '../../models/DataTable';
 import ChartMetadata from '../../models/ChartMetadata';
 import VisualizationFactory from '../../factories/VisualizationsFactory';
 import { getQueryResult } from '../../actions/queryResult/queryResultActions';
+import { DataSource } from '../../enums/DataSource';
 
 import './signalResultDetailsStyle.css';
 
@@ -28,7 +29,7 @@ import './signalResultDetailsStyle.css';
  * Represents the SignalResultDetails component props for the dispatch functions
  */
 interface SignalResultDetailsDispatchProps {
-    executeQuery: (queryId: string, applicationId: string, query: string, apiKey: string) =>
+    executeQuery: (queryId: string, applicationId: string, query: string, dataSource: DataSource) =>
                   (dispatch: Dispatch<StoreState>) => Promise<void>;
 }
 
@@ -70,7 +71,7 @@ class SignalResultDetails extends React.Component<SignalResultDetailsProps> {
                     await this.props.executeQuery(chart.id,
                                                   chart.applicationId,
                                                   chart.query,
-                                                  chart.apiKey);
+                                                  chart.dataSource);
                 }
             });
         }

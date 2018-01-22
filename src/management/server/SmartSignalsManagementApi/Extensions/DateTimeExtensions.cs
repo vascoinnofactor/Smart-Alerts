@@ -20,7 +20,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Extensions
         /// <returns>The date time in the required query format.</returns>
         public static string ToQueryTimeFormat(this DateTime dateTime)
         {
-            return dateTime.ToString("yyyy-MM-ddThh:mm:ssZ");
+            return dateTime.ToString("yyyy-MM-ddTHH:mm:ssZ");
         }
     }
 }

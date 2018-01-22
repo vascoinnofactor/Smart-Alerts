@@ -10,7 +10,7 @@ import timelineChartFormatter from '../data-formats/timeline';
 import pieDataFormat from '../data-formats/pie';
 import barsDataFormat from '../data-formats/bars';
 
-import ChartType from '../models/ChartType';
+import ChartType from '../enums/ChartType';
 import ChartDataBase from '../models/Charts/ChartDataBase';
 
 /**

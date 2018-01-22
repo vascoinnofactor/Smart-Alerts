@@ -10,10 +10,10 @@ import { connect } from 'react-redux';
 import { withRouter, RouteComponentProps, Redirect } from 'react-router-dom';
 
 import ActiveDirectoryAuthenticator from '../../utils/adal/ActiveDirectoryAuthenticator';
-import AdalConfigProvider from '../../utils/adal/AdalConfigProvider';
 import StoreState from '../../store/StoreState';
 import { loginSuccessed } from '../../actions/authentication/authenticationActions';
 import User from '../../models/User';
+import ActiveDirectoryAuthenticatorFactory from '../../factories/activeDirectoryAuthenticatorFactory';
 
 /**
  * Represents the Login component props for the dispatch functions
@@ -38,11 +38,6 @@ type LoginProps = LoginDispatchProps & LoginStateProps;
  */
 class Login extends React.Component<LoginProps> {
     /**
-     * The ADAL configuration provider
-     */
-    private adalConfigProvider: AdalConfigProvider;
-
-    /**
      * The active directory authenticator
      */
     private activeDirectoryAuthenticator: ActiveDirectoryAuthenticator;
@@ -50,8 +45,7 @@ class Login extends React.Component<LoginProps> {
     constructor(props: LoginProps) {
         super(props);
 
-        this.adalConfigProvider = new AdalConfigProvider();
-        this.activeDirectoryAuthenticator = new ActiveDirectoryAuthenticator(this.adalConfigProvider);
+        this.activeDirectoryAuthenticator = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator();
     }
 
     /**
@@ -72,6 +66,8 @@ class Login extends React.Component<LoginProps> {
     }
 
     public render() {
+        this.activeDirectoryAuthenticator.handleCallback();
+
         // Decide what was the previous url before directed to this component ('/login')
         // We are doing it in order to support returning to the previous page 
         // (e.g. if the user wanted to direct to '/signals' but wasn't authenticated,

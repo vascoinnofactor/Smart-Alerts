@@ -12,7 +12,7 @@ import ListSmartSignalResultResponse from './models/ListSmartSignalResultRespons
  * Gets a list of signals results without any flitering
  */
 export async function getSignalsResultsAsync(): Promise<ListSmartSignalResultResponse> {
-    const requestUrl = `${baseUrl}/api/signalResult?startTime=1/18/2018 5:00 AM`;
+    const requestUrl = `${baseUrl}/api/signalResult?startTime=1/22/2018`;
 
     // Throws TypeError for network error. 
     // See for details: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch

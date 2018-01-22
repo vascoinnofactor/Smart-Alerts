@@ -15,6 +15,9 @@ import {
 import StoreState from '../../store/StoreState';
 import { executeQuery } from '../../api/applicationInsightsApi';
 import DataTable from '../../models/DataTable';
+import ActiveDirectoryAuthenticatorFactory from '../../factories/activeDirectoryAuthenticatorFactory';
+import ActiveDirectoryAuthenticator from '../../utils/adal/ActiveDirectoryAuthenticator';
+import { DataSource } from '../../enums/DataSource';
 
 /**
  * Create an action for executing the given query
@@ -22,20 +25,36 @@ import DataTable from '../../models/DataTable';
 export function getQueryResult(queryId: string,
                                applicationId: string,
                                query: string,
-                               apiKey: string )
+                               dataSource: DataSource)
         : (dispatch: Dispatch<StoreState>) => Promise<void> {
     return async (dispatch: Dispatch<StoreState>) => {
         dispatch(getQueryResultInProgressAction(queryId));
 
-        try {
-            // 1. Check if query id is already stored
-            const queryResponse = await executeQuery(applicationId, query, apiKey);
-            
-            dispatch(getQueryResultSuccessAction(queryId, queryResponse));
-          } catch (error) {
+        // 1. Check if query id is already stored - TODO
 
-            dispatch(getQueryResultFailAction(queryId, error));
-          }
+        // 2. In case not - generate a Azure AAD token 
+        let authenticator: ActiveDirectoryAuthenticator = ActiveDirectoryAuthenticatorFactory
+                                                            .getActiveDirectoryAuthenticator();
+
+        // Check which resource we should generate a token against
+        let resourceToken = dataSource === DataSource.ApplicationInsights ? 
+                                            'https://api.applicationinsights.io' :
+                                            'https://api.loganalytics.io';
+
+        authenticator.getResourceToken(resourceToken, async (message: string, token: string) => {
+            if (message) {
+                throw new Error('Failed to get AAD token: ' + message);
+            }
+
+            // 3. Execute the query against the correct endpoint
+            try {
+                const queryResponse = await executeQuery(applicationId, query, token);
+    
+                dispatch(getQueryResultSuccessAction(queryId, queryResponse));
+            } catch (error) {
+                dispatch(getQueryResultFailAction(queryId, error));
+            }
+        });
     };
 }
 

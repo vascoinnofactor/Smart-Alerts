@@ -4,8 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import ChartType from '../models/ChartType';
-import SignalResultProperty, { PropertyCategory } from '../models/SignalResultProperty';
+import ChartType from '../enums/ChartType';
+import SignalResultProperty from '../models/SignalResultProperty';
+import { PropertyCategory } from '../enums/PropertyCategory';
 
 /**
  * A utility class for SignalResultProperty object

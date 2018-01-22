@@ -4,6 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+import { PropertyCategory } from '../enums/PropertyCategory';
+
 /**
  * This model represents a signal result property
  */
@@ -27,29 +29,4 @@ export default interface SignalResultProperty {
      * Gets the signal result property info ballon (optional).
      */
     infoBallon?: string;
-}
-
-/**
- * List all the possible property category values.
- */
-export enum PropertyCategory {
-    /**
-     * Indicates a property belonging to the properties section.
-     */
-    Property = 0,
-
-    /**
-     * Indicates a property belonging to the analysis section.
-     */
-    Analysis = 1,
-
-    /**
-     * Indicates a property belonging to the charts section.
-     */
-    Chart = 2,
-
-    /**
-     * Indicates a property belonging to the additional queries section.
-     */
-    AdditionalQuery = 3
 }

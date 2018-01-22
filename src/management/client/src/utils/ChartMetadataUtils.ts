@@ -5,20 +5,21 @@
 // -----------------------------------------------------------------------
 
 import ChartMetadata from '../models/ChartMetadata';
-import ChartType from '../models/ChartType';
+import ChartType from '../enums/ChartType';
+import { DataSource } from '../enums/DataSource';
 
 /**
  * A utility class for ChartMetadata functions
  */
 export class ChartMetadataUtils {
     public static createChartMetadata(id: string, query: string, applicationId: string,
-                                      apiKey: string, chartType: ChartType): ChartMetadata {
+                                      chartType: ChartType, dataSource: DataSource): ChartMetadata {
         return {
             id: id,
             chartType: chartType,
             applicationId: applicationId,
             query: query,
-            apiKey: apiKey
+            dataSource: dataSource
         };
     }
 

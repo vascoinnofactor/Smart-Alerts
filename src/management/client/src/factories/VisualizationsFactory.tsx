@@ -9,7 +9,7 @@ import * as React from 'react';
 import Timeline from '../components/Visualizations/Timeline';
 import Bars from '../components/Visualizations/Bars';
 import PieData from '../components/Visualizations/PieData';
-import ChartType from '../models/ChartType';
+import ChartType from '../enums/ChartType';
 import DataTable from '../models/DataTable';
 import ChartDataFactory from './ChartDataFactory';
 import TimelineChart from '../models/Charts/TimelineChart';

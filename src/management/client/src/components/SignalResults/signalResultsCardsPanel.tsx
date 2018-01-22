@@ -16,6 +16,7 @@ import ChartMetadata from '../../models/ChartMetadata';
 import { SignalResultPropertyUtils } from '../../utils/SignalResultPropertyUtils';
 
 import './indexStyle.css';
+import { DataSource } from '../../enums/DataSource';
 
 /**
  * Represents the SignalResultsCardsPanel component props for the incoming properties 
@@ -57,9 +58,9 @@ export default class SignalResultsCardsPanel extends React.Component<SignalResul
                                     .createChartMetadata(cardChartId,
                                                          signalResult.summary.chart.value,
                                                          '2fee53af-477f-4e55-b1db-32ddbfdbe33c',
-                                                         'ismhkjiwsuyz1rhn52krjxeumasxmox1wspdp1yk',
                                                          SignalResultPropertyUtils
-                                                            .getChartTypeFromProperty(signalResult.summary.chart));
+                                                            .getChartTypeFromProperty(signalResult.summary.chart),
+                                                         DataSource.ApplicationInsights);
 
             }
 

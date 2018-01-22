@@ -4,8 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import SignalResultProperty, { PropertyCategory } from '../models/SignalResultProperty';
+import SignalResultProperty from '../models/SignalResultProperty';
 import SignalResult from '../models/SignalResult';
+import { PropertyCategory } from '../enums/PropertyCategory';
 
 /**
  * A utility class for SignalResult object

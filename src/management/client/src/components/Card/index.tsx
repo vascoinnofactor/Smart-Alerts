@@ -13,19 +13,20 @@ import { Moment } from 'moment';
 import * as moment from 'moment';
 
 import VisualizationFactory from '../../factories/VisualizationsFactory';
-import ChartType from '../../models/ChartType';
+import ChartType from '../../enums/ChartType';
 import ChartMetadata from '../../models/ChartMetadata';
 import StoreState from '../../store/StoreState';
 import DataTable from '../../models/DataTable';
 import { getQueryResult } from '../../actions/queryResult/queryResultActions';
 
 import './indexStyle.css';
+import { DataSource } from '../../enums/DataSource';
 
 /**
  * Represents the Card component props for the dispatch functions
  */
 interface CardDispatchProps {
-    executeQuery: (queryId: string, applicationId: string, query: string, apiKey: string) =>
+    executeQuery: (queryId: string, applicationId: string, query: string, dataSource: DataSource) =>
                   (dispatch: Dispatch<StoreState>) => Promise<void>;
 }
 
@@ -72,7 +73,7 @@ class Card extends React.Component<CardProps> {
             await this.props.executeQuery(this.props.chartMetadata.id,
                                           this.props.chartMetadata.applicationId,
                                           this.props.chartMetadata.query,
-                                          this.props.chartMetadata.apiKey);
+                                          this.props.chartMetadata.dataSource);
         }
     }
 
@@ -136,7 +137,6 @@ class Card extends React.Component<CardProps> {
  */
 function mapStateToProps(state: StoreState, ownProps: CardOwnProps): CardStateProps {
     let chartData: DataTable | undefined;
-
     // Get the chart data only if this card has chart
     if (ownProps.chartMetadata && state.queryResults) {
         let queryResult = state.queryResults.get(ownProps.chartMetadata.id);

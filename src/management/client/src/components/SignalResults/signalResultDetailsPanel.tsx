@@ -14,6 +14,7 @@ import ChartMetadata from '../../models/ChartMetadata';
 import SignalResultProperty from '../../models/SignalResultProperty';
 import { SignalResultPropertyUtils } from '../../utils/SignalResultPropertyUtils';
 import { ChartMetadataUtils } from '../../utils/ChartMetadataUtils';
+import { DataSource } from '../../enums/DataSource';
 
 /**
  * Represents the SignalResultDetailsPanel component props
@@ -80,9 +81,9 @@ export default class SignalResultDetailsPanel extends React.PureComponent<Signal
             return {
                 id: ChartMetadataUtils.createChartId(signalResult.id, property.name, property.value),
                 applicationId: '2fee53af-477f-4e55-b1db-32ddbfdbe33c',
-                apiKey: 'ismhkjiwsuyz1rhn52krjxeumasxmox1wspdp1yk',
                 query: property.value,
-                chartType: SignalResultPropertyUtils.getChartTypeFromProperty(property)
+                chartType: SignalResultPropertyUtils.getChartTypeFromProperty(property),
+                dataSource: DataSource.ApplicationInsights
             } as ChartMetadata;
         });
     }

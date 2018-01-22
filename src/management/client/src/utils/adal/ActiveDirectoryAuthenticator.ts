@@ -42,6 +42,7 @@ export default class ActiveDirectoryAuthenticator {
     public logout() {
         this.context.logOut();
     }
+
     public handleCallback() {
         this.context.handleWindowCallback();
     }
@@ -52,11 +53,15 @@ export default class ActiveDirectoryAuthenticator {
         return AdalUserConvertor.toUserModel(user);
     }
     
-      public get accessToken(): string {
+    public get accessToken(): string {
         return this.context.getCachedToken(this.adalConfig.clientId); 
     }
     
     public get isAuthenticated() {
         return this.accessToken && this.userInfo; 
+    }
+
+    public getResourceToken(resource: string, callback: (message: string, token: string) => void): void {
+        this.context.acquireToken(resource, callback);
     }
 }
