@@ -17,6 +17,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Shared;
     using Microsoft.Azure.Monitoring.SmartSignals.Shared.Extensions;
     using Microsoft.Rest;
@@ -32,7 +33,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         private readonly IHttpClientWrapper httpClientWrapper;
         private readonly ServiceClientCredentials credentials;
         private readonly Uri queryUri;
-        private readonly string dependencyName;
         private readonly Policy retryPolicy;
 
         /// <summary>
@@ -43,15 +43,27 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         /// <param name="credentialsFactory">The credentials factory</param>
         /// <param name="queryUri">The query URI</param>
         /// <param name="queryTimeout">The query timeout</param>
-        /// <param name="dependencyName">The dependency name (for telemetry)</param>
-        protected TelemetryDataClientBase(ITracer tracer, IHttpClientWrapper httpClientWrapper, ICredentialsFactory credentialsFactory, Uri queryUri, TimeSpan queryTimeout, string dependencyName)
+        /// <param name="telemetryDbType">The type of telemetry DB that this data client accesses</param>
+        /// <param name="mainTelemetryDbId">The main telemetry DB ID - the ID of the DB on which all queries will run</param>
+        /// <param name="telemetryResourceIds">the telemetry resource IDs - the IDs of the resources that store the telemetry that this data client accesses</param>
+        protected TelemetryDataClientBase(
+            ITracer tracer,
+            IHttpClientWrapper httpClientWrapper,
+            ICredentialsFactory credentialsFactory,
+            Uri queryUri,
+            TimeSpan queryTimeout,
+            TelemetryDbType telemetryDbType,
+            string mainTelemetryDbId,
+            IEnumerable<string> telemetryResourceIds)
         {
             this.tracer = Diagnostics.EnsureArgumentNotNull(() => tracer);
             this.httpClientWrapper = Diagnostics.EnsureArgumentNotNull(() => httpClientWrapper);
             this.Timeout = Diagnostics.EnsureArgumentInRange(() => queryTimeout, TimeSpan.FromMinutes(0), TimeSpan.FromHours(2));
             this.queryUri = queryUri;
-            this.dependencyName = dependencyName;
-            this.retryPolicy = PolicyExtensions.CreateDefaultPolicy(this.tracer, dependencyName);
+            this.TelemetryDbType = telemetryDbType;
+            this.MainTelemetryDbId = Diagnostics.EnsureStringNotNullOrWhiteSpace(() => mainTelemetryDbId);
+            this.TelemetryResourceIds = telemetryResourceIds?.ToList() ?? new List<string>();
+            this.retryPolicy = PolicyExtensions.CreateDefaultPolicy(this.tracer, this.TelemetryDbType.ToString());
 
             // Extract the host part of the URI as the credentials resource
             UriBuilder builder = new UriBuilder()
@@ -68,6 +80,22 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         /// Gets or sets the query timeout.
         /// </summary>
         public TimeSpan Timeout { get; set; }
+
+        /// <summary>
+        /// Gets the type of telemetry DB that this data client accesses.
+        /// </summary>
+        public TelemetryDbType TelemetryDbType { get; }
+
+        /// <summary>
+        /// Gets the main telemetry DB ID - the ID of the DB on which all queries will run.
+        /// </summary>
+        public string MainTelemetryDbId { get; }
+
+        /// <summary>
+        /// Gets the telemetry resource IDs - the IDs of the resources
+        /// that store the telemetry that this data client accesses.
+        /// </summary>
+        public IReadOnlyList<string> TelemetryResourceIds { get; }
 
         /// <summary>
         /// Run a query against the relevant telemetry database. 
@@ -102,7 +130,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
 
             // Send request and get the response as JSON
             Stopwatch queryStopwatch = Stopwatch.StartNew();
-            HttpResponseMessage response = await this.retryPolicy.RunAndTrackDependencyAsync(this.tracer, this.dependencyName, "RunQuery", () => this.httpClientWrapper.SendAsync(request, cancellationToken));
+            HttpResponseMessage response = await this.retryPolicy.RunAndTrackDependencyAsync(this.tracer, this.TelemetryDbType.ToString(), "RunQuery", () => this.httpClientWrapper.SendAsync(request, cancellationToken));
             queryStopwatch.Stop();
             this.tracer.TraceInformation($"Query completed in {queryStopwatch.ElapsedMilliseconds}ms");
             string responseContent = await response.Content.ReadAsStringAsync();

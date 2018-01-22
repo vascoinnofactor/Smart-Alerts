@@ -8,9 +8,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Shared;
     using Newtonsoft.Json.Linq;
 
@@ -20,9 +19,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     public class LogAnalyticsTelemetryDataClient : TelemetryDataClientBase
     {
         private const string UriFormat = "https://api.loganalytics.io/v1/workspaces/{0}/query";
-
-        private readonly string workspaceId;
-        private readonly IReadOnlyList<string> workspacesResourceIds;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogAnalyticsTelemetryDataClient"/> class.
@@ -38,10 +34,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         /// </param>
         /// <param name="queryTimeout">The query timeout.</param>
         public LogAnalyticsTelemetryDataClient(ITracer tracer, IHttpClientWrapper httpClientWrapper, ICredentialsFactory credentialsFactory, string workspaceId, IEnumerable<string> workspacesResourceIds, TimeSpan queryTimeout)
-            : base(tracer, httpClientWrapper, credentialsFactory, new Uri(string.Format(UriFormat, workspaceId)), queryTimeout, "LogAnalytics")
+            : base(
+                tracer,
+                httpClientWrapper,
+                credentialsFactory,
+                new Uri(string.Format(UriFormat, workspaceId)),
+                queryTimeout,
+                TelemetryDbType.LogAnalytics,
+                workspaceId,
+                workspacesResourceIds)
         {
-            this.workspaceId = Diagnostics.EnsureStringNotNullOrWhiteSpace(() => workspaceId);
-            this.workspacesResourceIds = workspacesResourceIds?.ToList() ?? new List<string>();
         }
 
         /// <summary>
@@ -50,9 +52,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         /// <param name="requestContent">The request content.</param>
         protected override void UpdateRequestContent(JObject requestContent)
         {
-            if (this.workspacesResourceIds.Count > 1)
+            if (this.TelemetryResourceIds.Count > 1)
             {
-                requestContent["workspaces"] = new JArray(this.workspacesResourceIds);
+                requestContent["workspaces"] = new JArray(this.TelemetryResourceIds);
             }
         }
     }
