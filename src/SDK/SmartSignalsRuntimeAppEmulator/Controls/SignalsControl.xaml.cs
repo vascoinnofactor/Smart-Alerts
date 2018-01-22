@@ -24,16 +24,5 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls
             this.InitializeComponent();
             this.DataContext = App.Container.Resolve<SignalsControlViewModel>();
         }
-
-        /// <summary>
-        /// Temporary - start analysis.
-        /// </summary>
-        /// <param name="sender">The element that was clicked</param>
-        /// <param name="e">The event args</param>
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-        {
-            this.BeforeStartMessage.Visibility = Visibility.Collapsed;
-            this.EmulationStatusControl.Visibility = Visibility.Visible;
-        }
     }
 }

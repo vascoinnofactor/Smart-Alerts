@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient
+namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
     /// <summary>
     /// Represents an Azure subscription.

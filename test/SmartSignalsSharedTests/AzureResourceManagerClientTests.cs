@@ -7,8 +7,7 @@
 namespace SmartSignalsSharedTests
 {
     using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 

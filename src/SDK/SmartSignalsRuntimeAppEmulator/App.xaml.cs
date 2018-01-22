@@ -7,10 +7,14 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
 {
     using System;
+    using System.IO;
     using System.Windows;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.Trace;
+    using Microsoft.Azure.Monitoring.SmartSignals.Package;
+    using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartSignals.Trace;
     using Unity;
 
     /// <summary>
@@ -29,19 +33,34 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
         /// <param name="e">A <see cref="T:System.Windows.StartupEventArgs" /> that contains the event data.</param>
         protected override void OnStartup(StartupEventArgs e)
         {
-            // Create a Unity container with all the required models and view models registrations
-            Container = new UnityContainer();
+            var tracer = new ConsoleTracer(string.Empty);
+            var signalLoader = new SmartSignalLoader(tracer);
+            if (e.Args.Length != 1)
+            {
+                throw new ArgumentException($"Invalid number of arguments - expected 1, actual {e.Args?.Length}");
+            }
+
+            string signalPackagePath = Diagnostics.EnsureStringNotNullOrWhiteSpace(() => e.Args[0]);
+            SmartSignalPackage signalPackage;
+            using (var fileStream = new FileStream(signalPackagePath, FileMode.Open))
+            {
+                signalPackage = SmartSignalPackage.CreateFromStream(fileStream, tracer);
+            }
+                
+            ISmartSignal signal = signalLoader.LoadSignal(signalPackage);
 
             // Authenticate the user to AAD
             var authenticationServices = new AuthenticationServices();
             authenticationServices.AuthenticateUser();
             var credentialsFactory = new ActiveDirectoryCredentialsFactory(authenticationServices.AuthenticationResult.AccessToken);
-            var tracer = new ConsoleTracer(string.Empty);
 
+            // Create a Unity container with all the required models and view models registrations
+            Container = new UnityContainer();
             Container
                 .RegisterInstance(new SignalsResultsRepository())
                 .RegisterInstance(authenticationServices)
-                .RegisterInstance(new AzureResourceManagerClient(credentialsFactory, tracer));
+                .RegisterInstance(new AzureResourceManagerClient(credentialsFactory, tracer))
+                .RegisterInstance(signal);
         }
     }
 }

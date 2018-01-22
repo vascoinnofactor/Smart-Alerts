@@ -11,11 +11,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
+    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Models;
-    using Responses;
-    using Shared;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
 
     /// <summary>
     /// This class is the logic for the /signal endpoint.

@@ -9,7 +9,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     using System;
     using System.Runtime.Serialization;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Shared;
 
     /// <summary>
     /// This exception is thrown when the requested resource type is not supported by the requested signal.

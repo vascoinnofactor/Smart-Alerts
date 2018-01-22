@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <RootNamespace>Microsoft.Azure.Monitoring.SmartSignals.Shared</RootNamespace>
+    <RootNamespace>Microsoft.Azure.Monitoring.SmartSignals</RootNamespace>
     <AssemblyName>Microsoft.Azure.Monitoring.SmartSignals.Shared</AssemblyName>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -9,6 +9,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -23,6 +24,6 @@
     <PackageReference Include="StyleCop.MSBuild" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SDK\SmartSignalsSDK\SmartSignalsSDK.csproj" />
+    <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj" />
   </ItemGroup>
 </Project>

@@ -8,9 +8,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared;
     using Newtonsoft.Json.Linq;
 
     /// <summary>

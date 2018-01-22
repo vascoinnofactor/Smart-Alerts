@@ -17,7 +17,6 @@ namespace ManagementApiTests.EndpointsLogic
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 

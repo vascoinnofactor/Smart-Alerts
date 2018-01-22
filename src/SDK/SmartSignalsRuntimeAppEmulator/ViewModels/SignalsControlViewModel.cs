@@ -12,8 +12,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient;
+    using System.Windows;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Unity.Attributes;
 
     /// <summary>
@@ -22,6 +22,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     public class SignalsControlViewModel : ObservableObject
     {
         private readonly AzureResourceManagerClient azureResourceManagerClient;
+
+        private readonly ISmartSignal smartSignal;
 
         private ObservableTask<ObservableCollection<AzureSubscription>> readSubscriptionsTask;
 
@@ -51,12 +53,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="SignalsControlViewModel"/> class.
         /// </summary>
-        /// <param name="azureResourceManagerClient">The Azure resources manager client</param>
+        /// <param name="azureResourceManagerClient">The Azure resources manager client.</param>
+        /// <param name="smartSignal">The smart signal.</param>
         [InjectionConstructor]
-        public SignalsControlViewModel(AzureResourceManagerClient azureResourceManagerClient)
+        public SignalsControlViewModel(AzureResourceManagerClient azureResourceManagerClient, ISmartSignal smartSignal)
         {
             this.azureResourceManagerClient = azureResourceManagerClient;
+            this.smartSignal = smartSignal;
 
+            // Initialize combo boxes read tasks
             this.ReadSubscriptionsTask = new ObservableTask<ObservableCollection<AzureSubscription>>(
                 this.GetSubscriptionsAsync());
 
@@ -68,6 +73,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
             this.ReadResourcesTask = new ObservableTask<ObservableCollection<string>>(
                 Task.FromResult(new ObservableCollection<string>()));
+
+            // Initialize commands
+            this.RunSignalCommand = new CommandHandler(() => this.RunSignal());
         }
 
         #endregion
@@ -224,6 +232,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
         #endregion
 
+        #region Commands
+
+        /// <summary>
+        /// Gets the command that runs the signal.
+        /// </summary>
+        public CommandHandler RunSignalCommand { get; }
+
+        #endregion
+
         /// <summary>
         /// Gets Azure subscriptions.
         /// </summary>
@@ -277,6 +294,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
                 .Select(resourceIndentifier => resourceIndentifier.ResourceName).ToList();
 
             return new ObservableCollection<string>(resources);
+        }
+
+        /// <summary>
+        /// Runs the smart signal.
+        /// </summary>
+        private void RunSignal()
+        {
+            MessageBox.Show("Comming soon...");
         }
     }
 }

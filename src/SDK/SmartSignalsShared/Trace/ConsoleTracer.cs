@@ -4,11 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Shared.Trace
+namespace Microsoft.Azure.Monitoring.SmartSignals.Trace
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.Azure.Monitoring.SmartSignals;
 
     /// <summary>
     /// Implementation of the <see cref="ITracer"/> interface that traces to the console.

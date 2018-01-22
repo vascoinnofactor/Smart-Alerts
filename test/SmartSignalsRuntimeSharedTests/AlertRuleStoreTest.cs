@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace SmartSignalsInfrastructureTests
+namespace SmartSignalsRuntimeSharedTests
 {
     using System.Collections.Generic;
     using System.Linq;

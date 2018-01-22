@@ -15,11 +15,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
+    using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.Extensions;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Microsoft.Rest;
     using Newtonsoft.Json.Linq;
     using Polly;

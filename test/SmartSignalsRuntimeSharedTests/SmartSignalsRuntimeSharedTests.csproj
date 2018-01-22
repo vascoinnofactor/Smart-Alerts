@@ -3,7 +3,8 @@
     <TargetFramework>net461</TargetFramework>
 	<StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AssemblyName>SmartSignalsInfrastructureTests</AssemblyName>
+    <AssemblyName>SmartSignalsRuntimeSharedTests</AssemblyName>
+    <RootNamespace>SmartSignalsRuntimeSharedTests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
@@ -14,7 +15,6 @@
     <PackageReference Include="StyleCop.MSBuild" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SDK\SmartSignalsPackage\SmartSignalsPackage.csproj" />
     <ProjectReference Include="..\..\src\SmartSignalsRuntimeShared\SmartSignalsRuntimeShared.csproj" />
     <ProjectReference Include="..\TestChildProcess\TestChildProcess.csproj" />
   </ItemGroup>
