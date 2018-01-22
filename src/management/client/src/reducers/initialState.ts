@@ -20,7 +20,9 @@ const defaultState: StoreState = {
         items: [],
         lastUpdated: null
     },
-    queryResults: new Map<string, QueryResultStoreState>()
+    queryResults: new Map<string, QueryResultStoreState>(),
+    isAuthenticated: false,
+    userDetails: null
 };
   
 export default defaultState;

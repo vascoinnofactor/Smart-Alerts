@@ -7,6 +7,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
+import { Route } from 'react-router-dom';
 import { Grid, Col, Row } from 'react-flexbox-grid';
 
 import SignalResultsCardsPanel from './signalResultsCardsPanel';
@@ -102,10 +103,14 @@ class SignalResultPresentation extends React.Component<SignalResultPresentationP
                         </Col>
 
                         <Col xs className="signal-result-details-panel">
-                            <SignalResultDetailsPanel 
-                                signalResult={this.props.selectedSignalResultNumber ? 
-                                                signalsResults[this.props.selectedSignalResultNumber] : 
-                                                undefined} 
+                            <Route 
+                                render={(props) => (
+                                    <SignalResultDetailsPanel 
+                                        signalResult={this.props.selectedSignalResultNumber ? 
+                                                    signalsResults[this.props.selectedSignalResultNumber] : 
+                                                    undefined}
+                                    />
+                                )} 
                             />
                         </Col>  
                     </Row>

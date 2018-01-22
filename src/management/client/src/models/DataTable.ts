@@ -6,7 +6,13 @@
 
 import { Moment } from 'moment';
 
+import Column from './Column';
+
 export default interface DataTable {
+    data: [{}];
+
+    columnsMetadata: Column[];
+
     timeColumnName: string;
 
     timeColumnValues: Moment[];

@@ -11,7 +11,10 @@ import Bars from '../components/Visualizations/Bars';
 import PieData from '../components/Visualizations/PieData';
 import ChartType from '../models/ChartType';
 import DataTable from '../models/DataTable';
-import ChartRawData from '../components/Visualizations/Models/ChartRawData';
+import ChartDataFactory from './ChartDataFactory';
+import TimelineChart from '../models/Charts/TimelineChart';
+import BarsChart from '../models/Charts/BarsChart';
+import PieChartData from '../models/Charts/PieChartData';
 
 /**
  * A factory class that creates the required visualization component
@@ -20,15 +23,11 @@ export default class VisualizationsFactory {
     public static create(chartType: ChartType, data: DataTable,
                          className?: string, hideXAxis?: boolean, hideYAxis?: boolean,
                          hideLegend?: boolean): JSX.Element {     
-        // Convert the numeric values to chart data
-        let chartData: ChartRawData[] = this.convertToChartRawDataArray(data.numericValues);
-
         switch (chartType) {
             case ChartType.Timeline:
                 return (
                             <Timeline 
-                                data={chartData} 
-                                timestampDataKey={data.timeColumnName}
+                                timelineChart={ChartDataFactory.createChartData(data, chartType) as TimelineChart}
                                 className={className} 
                                 hideXAxis={hideXAxis} 
                                 hideYAxis={hideYAxis}
@@ -38,7 +37,7 @@ export default class VisualizationsFactory {
             case ChartType.Bars:
                 return (
                             <Bars
-                                data={chartData}
+                                chartData={ChartDataFactory.createChartData(data, chartType) as BarsChart}
                                 className={className}
                                 hideXAxis={hideXAxis} 
                                 hideYAxis={hideYAxis}
@@ -48,7 +47,7 @@ export default class VisualizationsFactory {
             case ChartType.Pie:
                 return (
                             <PieData
-                                data={chartData}
+                                chartData={ChartDataFactory.createChartData(data, chartType) as PieChartData}
                                 className={className}
                                 hideXAxis={hideXAxis} 
                                 hideYAxis={hideYAxis}
@@ -58,29 +57,5 @@ export default class VisualizationsFactory {
             default:
                 return (<div/>);
         }
-    }
-
-    /**
-     * Convert the given values map to a chart raw data.
-     * Each raw will contain the column name and the raw value.
-     * @param valuesMap The values map
-     */
-    private static convertToChartRawDataArray(valuesMap: Map<string, number[]>): ChartRawData[] {
-        let chartData: ChartRawData[] = [];
-        
-        Object.keys(valuesMap).forEach((key, index) => {
-            // Get all the numeric values for this entry
-            let values: number[] = valuesMap[index];
-
-            // Add all the values with this key
-            values.forEach(value => {
-                chartData.fill({
-                    name: key,
-                    value: value
-                });
-            });
-        });
-
-        return chartData;
     }
 }

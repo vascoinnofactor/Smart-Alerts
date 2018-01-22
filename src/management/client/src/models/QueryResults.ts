@@ -8,7 +8,7 @@
  * This model represents the query results (coming from Application Insights)
  */
 interface QueryResults {
-    Tables: QueryResult[];
+    tables: QueryResult[];
 }
   
 /**
@@ -18,9 +18,8 @@ interface QueryResult {
     tableName: string;
 
     columns: {
-      columnName: string,
-      dataType: string,
-      columnType: string
+      name: string,
+      type: string,
     }[];
 
     // As Application Insights/OMS response is dynamic, we must use 'any'

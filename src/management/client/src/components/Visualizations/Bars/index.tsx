@@ -9,18 +9,23 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 import Visualization, { VisualizationProps } from '../VisualizationBase';
 import FormatUtils from '../../../utils/FormatUtils';
+import BarsChart from '../../../models/Charts/BarsChart';
+
+interface BarsProps extends VisualizationProps {
+    chartData: BarsChart;
+}
 
 /**
  * This component represents the bars visualization rendering
  */
-export default class Timeline extends Visualization<VisualizationProps> {
+export default class Timeline extends Visualization<BarsProps> {
     public render() {
-        const { data, hideLegend, hideYAxis, hideXAxis, className } = this.props;
+        const { chartData, hideLegend, hideYAxis, hideXAxis, className } = this.props;
         
         return (
             <ResponsiveContainer>
                 <BarChart 
-                        data={data} 
+                        data={chartData.data} 
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }} 
                         className={className}
                 >
@@ -49,7 +54,7 @@ export default class Timeline extends Visualization<VisualizationProps> {
                         strokeWidth={2}
                         fill="#8884d8"
                     />
-                    {this.createBarElements(data)}
+                    {this.createBarElements(chartData.data)}
                 </BarChart>
             </ResponsiveContainer>
         );

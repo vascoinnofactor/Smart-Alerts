@@ -36,7 +36,7 @@ export class SignalResultUtils {
  
         // Group 1 is the subscription id
         return regexResults[1];
-     }
+    }
 
     /**
      * Gets the resouce group name from the given resource id
@@ -50,12 +50,13 @@ export class SignalResultUtils {
      }
 
      /**
-      * Gets all the analysis properties from the given signal result
+      * Gets all the signal result properties from the given signal result
       * @param signalResult The signal result
       */
-     public static getAllAnalysisProperties(signalResult: SignalResult): SignalResultProperty[] {
-         return signalResult.properties.filter(property => property.displayCategory === PropertyCategory.Analysis);
-     }
+      public static getAllProperties(signalResult: SignalResult): SignalResultProperty[] {
+        return signalResult.properties.filter(property => property.displayCategory === PropertyCategory.Property ||
+                                                          property.displayCategory === PropertyCategory.Analysis);
+    }
 
     /**
      * Gets all the charts properties from the given signal result

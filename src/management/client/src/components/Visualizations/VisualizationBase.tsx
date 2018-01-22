@@ -7,13 +7,10 @@
 import * as React from 'react';
 import * as moment from 'moment';
 
-import ChartRawData from './Models/ChartRawData';
-
 /**
  * This component represents the visualization components global properties
  */
 export interface VisualizationProps {
-    data: ChartRawData[];
     className?: string;
     hideXAxis?: boolean;
     hideYAxis?: boolean;

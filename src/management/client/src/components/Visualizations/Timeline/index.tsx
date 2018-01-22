@@ -9,9 +9,10 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 import Visualization, { VisualizationProps } from '../VisualizationBase';
 import FormatUtils from '../../../utils/FormatUtils';
+import TimelineChart from '../../../models/Charts/TimelineChart';
 
 interface TimelineProps extends VisualizationProps {
-    timestampDataKey: string;
+    timelineChart: TimelineChart;
 }
 
 /**
@@ -19,23 +20,22 @@ interface TimelineProps extends VisualizationProps {
  */
 export default class Timeline extends Visualization<TimelineProps> {
     public render() {
-        const { data } = this.props;
+        const { timelineChart } = this.props;
 
         return (
             <ResponsiveContainer>
                 <LineChart 
-                           data={data} 
+                           data={timelineChart.data} 
                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }} 
                            className={this.props.className}
                 >
                     <XAxis 
-                        dataKey={this.props.timestampDataKey} 
+                        dataKey={timelineChart.timestampColumnName} 
                         tickFormatter={this.hourFormat} 
                         minTickGap={20} 
                         hide={this.props.hideXAxis}
                     />
                     <YAxis 
-                        dataKey="number"
                         type="number"
                         tickFormatter={FormatUtils.kmNumber}
                         hide={this.props.hideYAxis} 
@@ -47,7 +47,7 @@ export default class Timeline extends Visualization<TimelineProps> {
                         <Legend />
                     }
                     <Line dataKey="number" key="timeValue" type="monotone" strokeWidth={2} dot={false} />
-                    {this.createLineElements(this.props.data)}
+                    {this.createLineElements(timelineChart)}
                 </LineChart>
             </ResponsiveContainer>
         );
@@ -57,24 +57,13 @@ export default class Timeline extends Visualization<TimelineProps> {
      * Create a line element for each series
      * @param data The chart data
      */
-    private createLineElements(data: object[]): JSX.Element[] {
-        // 1. Calculates which fields we should create lines for
-        let fields: string[] = [];
-        for (var key in data[0]) {
-            // Ignore 'time' and 'number' fields
-            if (key !== 'time' && key !== 'number') {
-                fields.push(key);
-            }
-        }
-
-        // 2. Create the lines
+    private createLineElements(timelineChartData: TimelineChart): JSX.Element[] {
         var lineElements: JSX.Element[] = [];
-        if (fields && fields.length > 0) {
-          lineElements = fields.map((line, idx) => {
+        if (timelineChartData.numericFields && timelineChartData.numericFields.length > 0) {
+          lineElements = timelineChartData.numericFields.map((line, idx) => {
             return (
               <Line
                 stroke="#ff7300"
-                strokeWidth={9}
                 key={idx}
                 type="monotone"
                 dataKey={line}

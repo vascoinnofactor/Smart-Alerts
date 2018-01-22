@@ -20,13 +20,15 @@ export class SignalResultPropertyUtils {
             return ChartType.None;
         }
         
-        switch (signalResultProperty.name) {
-            case 'Bar Chart':
+        let queryLastWord = signalResultProperty.value.split(' ').pop();
+
+        switch (queryLastWord) {
+            case 'barchart':
                 return ChartType.Bars;
-            case 'Time Chart':
+            case 'timechart':
                 return ChartType.Timeline;
-            case 'Pie Chart':
-                return ChartType.Timeline;
+            case 'piechat':
+                return ChartType.Pie;
             default:
                 return ChartType.Timeline;
         }

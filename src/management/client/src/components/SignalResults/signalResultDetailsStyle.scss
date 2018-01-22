@@ -26,6 +26,7 @@
     .chart-container {
         height: 300px;
         width: 90%;
+        justify-content: center;
     }
 
     .analysis-chart {
@@ -37,4 +38,13 @@
 
 .analysis-additional-properties-section {
     margin-top: 20px;
+}
+
+.linear-progress-container {
+    align-self: center;
+    width: 50% !important;
+}
+
+.linear-progress {
+    background: #2dbdbe !important;
 }

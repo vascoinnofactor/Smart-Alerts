@@ -16,6 +16,7 @@ namespace ManagementApiTests.EndpointsLogic
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -29,6 +30,7 @@ namespace ManagementApiTests.EndpointsLogic
 
         private Mock<IApplicationInsightsClient> applicationInsightClientMock;
         private Mock<IApplicationInsightsClientFactory> applicationInsightsFactoryMock;
+        private Mock<ICloudStorageProviderFactory> storageProviderFactory;
         private ISignalResultApi signalResultApi;
 
         [TestInitialize]
@@ -36,10 +38,12 @@ namespace ManagementApiTests.EndpointsLogic
         {
             this.applicationInsightClientMock = new Mock<IApplicationInsightsClient>();
             this.applicationInsightsFactoryMock = new Mock<IApplicationInsightsClientFactory>();
+            this.storageProviderFactory = new Mock<ICloudStorageProviderFactory>();
 
             this.applicationInsightsFactoryMock.Setup(factory => factory.GetApplicationInsightsClient()).Returns(this.applicationInsightClientMock.Object);
 
-            this.signalResultApi = new SignalResultApi(this.applicationInsightsFactoryMock.Object);
+            this.signalResultApi = new SignalResultApi(this.storageProviderFactory.Object,
+                                                       this.applicationInsightsFactoryMock.Object);
         }
 
         [TestMethod]

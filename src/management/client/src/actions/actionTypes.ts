@@ -19,14 +19,17 @@ import {
 } from './signal/get';
 import {
     AddAlertRuleInProgressAction,
-    AddAlertRuleFailAction,
-    AddAlertRuleSuccessAction
+    AddAlertRuleSuccessAction,
+    AddAlertRuleFailAction
 } from './alertRule/add';
 import {
     GetQueryResultInProgressAction,
     GetQueryResultSuccessAction,
     GetQueryResultFailAction
 } from './queryResult/get';
+import {
+    LoginSuccessAction
+} from './authentication';
 
 type ActionTypes = GetSignalResultFailAction | 
                    GetSignalResultInProgressAction | 
@@ -39,6 +42,7 @@ type ActionTypes = GetSignalResultFailAction |
                    AddAlertRuleFailAction |
                    GetQueryResultInProgressAction |
                    GetQueryResultSuccessAction |
-                   GetQueryResultFailAction;
+                   GetQueryResultFailAction |
+                   LoginSuccessAction;
 
 export default ActionTypes;

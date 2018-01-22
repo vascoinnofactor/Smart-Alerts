@@ -134,13 +134,15 @@ class Card extends React.Component<CardProps> {
  * @param state The current state
  * @param ownProps the component's props
  */
-function mapStateToProps(state: StoreState, ownProps: CardOwnProps)
-    : CardStateProps {
+function mapStateToProps(state: StoreState, ownProps: CardOwnProps): CardStateProps {
     let chartData: DataTable | undefined;
 
     // Get the chart data only if this card has chart
-    if (ownProps.chartMetadata) {
-        chartData = state.queryResults[ownProps.chartMetadata.id].result;
+    if (ownProps.chartMetadata && state.queryResults) {
+        let queryResult = state.queryResults.get(ownProps.chartMetadata.id);
+        if (queryResult && queryResult.result) {
+            chartData = queryResult.result;
+        }
     }
 
     return {

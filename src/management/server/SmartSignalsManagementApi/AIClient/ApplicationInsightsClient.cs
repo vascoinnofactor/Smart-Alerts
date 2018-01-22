@@ -83,7 +83,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
                 var appInsightsRelativeUrl = $"/v1/apps/{this.applicationId}/events/customEvents";
 
                 // Filter by event name
-                appInsightsRelativeUrl += $"?$filter=customEvent/name eq '{eventName}'";
+                appInsightsRelativeUrl += $"?$top=5&$filter=customEvent/name eq '{eventName}'";
 
                 // Add timestamp filters in case it's required
                 if (startTime.HasValue && endTime.HasValue)

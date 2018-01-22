@@ -28,10 +28,12 @@ export function getQueryResult(queryId: string,
         dispatch(getQueryResultInProgressAction(queryId));
 
         try {
+            // 1. Check if query id is already stored
             const queryResponse = await executeQuery(applicationId, query, apiKey);
             
             dispatch(getQueryResultSuccessAction(queryId, queryResponse));
           } catch (error) {
+
             dispatch(getQueryResultFailAction(queryId, error));
           }
     };
@@ -53,8 +55,7 @@ function getQueryResultInProgressAction(queryId: string): GetQueryResultInProgre
  * Create an action once getting the query execution finished successfuly
  * @param signalsResults the retrieved signals results
  */
-function getQueryResultSuccessAction(queryId: string, queryResponse: DataTable)
-        : GetQueryResultSuccessAction {
+function getQueryResultSuccessAction(queryId: string, queryResponse: DataTable): GetQueryResultSuccessAction {
     return {
         type: keys.GET_QUERY_RESULT_SUCCESS,
         payload: {
@@ -72,8 +73,8 @@ function getQueryResultFailAction(queryId: string, error: Error): GetQueryResult
     return {
         type: keys.GET_QUERY_RESULT_FAIL,
         payload: {
-            error: error,
-            queryId: queryId
+            queryId: queryId,
+            error: error
         }
     };
 }

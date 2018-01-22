@@ -25,7 +25,7 @@ interface SignalResultDetailsPanelProps {
 /**
  * This component represents the inner view of the signal result page (without the filtering bar)
  */
-export default class SignalResultDetailsPanel extends React.Component<SignalResultDetailsPanelProps> {
+export default class SignalResultDetailsPanel extends React.PureComponent<SignalResultDetailsPanelProps> {
     constructor(props: SignalResultDetailsPanelProps) {
         super(props);
     }
@@ -56,10 +56,15 @@ export default class SignalResultDetailsPanel extends React.Component<SignalResu
                                 let chartsMetadata = this.getChartsMetadata(this.props.signalResult,
                                                                             allChartsProperties);
                                 return (
-                                    this.props.signalResult && 
-                                    <SignalResultDetails
-                                        signalResult={this.props.signalResult}
-                                        chartsMetadata={chartsMetadata}
+                                    <Route 
+                                        render={(routeProps) => (
+                                            this.props.signalResult &&
+                                            <SignalResultDetails
+                                                signalResult={this.props.signalResult}
+                                                chartsMetadata={chartsMetadata}
+                                                location={routeProps.location}
+                                            />
+                                        )}
                                     />
                                 );
                             }}

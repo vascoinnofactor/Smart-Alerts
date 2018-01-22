@@ -5,16 +5,17 @@
 // -----------------------------------------------------------------------
 
 import * as React from 'react';
-
-import { withRouter } from 'react-router';
-import { Switch, Route, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Switch, Route, Link, withRouter } from 'react-router-dom';
+import Avatar from 'react-md/lib/Avatars';
 
 import NavigationDrawer from 'react-md/lib/NavigationDrawers';
 import ListItem from 'react-md/lib/Lists/ListItem';
 import FontIcon from 'react-md/lib/FontIcons';
-
 import SignalResultsPage from '../../pages/SignalResults';
 import SignalsPage from '../../pages/Signals';
+import User from '../../models/User';
+import StoreState from '../../store/StoreState';
 
 import './indexStyle.css';
 
@@ -44,13 +45,36 @@ const navigationItems = [
           className="navbar-item-list"
         />
     )
-  ];
+];
+
+/**
+ * Represents the Navbar component props for the component inner state  
+ */
+interface NavbarStateProps {
+  isAuthenticated: boolean;
+  userDetails: User | null;
+}
+
+// Create a type combined from all the props
+type NavbarProps = NavbarStateProps;
 
 /**
  * The component represents the navigation bar
  */
-export class Navbar extends React.PureComponent {
+class Navbar extends React.PureComponent<NavbarProps> {
     public render() {
+        const toolbarActions = [
+            (
+                <Avatar>
+                    {
+                    this.props.isAuthenticated && this.props.userDetails ?
+                        this.props.userDetails.firstName.charAt(0).toUpperCase() :
+                        '?'
+                    }
+                </Avatar>
+            )
+        ];
+
         return (
             <NavigationDrawer
               toolbarTitle={this.getToolbarTitle()}
@@ -61,22 +85,23 @@ export class Navbar extends React.PureComponent {
               contentId="main-demo-content"
               drawerClassName="backgroundColor"
               temporaryIcon={<img src="/Azure.png" className="logo"/>}
+              toolbarActions={toolbarActions}
               visible={false}
             >
-                <Switch>
-                    <Route 
-                      path="/signalResults/:id?" 
-                      render={(props) => 
-                        <SignalResultsPage selectedSignalResultNumber={props.match.params.id} />
-                      }
-                    />
-                    <Route 
-                      path="/signals/:id?" 
-                      render={(props) => 
-                        <SignalsPage selectedSignalNumber={props.match.params.id}/>
-                      }
-                    />
-                </Switch>
+              <Switch>
+                <Route 
+                  path="/signalResults/:id?" 
+                  render={(props) => 
+                    <SignalResultsPage selectedSignalResultNumber={props.match.params.id} />
+                  }
+                />
+                <Route 
+                  path="/signals/:id?" 
+                  render={(props) => 
+                    <SignalsPage selectedSignalNumber={props.match.params.id}/>
+                  }
+                />
+              </Switch>
             </NavigationDrawer>
         );
     }
@@ -90,4 +115,16 @@ export class Navbar extends React.PureComponent {
     }
 }
 
-export default withRouter(Navbar);
+/**
+ * Map between the given state to this component props.
+ * @param state The current state
+ * @param ownProps the component's props
+ */
+function mapStateToProps(state: StoreState): NavbarStateProps {
+    return {
+        isAuthenticated: state.isAuthenticated,
+        userDetails: state.userDetails
+    };
+}
+
+export default withRouter(connect(mapStateToProps)(Navbar));

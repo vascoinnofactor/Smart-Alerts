@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Grid, Col, Row } from 'react-flexbox-grid';
 import * as moment from 'moment';
+import * as H from 'history';
+import LinearProgress from 'react-md/lib/Progress/LinearProgress';
 
 import { DateUtils } from '../../utils/DateUtils';
 import SignalResult from '../../models/SignalResult';
@@ -43,6 +45,7 @@ interface SignalResultDetailsStateProps {
 interface SignalResultDetailsOwnProps {
     signalResult: SignalResult;
     chartsMetadata: ChartMetadata[];
+    location: H.Location;
 }
 
 // Create a type combined from all the props
@@ -53,18 +56,24 @@ type SignalResultDetailsProps = SignalResultDetailsDispatchProps &
 /**
  * This component represents the Signal Result details view page
  */
-class SignalResultDetails extends React.PureComponent<SignalResultDetailsProps> {
-    constructor(props: SignalResultDetailsProps) {
+class SignalResultDetails extends React.Component<SignalResultDetailsProps> {
+    constructor(props: SignalResultDetailsProps) {        
         super(props);
+
+        this.getChartsElements = this.getChartsElements.bind(this);
     }
 
-    public componentDidMount() {
-        this.props.chartsMetadata.forEach(async chart => {
-            await this.props.executeQuery(chart.id,
-                                          chart.applicationId,
-                                          chart.query,
-                                          chart.apiKey);
-        });
+    public componentWillReceiveProps(nextProps: Readonly<SignalResultDetailsProps>) {
+        if (nextProps.location.pathname !== this.props.location.pathname) {
+            nextProps.chartsMetadata.forEach(async chart => {
+                if (!this.props.chartsData.has(chart.id)) {
+                    await this.props.executeQuery(chart.id,
+                                                  chart.applicationId,
+                                                  chart.query,
+                                                  chart.apiKey);
+                }
+            });
+        }
     }
 
     public render() {
@@ -143,25 +152,35 @@ class SignalResultDetails extends React.PureComponent<SignalResultDetailsProps> 
                 <Grid fluid className="analysis-additional-properties-section">
                     {this.customAnalysisProperties(this.props.signalResult)}
                 </Grid>
-
-                <Grid fluid className="analysis-additional-properties-section">
-                    {this.actionsSection(this.props.signalResult)}
-                </Grid>
             </div>
         );
     }
 
     private getChartsElements(): (JSX.Element | undefined)[] {
+        if (!this.props.chartsMetadata) {
+            return Element[0];
+        }
+        
         return this.props.chartsMetadata.map(chartMetadata => {
             // Get the chart data
             let chartData = this.props.chartsData.get(chartMetadata.id);
 
-            return (
-                chartData &&
-                VisualizationFactory.create(chartMetadata.chartType,
-                                            chartData,
-                                            'analysis-chart')
-            );
+            let presentedValue: JSX.Element;
+            if (!chartData) {
+                presentedValue = (
+                    <LinearProgress 
+                        id={chartMetadata.id} 
+                        className="linear-progress-container"
+                        progressClassName="linear-progress" 
+                    />   
+                );
+            } else {
+                presentedValue = VisualizationFactory.create(chartMetadata.chartType,
+                                                             chartData,
+                                                             'analysis-chart');
+            }
+
+            return presentedValue;
         });
     }
 
@@ -172,13 +191,13 @@ class SignalResultDetails extends React.PureComponent<SignalResultDetailsProps> 
     private customAnalysisProperties(signalResult: SignalResult): JSX.Element {
         let result: JSX.Element = (<div/>);
 
-        let analysisProperties: SignalResultProperty[] = SignalResultUtils.getAllAnalysisProperties(signalResult);
+        let signalResultProperties: SignalResultProperty[] = SignalResultUtils.getAllProperties(signalResult);
         
-        if (analysisProperties) {
+        if (signalResultProperties && signalResultProperties.length > 0) {
             result = (
                 <Grid fluid className="gridStyle properies-list">
                     {
-                        analysisProperties.map((property, index) => (
+                        signalResultProperties.map((property, index) => (
                             <Row className="property-row">
                                 <Col xs={2}>
                                     {property.name}
@@ -195,26 +214,6 @@ class SignalResultDetails extends React.PureComponent<SignalResultDetailsProps> 
 
         return result;
     }
-
-    /**
-     * Get the action section
-     * @param signalResult The signal result
-     */
-    private actionsSection(signalResult: SignalResult): JSX.Element {
-        return (
-            <Grid fluid className="gridStyle properies-list">
-                <Row className="section-title">
-                        ACTIONS
-                </Row>
-                
-                <Grid fluid>
-                    <Row>
-                        hiiiii
-                    </Row>
-                </Grid>
-            </Grid>
-        );
-    }
 }
 
 /**
@@ -225,10 +224,10 @@ class SignalResultDetails extends React.PureComponent<SignalResultDetailsProps> 
 function mapStateToProps(state: StoreState, ownProps: SignalResultDetailsOwnProps): SignalResultDetailsStateProps {
     let chartsData: Map<string, DataTable> = new Map<string, DataTable>();
 
-    if (ownProps.chartsMetadata) {
+    if (ownProps.chartsMetadata && state.queryResults) {
         ownProps.chartsMetadata.forEach(chart => {
             let queryResult = state.queryResults.get(chart.id);
-            if (queryResult) {
+            if (queryResult && queryResult.result) {
                 chartsData.set(chart.id, queryResult.result);
             }
         });

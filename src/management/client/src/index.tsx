@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 
-import routes from './routes';
+import App from './components/App';
 import registerServiceWorker from './registerServiceWorker';
 import configureStore from '../src/store/configureStore';
 
@@ -20,7 +20,7 @@ const configuredStore = configureStore();
 ReactDOM.render(
   <Provider store={configuredStore}>
     <BrowserRouter>
-      {routes}
+      <App />
     </BrowserRouter>
   </Provider>,
   document.getElementById('root') as HTMLElement

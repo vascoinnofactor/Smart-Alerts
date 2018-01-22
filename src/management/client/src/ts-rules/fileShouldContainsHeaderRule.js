@@ -17,6 +17,18 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Lint = require("tslint");
 var fs = require("fs");
+var Rule = /** @class */ (function (_super) {
+    __extends(Rule, _super);
+    function Rule() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Rule.prototype.apply = function (sourceFile) {
+        return this.applyWithWalker(new NoFileWithoutCopyrightHeader(sourceFile, this.getOptions()));
+    };
+    Rule.FAILURE_STRING = 'File should contains header: ';
+    return Rule;
+}(Lint.Rules.AbstractRule));
+exports.Rule = Rule;
 var NoFileWithoutCopyrightHeader = /** @class */ (function (_super) {
     __extends(NoFileWithoutCopyrightHeader, _super);
     function NoFileWithoutCopyrightHeader() {
@@ -32,26 +44,12 @@ var NoFileWithoutCopyrightHeader = /** @class */ (function (_super) {
             if (sourceFile.getFullText().startsWith(copyrightHeaderTemplate)) {
                 return _super.prototype.visitSourceFile.call(this, sourceFile);
             }
-            // Create a fix - add the header to the start of the file
-            var fix = new Lint.Replacement(1, 1, copyrightHeaderTemplate);
-            this.addFailure(this.createFailure(1, 1, NoFileWithoutCopyrightHeader.FAILURE_STRING +
+            this.addFailure(this.createFailure(1, 1, Rule.FAILURE_STRING +
                 '\n' +
-                copyrightHeaderTemplate, fix));
+                copyrightHeaderTemplate));
             return _super.prototype.visitSourceFile.call(this, sourceFile);
         }
         _super.prototype.visitSourceFile.call(this, sourceFile);
     };
-    NoFileWithoutCopyrightHeader.FAILURE_STRING = 'File should contains header: ';
     return NoFileWithoutCopyrightHeader;
 }(Lint.RuleWalker));
-var Rule = /** @class */ (function (_super) {
-    __extends(Rule, _super);
-    function Rule() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Rule.prototype.apply = function (sourceFile) {
-        return this.applyWithWalker(new NoFileWithoutCopyrightHeader(sourceFile, this.getOptions()));
-    };
-    return Rule;
-}(Lint.Rules.AbstractRule));
-exports.Rule = Rule;

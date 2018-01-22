@@ -8,9 +8,15 @@ import * as ts from 'typescript';
 import * as Lint from 'tslint';
 import * as fs from 'fs';
 
-class NoFileWithoutCopyrightHeader extends Lint.RuleWalker {
-    private static FAILURE_STRING = 'File should contains header: ';
+export class Rule extends Lint.Rules.AbstractRule {  
+    public static FAILURE_STRING = 'File should contains header: ';
+    
+    public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
+        return this.applyWithWalker(new NoFileWithoutCopyrightHeader(sourceFile, this.getOptions()));
+    }
+}
 
+class NoFileWithoutCopyrightHeader extends Lint.RuleWalker {
     public visitSourceFile(sourceFile: ts.SourceFile) {
         if (sourceFile && sourceFile.fileName && sourceFile.getFullText()) {
             // tslint:disable-next-line:no-console
@@ -26,24 +32,14 @@ class NoFileWithoutCopyrightHeader extends Lint.RuleWalker {
                 return super.visitSourceFile(sourceFile);
             }
 
-            // Create a fix - add the header to the start of the file
-            const fix = new Lint.Replacement(1, 1, copyrightHeaderTemplate);
-
             this.addFailure(this.createFailure(1, 1,
-                                               NoFileWithoutCopyrightHeader.FAILURE_STRING +
+                                               Rule.FAILURE_STRING +
                                                '\n' + 
-                                               copyrightHeaderTemplate,
-                                               fix));
+                                               copyrightHeaderTemplate));
                
             return super.visitSourceFile(sourceFile);
         }
         
         super.visitSourceFile(sourceFile);
-    }
-}
-
-export class Rule extends Lint.Rules.AbstractRule {  
-    public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
-        return this.applyWithWalker(new NoFileWithoutCopyrightHeader(sourceFile, this.getOptions()));
     }
 }

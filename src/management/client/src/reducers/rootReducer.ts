@@ -9,13 +9,19 @@ import { combineReducers } from 'redux';
 import StoreState from '../store/StoreState';
 import signalsResults from './signalResultReducer';
 import signals from './signalReducer';
+import queryResults from './queryResultReducer';
+import isAuthenticated from './isAuthenticatedReducer';
+import userDetails from './userDetailsReducer';
 
 /**
  * Defines the root reducer - a combination of all the reducers.
  */
 const rootReducer = combineReducers<StoreState>({
     signalsResults,
-    signals
+    signals,
+    queryResults,
+    isAuthenticated,
+    userDetails
 });
 
 export default rootReducer;

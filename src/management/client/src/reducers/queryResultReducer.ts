@@ -39,10 +39,29 @@ export default function signalsReducer(
 function onGetQueryResultInProgress(action: GetQueryResultInProgressAction,
                                     currentState: Map<string, QueryResultStoreState>)
         : Map<string, QueryResultStoreState> {
-    let newState = {...currentState};
-    newState[action.payload.queryId].isFetching = true;
+    // Check if we only need to add new item of query result state
+    if (!currentState.has(action.payload.queryId)) {
+        currentState.set(action.payload.queryId, {
+            isFetching: true,
+            lastUpdated: null,
+            result: null
+        });
 
-    return newState;
+        return currentState;
+    }
+
+    // As we need to keep the Map immutable - we will remove and add the item
+    let newQueryResultState: QueryResultStoreState = {
+        isFetching: true,
+        result: null,
+        lastUpdated: null
+    };
+
+    // Replace the result
+    currentState.delete(action.payload.queryId);
+    currentState.set(action.payload.queryId, newQueryResultState);
+
+    return new Map<string, QueryResultStoreState>(currentState);
 }
 
 /**
@@ -52,12 +71,17 @@ function onGetQueryResultInProgress(action: GetQueryResultInProgressAction,
  */
 function onGetQueryResultSuccess(action: GetQueryResultSuccessAction, currentState: Map<string, QueryResultStoreState>)
         : Map<string, QueryResultStoreState> {
-    let newState = {...currentState};
-    newState[action.payload.queryId].isFetching = false;
-    newState[action.payload.queryId].result = action.payload.result;
-    newState[action.payload.queryId].lastUpdated = moment.utc();
+    let newQueryResultState: QueryResultStoreState = {
+        result: action.payload.result,
+        isFetching: false,
+        lastUpdated: moment.utc()
+    };
 
-    return newState;
+    // Replace the result
+    currentState.delete(action.payload.queryId);
+    currentState.set(action.payload.queryId, newQueryResultState);
+    
+    return new Map<string, QueryResultStoreState>(currentState);
 }
 
 /**
@@ -66,9 +90,18 @@ function onGetQueryResultSuccess(action: GetQueryResultSuccessAction, currentSta
  */
 function onGetQueryResultFail(action: GetQueryResultFailAction, currentState: Map<string, QueryResultStoreState>)
         : Map<string, QueryResultStoreState> {
-    let newState = {...currentState};
-    newState[action.payload.queryId].isFetching = false;
-    newState[action.payload.queryId].lastUpdated = null;
+    let newQueryResultState: QueryResultStoreState = {
+        result: null,
+        isFetching: false,
+        lastUpdated: null,
+        failureReason: {
+            error: action.payload.error
+        }
+    };
 
-    return newState;
+    // Replace the result
+    currentState.delete(action.payload.queryId);
+    currentState.set(action.payload.queryId, newQueryResultState);
+    
+    return new Map<string, QueryResultStoreState>(currentState);
 }

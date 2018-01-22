@@ -1,11 +1,11 @@
 // -----------------------------------------------------------------------
-// <copyright file="ChartRawData.ts" company="Microsoft Corporation">
+// <copyright file="ChartData.ts" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
-export default interface ChartRawData {
-    name: string;
+export default interface ChartData {
+    data: [{}];
 
-    value: number;
+    numericFields: string[];
 }
