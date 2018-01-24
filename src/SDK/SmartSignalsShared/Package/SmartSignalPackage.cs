@@ -86,12 +86,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Package
                 throw new InvalidSmartSignalPackageException("No manifest file found in the smart signal package");
             }
 
-            // Deserialize the manifest
-            string manifest = Encoding.UTF8.GetString(manifestBytes);
-            tracer.TraceInformation($"Deserializing signal manifest {manifest}");
-            SmartSignalManifest signalManifest = JsonConvert.DeserializeObject<SmartSignalManifest>(manifest);
-
-            return new SmartSignalPackage(signalManifest, packageContent);
+            // Deserialize the manifest. We use stream reader to avoid unexpected characters such as BOM.
+            using (var stream = new StreamReader(new MemoryStream(manifestBytes)))
+            {
+                string manifest = stream.ReadToEnd();
+                tracer.TraceInformation($"Deserializing signal manifest {manifest}");
+                SmartSignalManifest signalManifest = JsonConvert.DeserializeObject<SmartSignalManifest>(manifest);
+                return new SmartSignalPackage(signalManifest, packageContent);
+            }
         }
 
         /// <summary>
