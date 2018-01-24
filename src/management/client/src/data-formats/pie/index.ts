@@ -8,6 +8,10 @@ import DataTable from '../../models/DataTable';
 import PieChart from '../../models/Charts/PieChartData';
 import Column from '../../models/Column';
 
+/**
+ * The data formater for a pie chart
+ * @param dataTable The data table
+ */
 export default function pieDataFormat(dataTable: DataTable): PieChart  {
     // Get all the columns which are numeric values
     let numericColumns: Column[] = dataTable.columnsMetadata.filter(column => column.dataType === 'int' ||
@@ -15,6 +19,6 @@ export default function pieDataFormat(dataTable: DataTable): PieChart  {
 
     return {
         data: dataTable.data,
-        numericFields: numericColumns.map(column => column.name)
+        numericDataKeys: numericColumns.map(column => column.name)
     };
 }

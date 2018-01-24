@@ -1,11 +1,20 @@
 // -----------------------------------------------------------------------
-// <copyright file="ChartData.ts" company="Microsoft Corporation">
+// <copyright file="ChartDataBase.ts" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
+/**
+ * Represents the base model of a chart
+ */
 export default interface ChartData {
-    data: [{}];
+    /**
+     * Gets the chart data
+     */
+    data: {}[];
 
-    numericFields: string[];
+    /**
+     * Gets the numeric data keys
+     */
+    numericDataKeys: string[];
 }

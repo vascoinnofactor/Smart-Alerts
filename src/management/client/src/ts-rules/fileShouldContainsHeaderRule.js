@@ -44,9 +44,11 @@ var NoFileWithoutCopyrightHeader = /** @class */ (function (_super) {
             if (sourceFile.getFullText().startsWith(copyrightHeaderTemplate)) {
                 return _super.prototype.visitSourceFile.call(this, sourceFile);
             }
+            // create a fixer for this failure
+            var fix = new Lint.Replacement(0, 0, copyrightHeaderTemplate + '\n\n');
             this.addFailure(this.createFailure(1, 1, Rule.FAILURE_STRING +
                 '\n' +
-                copyrightHeaderTemplate));
+                copyrightHeaderTemplate, fix));
             return _super.prototype.visitSourceFile.call(this, sourceFile);
         }
         _super.prototype.visitSourceFile.call(this, sourceFile);

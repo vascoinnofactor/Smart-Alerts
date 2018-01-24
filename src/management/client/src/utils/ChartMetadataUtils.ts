@@ -6,23 +6,32 @@
 
 import ChartMetadata from '../models/ChartMetadata';
 import ChartType from '../enums/ChartType';
-import { DataSource } from '../enums/DataSource';
+import QueryRunInfo from '../models/QueryRunInfo';
 
 /**
  * A utility class for ChartMetadata functions
  */
 export class ChartMetadataUtils {
-    public static createChartMetadata(id: string, query: string, applicationId: string,
-                                      chartType: ChartType, dataSource: DataSource): ChartMetadata {
+    /**
+     * Create the chart metadata
+     * @param id The chart id
+     * @param query The chart query
+     * @param queryRunInfo The chart query run info
+     * @param chartType The chart type
+     */
+    public static createChartMetadata(id: string, query: string, queryRunInfo: QueryRunInfo,
+                                      chartType: ChartType): ChartMetadata {
         return {
             id: id,
             chartType: chartType,
-            applicationId: applicationId,
             query: query,
-            dataSource: dataSource
+            queryRunInfo: queryRunInfo
         };
     }
 
+    /**
+     * Create a chart id by the given parameters
+     */
     public static createChartId(...ids: string[]) {
         return ids.join('-');
     }

@@ -6,8 +6,17 @@
 
 import ChartDataBase from './ChartDataBase';
 
+/**
+ * Represents the model of a timeline chart
+ */
 export default interface TimelineChart extends ChartDataBase {
-    lines: string[];
+    /**
+     * Gets the timeline chart lines series
+     */
+    linesDataKeys: string[];
 
-    timestampColumnName: string;
+    /**
+     * Gets the timestamp data key (for x axis)
+     */
+    timestampDataKey: string;
 }

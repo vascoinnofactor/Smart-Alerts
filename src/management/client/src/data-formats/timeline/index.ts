@@ -8,6 +8,10 @@ import DataTable from '../../models/DataTable';
 import TimelineChart from '../../models/Charts/TimelineChart';
 import Column from '../../models/Column';
 
+/**
+ * The data formater for a timeline chart
+ * @param dataTable The data table
+ */
 export default function timelineDataFormat(dataTable: DataTable): TimelineChart  {
         // Get all the columns that are timestamp
         let timestampColumns: Column[] = dataTable.columnsMetadata.filter(column => column.dataType === 'datetime');
@@ -30,8 +34,8 @@ export default function timelineDataFormat(dataTable: DataTable): TimelineChart 
 
         return {
             data: dataTable.data,
-            timestampColumnName: timestampColumns[0].name,
-            lines: stringColumns.map(column => column.name),
-            numericFields: numericColumns.map(column => column.name)
+            timestampDataKey: timestampColumns[0].name,
+            linesDataKeys: stringColumns.map(column => column.name),
+            numericDataKeys: numericColumns.map(column => column.name)
         };
 }

@@ -24,8 +24,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
     {
         private readonly IHttpClientWrapper httpClient;
         private readonly string applicationId;
-        private readonly string applicationKey;
-        private readonly Uri applicationInsightUri = new Uri("https://api.applicationinsights.io/beta/apps");
+        private readonly Uri applicationInsightUri = new Uri("https://api.applicationinsights.io");
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationInsightsClient"/> class.
@@ -34,18 +33,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
         public ApplicationInsightsClient(string applicationId)
         {
             this.applicationId = applicationId;
-            this.httpClient = new HttpClientWrapper();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationInsightsClient"/> class.
-        /// </summary>
-        /// <param name="applicationId">The AI application id.</param>
-        /// <param name="applicationKey">The AI application key.</param>
-        public ApplicationInsightsClient(string applicationId, string applicationKey)
-        {
-            this.applicationId = applicationId;
-            this.applicationKey = applicationKey;
             this.httpClient = new HttpClientWrapper();
         }
 
@@ -83,7 +70,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
                 var appInsightsRelativeUrl = $"/v1/apps/{this.applicationId}/events/customEvents";
 
                 // Filter by event name
-                appInsightsRelativeUrl += $"?$top=5&$filter=customEvent/name eq '{eventName}'";
+                appInsightsRelativeUrl += $"?$filter=customEvent/name eq '{eventName}'";
 
                 // Add timestamp filters in case it's required
                 if (startTime.HasValue && endTime.HasValue)
@@ -138,12 +125,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
         /// <returns>The authorization token.</returns>
         private Tuple<string, string> GetAuthorizationHeader()
         {
-            // In case application key was providere - use it first
-            if (!string.IsNullOrWhiteSpace(this.applicationKey))
-            {
-                return new Tuple<string, string>("x-api-key", this.applicationKey);
-            }
-
             return new Tuple<string, string>("Authorization", "bearer someTokenWillBeHere");
         }
     }

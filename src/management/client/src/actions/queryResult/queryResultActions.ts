@@ -13,31 +13,48 @@ import {
     GetQueryResultFailAction
 } from './get';
 import StoreState from '../../store/StoreState';
-import { executeQuery } from '../../api/applicationInsightsApi';
+import { executeQuery as executeApplicationInsightsQuery } from '../../api/applicationInsightsApi';
+import { executeQuery as executeLogAnalyticsQuery } from '../../api/logAnalyticsApi';
 import DataTable from '../../models/DataTable';
-import ActiveDirectoryAuthenticatorFactory from '../../factories/activeDirectoryAuthenticatorFactory';
 import ActiveDirectoryAuthenticator from '../../utils/adal/ActiveDirectoryAuthenticator';
+import QueryRunInfo from '../../models/QueryRunInfo';
+import ActiveDirectoryAuthenticatorFactory from '../../factories/activeDirectoryAuthenticatorFactory';
 import { DataSource } from '../../enums/DataSource';
 
 /**
  * Create an action for executing the given query
  */
 export function getQueryResult(queryId: string,
-                               applicationId: string,
                                query: string,
-                               dataSource: DataSource)
-        : (dispatch: Dispatch<StoreState>) => Promise<void> {
-    return async (dispatch: Dispatch<StoreState>) => {
-        dispatch(getQueryResultInProgressAction(queryId));
-
+                               queryRunInfo: QueryRunInfo)
+        : (dispatch: Dispatch<StoreState>, getState: () => StoreState) => Promise<void> {
+    return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
         // 1. Check if query id is already stored - TODO
+        let currentStoreState = getState();
+        let queryResult = currentStoreState.queryResults.get(queryId);
+
+        // In case query was already executed - notify about the result (maybe other components are still waiting)
+        if (queryResult && queryResult.result) {
+            dispatch(getQueryResultSuccessAction(queryId, queryResult.result));
+
+            return;
+        }
+
+        // In case query was already executed but failed - notify failure
+        if (queryResult && queryResult.failureReason) {
+            dispatch(getQueryResultFailAction(queryId, queryResult.failureReason.error));
+
+            return;
+        }
+
+        dispatch(getQueryResultInProgressAction(queryId));
 
         // 2. In case not - generate a Azure AAD token 
         let authenticator: ActiveDirectoryAuthenticator = ActiveDirectoryAuthenticatorFactory
                                                             .getActiveDirectoryAuthenticator();
 
         // Check which resource we should generate a token against
-        let resourceToken = dataSource === DataSource.ApplicationInsights ? 
+        let resourceToken = queryRunInfo.type === DataSource.ApplicationInsights ? 
                                             'https://api.applicationinsights.io' :
                                             'https://api.loganalytics.io';
 
@@ -48,8 +65,10 @@ export function getQueryResult(queryId: string,
 
             // 3. Execute the query against the correct endpoint
             try {
-                const queryResponse = await executeQuery(applicationId, query, token);
-    
+                const queryResponse = queryRunInfo.type === DataSource.ApplicationInsights ?
+                                        await executeApplicationInsightsQuery(queryRunInfo.resourceIds, query, token) :
+                                        await executeLogAnalyticsQuery(queryRunInfo.resourceIds, query, token);
+                                        
                 dispatch(getQueryResultSuccessAction(queryId, queryResponse));
             } catch (error) {
                 dispatch(getQueryResultFailAction(queryId, error));

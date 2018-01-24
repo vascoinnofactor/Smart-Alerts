@@ -25,17 +25,21 @@ class NoFileWithoutCopyrightHeader extends Lint.RuleWalker {
             // Create the copyright header based on the file name
             copyrightHeaderTemplate = copyrightHeaderTemplate.replace('{fileName}',
                                                                       sourceFile.fileName.substring(
-                                                                      sourceFile.fileName.lastIndexOf('/') + 1));
+                                                                            sourceFile.fileName.lastIndexOf('/') + 1));
 
             // Check if file is starting with it - if so, no need to continue
             if (sourceFile.getFullText().startsWith(copyrightHeaderTemplate)) {
                 return super.visitSourceFile(sourceFile);
             }
 
-            this.addFailure(this.createFailure(1, 1,
+            // Create a fixer for this failure
+            const fix = new Lint.Replacement(0, 0, copyrightHeaderTemplate + '\n\n');
+
+            this.addFailure(this.createFailure(0, 1,
                                                Rule.FAILURE_STRING +
                                                '\n' + 
-                                               copyrightHeaderTemplate));
+                                               copyrightHeaderTemplate,
+                                               fix));
                
             return super.visitSourceFile(sourceFile);
         }

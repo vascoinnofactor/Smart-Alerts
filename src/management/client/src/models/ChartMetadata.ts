@@ -4,8 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import { DataSource } from '../enums/DataSource';
 import ChartType from '../enums/ChartType';
+import QueryRunInfo from './QueryRunInfo';
 
 export default interface ChartMetadata {
     /**
@@ -24,12 +24,7 @@ export default interface ChartMetadata {
     chartType: ChartType;
 
     /**
-     * Gets the application id (in case query is against AI)
+     * Gets the information about the queries run
      */
-    applicationId: string;
-
-    /**
-     * Gets the data source where the data is placed (currently Application Insights / Log Analytics)
-     */
-    dataSource: DataSource;
+    queryRunInfo: QueryRunInfo;
 }

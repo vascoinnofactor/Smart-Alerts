@@ -15,14 +15,14 @@ let AuthContext: adal.AuthenticationContextStatic = AuthenticationContext;
 
 export default class ActiveDirectoryAuthenticator {
     /**
-     * The ADAL authentication context
-     */
-    private context: adal.AuthenticationContext; 
-
-    /**
      * The ADAL configuration
      */
     private adalConfig: AdalConfig;
+
+    /**
+     * The ADAL authentication context
+     */
+    private context: adal.AuthenticationContext; 
 
     /**
      * Initializes a new instance of the ActiveDirectoryAuthenticator class.
@@ -45,6 +45,10 @@ export default class ActiveDirectoryAuthenticator {
 
     public handleCallback() {
         this.context.handleWindowCallback();
+    }
+
+    public get getActiveDirectoryApplicationId(): string {
+        return this.adalConfig.clientId;
     }
 
     public get userInfo(): User {    

@@ -7,7 +7,7 @@
 import Column from './Column';
 
 export default interface DataTable {
-    data: [{}];
+    data: {}[];
 
     columnsMetadata: Column[];
 }

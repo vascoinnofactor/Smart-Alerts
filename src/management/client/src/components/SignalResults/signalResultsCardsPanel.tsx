@@ -6,6 +6,7 @@
 
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import CircularProgress from 'react-md/lib/Progress/CircularProgress';
 
 import Card from '../Card';
 
@@ -16,7 +17,6 @@ import ChartMetadata from '../../models/ChartMetadata';
 import { SignalResultPropertyUtils } from '../../utils/SignalResultPropertyUtils';
 
 import './indexStyle.css';
-import { DataSource } from '../../enums/DataSource';
 
 /**
  * Represents the SignalResultsCardsPanel component props for the incoming properties 
@@ -45,7 +45,7 @@ export default class SignalResultsCardsPanel extends React.Component<SignalResul
 
     private getInsightsCards(): JSX.Element[] {
         if (!this.props.signalResults || this.props.signalResults.length === 0) {
-            return Element[0];
+            return [(<CircularProgress id="signal-results-cards"/>)];
         }
 
         return this.props.signalResults.map((signalResult, index) => {
@@ -57,10 +57,9 @@ export default class SignalResultsCardsPanel extends React.Component<SignalResul
                 cardChartMetadata = ChartMetadataUtils
                                     .createChartMetadata(cardChartId,
                                                          signalResult.summary.chart.value,
-                                                         '2fee53af-477f-4e55-b1db-32ddbfdbe33c',
+                                                         signalResult.queryRunInfo,
                                                          SignalResultPropertyUtils
-                                                            .getChartTypeFromProperty(signalResult.summary.chart),
-                                                         DataSource.ApplicationInsights);
+                                                            .getChartTypeFromProperty(signalResult.summary.chart));
 
             }
 

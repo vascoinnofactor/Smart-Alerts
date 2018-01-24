@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------
 
 import * as React from 'react';
-import { PieChart, Pie, ResponsiveContainer, Cell } from 'recharts';
+import { PieChart, Pie, ResponsiveContainer } from 'recharts';
 
 import Visualization, { VisualizationProps } from '../VisualizationBase';
 import PieChartData from '../../../models/Charts/PieChartData';
@@ -22,16 +22,16 @@ export default class PieData extends Visualization<PieProps> {
         const { chartData, hideLegend } = this.props;
 
         return (
-            <ResponsiveContainer>
+            <ResponsiveContainer height={this.props.height}>
                 <PieChart>
                     <Pie 
                         data={chartData.data} 
-                        dataKey={chartData.numericFields[0]} 
+                        dataKey={chartData.numericDataKeys[0]} 
                         fill="#bd84d8" 
                         label={!hideLegend} 
                     >
-                        {chartData.data.map((entry, index) => 
-                            <Cell key={index} />)}
+                        {/* {chartData.data.map((entry, index) => 
+                            <Cell key={index} />)} */}
                     </Pie>
                 </PieChart>
             </ResponsiveContainer>

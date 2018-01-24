@@ -16,6 +16,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
+    using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
     using Newtonsoft.Json;
 
@@ -66,7 +67,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
 
                 return new ListSmartSignalsResultsResponse
                 {
-                    SignalsResults = smartSignalsResults.Take(10).ToList()
+                    SignalsResults = smartSignalsResults.ToList()
                 };
             }
             catch (ApplicationInsightsClientException e)
@@ -76,6 +77,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
             catch (JsonException e)
             {
                 throw new SmartSignalsManagementApiException("Failed to de-serialize signals results items", e, HttpStatusCode.InternalServerError);
+            }
+            catch (StorageException e)
+            {
+                throw new SmartSignalsManagementApiException("Failed to get signals results items from storage", e, HttpStatusCode.InternalServerError);
             }
         }
     }

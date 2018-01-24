@@ -22,16 +22,16 @@ export default class AuthenticateRoute extends React.Component<AuthenticateRoute
         // tslint:disable-next-line:no-any
         const render = (renderProps: RouteComponentProps<any>) => {
             let element = (
-            <Redirect
-                to={{
-                pathname: this.props.authenticatePath,
-                state: { from: renderProps.location }
-                }}
-            />
+                <Redirect
+                    to={{
+                    pathname: this.props.authenticatePath,
+                    state: { from: renderProps.location }
+                    }}
+                />
             );
         
             if (this.props.isAuthenticated) {
-            element = <Component {...renderProps} />;
+                element = <Component {...renderProps} />;
             }
         
             return element;

@@ -8,6 +8,7 @@ import { Moment } from 'moment';
 
 import SignalResultSummaryProperty from './SignalResultSummaryProperty';
 import SignalResultProperty from './SignalResultProperty';
+import QueryRunInfo from './QueryRunInfo';
 
 /**
  * This model represents the signal result entity
@@ -67,4 +68,9 @@ export default interface SignalResult {
      * Gets the raw signal result properties
      */
     rawProperties: Map<string, string>;
+
+    /**
+     * Gets the signal result queries run info
+     */
+    queryRunInfo: QueryRunInfo;
 }

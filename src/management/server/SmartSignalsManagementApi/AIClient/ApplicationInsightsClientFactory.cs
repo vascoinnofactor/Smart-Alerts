@@ -20,12 +20,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
         public IApplicationInsightsClient GetApplicationInsightsClient()
         {
             string applicationId = ConfigurationReader.ReadConfig("TelemetryApplicationId", required: true);
-            string applicationKey = ConfigurationReader.ReadConfig("TelemetryApplicationKey", required: false);
-
-            if (!string.IsNullOrWhiteSpace(applicationKey))
-            {
-                return new ApplicationInsightsClient(applicationId, applicationKey);
-            }
 
             return new ApplicationInsightsClient(applicationId);
         }

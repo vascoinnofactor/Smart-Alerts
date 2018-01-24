@@ -22,7 +22,7 @@ import PieChartData from '../models/Charts/PieChartData';
 export default class VisualizationsFactory {
     public static create(chartType: ChartType, data: DataTable,
                          className?: string, hideXAxis?: boolean, hideYAxis?: boolean,
-                         hideLegend?: boolean): JSX.Element {     
+                         hideLegend?: boolean, height?: number): JSX.Element {     
         switch (chartType) {
             case ChartType.Timeline:
                 return (
@@ -32,6 +32,7 @@ export default class VisualizationsFactory {
                                 hideXAxis={hideXAxis} 
                                 hideYAxis={hideYAxis}
                                 hideLegend={hideLegend} 
+                                height={height}
                             />
                         );
             case ChartType.Bars:
@@ -42,6 +43,7 @@ export default class VisualizationsFactory {
                                 hideXAxis={hideXAxis} 
                                 hideYAxis={hideYAxis}
                                 hideLegend={hideLegend} 
+                                height={height}
                             />
                         );
             case ChartType.Pie:
@@ -52,6 +54,7 @@ export default class VisualizationsFactory {
                                 hideXAxis={hideXAxis} 
                                 hideYAxis={hideYAxis}
                                 hideLegend={hideLegend}
+                                height={height}
                             />  
                         );
             default:

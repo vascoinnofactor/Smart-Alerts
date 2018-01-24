@@ -59,7 +59,7 @@ class Login extends React.Component<LoginProps> {
         this.activeDirectoryAuthenticator.handleCallback();
         
         if (!this.activeDirectoryAuthenticator.isAuthenticated) {
-          this.activeDirectoryAuthenticator.login();
+            this.activeDirectoryAuthenticator.login();
         } else {
             this.props.loginSuccessed(this.activeDirectoryAuthenticator.userInfo);
         }

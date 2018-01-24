@@ -15,6 +15,7 @@ export interface VisualizationProps {
     hideXAxis?: boolean;
     hideYAxis?: boolean;
     hideLegend?: boolean;
+    height?: number;
 }
 
 /**

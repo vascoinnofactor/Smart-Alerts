@@ -14,6 +14,7 @@ namespace ManagementApiTests.AIClient
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient;
+    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -79,7 +80,7 @@ namespace ManagementApiTests.AIClient
 
             // Verify the executed url was the correct one
             Assert.AreEqual(
-                   $"https://api.applicationinsights.io/v1/apps/someApplicationId/events/customEvents?$filter=customEvent/name eq '{EventName}' AND timestamp ge {queryStartTime}", 
+                   $"https://api.applicationinsights.io/v1/apps/someApplicationId/events/customEvents?$filter=customEvent/name eq '{EventName}' and timestamp ge {queryStartTime.ToQueryTimeFormat()}", 
                    requestMessage.RequestUri.ToString());
         }
 
@@ -106,7 +107,7 @@ namespace ManagementApiTests.AIClient
 
             // Verify the executed url was the correct one
             Assert.AreEqual(
-                   $"https://api.applicationinsights.io/v1/apps/someApplicationId/events/customEvents?$filter=customEvent/name eq '{EventName}' AND timestamp ge {queryStartTime} AND timestamp le {queryEndTime}",
+                   $"https://api.applicationinsights.io/v1/apps/someApplicationId/events/customEvents?$filter=customEvent/name eq '{EventName}' and timestamp ge {queryStartTime.ToQueryTimeFormat()} and timestamp le {queryEndTime.ToQueryTimeFormat()}",
                    requestMessage.RequestUri.ToString());
         }
 

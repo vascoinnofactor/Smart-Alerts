@@ -24,7 +24,7 @@ interface QueryResult {
 
     // As Application Insights/OMS response is dynamic, we must use 'any'
     // tslint:disable-next-line:no-any
-    rows: any[][];
+    rows: any[][][];
 }
 
 export {

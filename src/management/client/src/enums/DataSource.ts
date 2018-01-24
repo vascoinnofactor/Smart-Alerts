@@ -9,12 +9,12 @@
  */
 export enum DataSource {
     /**
-     * Indicates the data source is in Application Insights
-     */
-    ApplicationInsights = 0,
-
-    /**
      * Indicates the data source type is in Log Analytics
      */
-    LogAnalytics = 1,
+    LogAnalytics = 0,
+
+    /**
+     * Indicates the data source is in Application Insights
+     */
+    ApplicationInsights = 1,
 }

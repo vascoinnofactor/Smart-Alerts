@@ -20,14 +20,15 @@ import DataTable from '../../models/DataTable';
 import { getQueryResult } from '../../actions/queryResult/queryResultActions';
 
 import './indexStyle.css';
-import { DataSource } from '../../enums/DataSource';
+import QueryRunInfo from '../../models/QueryRunInfo';
+import CircularProgress from 'react-md/lib/Progress/CircularProgress';
 
 /**
  * Represents the Card component props for the dispatch functions
  */
 interface CardDispatchProps {
-    executeQuery: (queryId: string, applicationId: string, query: string, dataSource: DataSource) =>
-                  (dispatch: Dispatch<StoreState>) => Promise<void>;
+    executeQuery: (queryId: string, query: string, queryRunInfo: QueryRunInfo) =>
+                  (dispatch: Dispatch<StoreState>, getState: () => StoreState) => Promise<void>;
 }
 
 /**
@@ -71,9 +72,8 @@ class Card extends React.Component<CardProps> {
     public async componentDidMount() {
         if (this.props.chartMetadata) {
             await this.props.executeQuery(this.props.chartMetadata.id,
-                                          this.props.chartMetadata.applicationId,
                                           this.props.chartMetadata.query,
-                                          this.props.chartMetadata.dataSource);
+                                          this.props.chartMetadata.queryRunInfo);
         }
     }
 
@@ -107,6 +107,10 @@ class Card extends React.Component<CardProps> {
                             </div>
                             <div className="chart-container">
                                 {
+                                    !this.props.chartData &&
+                                    <CircularProgress id={'loading-chart' + this.props.chartType}/>   
+                                }
+                                {
                                     this.props.chartData && this.props.chartType &&
                                     VisualizationFactory.create(this.props.chartType, this.props.chartData,
                                                                 undefined, this.props.hideXAxis, this.props.hideYAxis,
@@ -137,6 +141,7 @@ class Card extends React.Component<CardProps> {
  */
 function mapStateToProps(state: StoreState, ownProps: CardOwnProps): CardStateProps {
     let chartData: DataTable | undefined;
+
     // Get the chart data only if this card has chart
     if (ownProps.chartMetadata && state.queryResults) {
         let queryResult = state.queryResults.get(ownProps.chartMetadata.id);

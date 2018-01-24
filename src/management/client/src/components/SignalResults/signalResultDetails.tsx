@@ -21,7 +21,7 @@ import DataTable from '../../models/DataTable';
 import ChartMetadata from '../../models/ChartMetadata';
 import VisualizationFactory from '../../factories/VisualizationsFactory';
 import { getQueryResult } from '../../actions/queryResult/queryResultActions';
-import { DataSource } from '../../enums/DataSource';
+import QueryRunInfo from '../../models/QueryRunInfo';
 
 import './signalResultDetailsStyle.css';
 
@@ -29,8 +29,8 @@ import './signalResultDetailsStyle.css';
  * Represents the SignalResultDetails component props for the dispatch functions
  */
 interface SignalResultDetailsDispatchProps {
-    executeQuery: (queryId: string, applicationId: string, query: string, dataSource: DataSource) =>
-                  (dispatch: Dispatch<StoreState>) => Promise<void>;
+    executeQuery: (queryId: string, query: string, queryRunInfo: QueryRunInfo) =>
+                  (dispatch: Dispatch<StoreState>, getState: () => StoreState) => Promise<void>;
 }
 
 /**
@@ -64,14 +64,24 @@ class SignalResultDetails extends React.Component<SignalResultDetailsProps> {
         this.getChartsElements = this.getChartsElements.bind(this);
     }
 
+    public componentDidMount() {
+        // TODO - merge with componentwillRecieveProps
+        this.props.chartsMetadata.forEach(async chart => {
+            if (!this.props.chartsData.has(chart.id)) {
+                await this.props.executeQuery(chart.id,
+                                              chart.query,
+                                              chart.queryRunInfo);
+            }
+        });
+    }
+
     public componentWillReceiveProps(nextProps: Readonly<SignalResultDetailsProps>) {
         if (nextProps.location.pathname !== this.props.location.pathname) {
             nextProps.chartsMetadata.forEach(async chart => {
                 if (!this.props.chartsData.has(chart.id)) {
                     await this.props.executeQuery(chart.id,
-                                                  chart.applicationId,
                                                   chart.query,
-                                                  chart.dataSource);
+                                                  chart.queryRunInfo);
                 }
             });
         }
@@ -153,6 +163,12 @@ class SignalResultDetails extends React.Component<SignalResultDetailsProps> {
                 <Grid fluid className="analysis-additional-properties-section">
                     {this.customAnalysisProperties(this.props.signalResult)}
                 </Grid>
+
+                <Grid fluid className="gridStyle">
+                    <Row className="section-title">
+                            NEED SOME HELP?
+                    </Row>
+                </Grid>
             </div>
         );
     }
@@ -171,14 +187,21 @@ class SignalResultDetails extends React.Component<SignalResultDetailsProps> {
                 presentedValue = (
                     <LinearProgress 
                         id={chartMetadata.id} 
+                        key={chartMetadata.id}
                         className="linear-progress-container"
                         progressClassName="linear-progress" 
                     />   
                 );
+            } else if (chartData.data.length === 0) {
+                presentedValue = (<div/>);
             } else {
                 presentedValue = VisualizationFactory.create(chartMetadata.chartType,
                                                              chartData,
-                                                             'analysis-chart');
+                                                             'analysis-chart',
+                                                             undefined,
+                                                             undefined,
+                                                             undefined,
+                                                             300);
             }
 
             return presentedValue;
@@ -200,10 +223,10 @@ class SignalResultDetails extends React.Component<SignalResultDetailsProps> {
                     {
                         signalResultProperties.map((property, index) => (
                             <Row className="property-row">
-                                <Col xs={2}>
+                                <Col xs={4}>
                                     {property.name}
                                 </Col>
-                                <Col xs={10}>
+                                <Col xs={8}>
                                     {property.value}
                                 </Col>
                             </Row>

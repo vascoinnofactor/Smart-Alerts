@@ -23,14 +23,14 @@ export default class Timeline extends Visualization<TimelineProps> {
         const { timelineChart } = this.props;
 
         return (
-            <ResponsiveContainer>
+            <ResponsiveContainer height={this.props.height}>
                 <LineChart 
                            data={timelineChart.data} 
                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }} 
                            className={this.props.className}
                 >
                     <XAxis 
-                        dataKey={timelineChart.timestampColumnName} 
+                        dataKey={timelineChart.timestampDataKey} 
                         tickFormatter={this.hourFormat} 
                         minTickGap={20} 
                         hide={this.props.hideXAxis}
@@ -59,8 +59,8 @@ export default class Timeline extends Visualization<TimelineProps> {
      */
     private createLineElements(timelineChartData: TimelineChart): JSX.Element[] {
         var lineElements: JSX.Element[] = [];
-        if (timelineChartData.numericFields && timelineChartData.numericFields.length > 0) {
-          lineElements = timelineChartData.numericFields.map((line, idx) => {
+        if (timelineChartData.numericDataKeys && timelineChartData.numericDataKeys.length > 0) {
+          lineElements = timelineChartData.numericDataKeys.map((line, idx) => {
             return (
               <Line
                 stroke="#ff7300"
