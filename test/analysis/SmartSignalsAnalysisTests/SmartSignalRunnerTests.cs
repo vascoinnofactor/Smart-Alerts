@@ -163,7 +163,7 @@ namespace SmartSignalsAnalysisTests
 
             this.smartSignalsRepositoryMock = new Mock<ISmartSignalRepository>();
             this.smartSignalsRepositoryMock
-                .Setup(x => x.ReadSignalPackageAsync(It.IsAny<string>()))
+                .Setup(x => x.ReadSignalPackageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => this.smartSignalPackage);
 
             this.analysisServicesFactoryMock = new Mock<IAnalysisServicesFactory>();

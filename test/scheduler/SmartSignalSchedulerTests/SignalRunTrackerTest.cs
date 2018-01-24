@@ -9,6 +9,7 @@ namespace SmartSignalSchedulerTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
@@ -50,11 +51,13 @@ namespace SmartSignalSchedulerTests
                 CurrentExecutionTime = DateTime.UtcNow.AddMinutes(-1)
             };
             await this.signalRunsTracker.UpdateSignalRunAsync(signalExecution);
-            this.tableMock.Verify(m => m.ExecuteAsync(It.Is<TableOperation>(operation =>
-                operation.OperationType == TableOperationType.InsertOrReplace &&
-                operation.Entity.RowKey.Equals(signalExecution.RuleId) && 
-                ((TrackSignalRunEntity)operation.Entity).SignalId.Equals(signalExecution.SignalId) &&
-                ((TrackSignalRunEntity)operation.Entity).LastSuccessfulExecutionTime.Equals(signalExecution.CurrentExecutionTime))));
+            this.tableMock.Verify(m => m.ExecuteAsync(
+                It.Is<TableOperation>(operation =>
+                    operation.OperationType == TableOperationType.InsertOrReplace &&
+                    operation.Entity.RowKey.Equals(signalExecution.RuleId) &&
+                    ((TrackSignalRunEntity)operation.Entity).SignalId.Equals(signalExecution.SignalId) &&
+                    ((TrackSignalRunEntity)operation.Entity).LastSuccessfulExecutionTime.Equals(signalExecution.CurrentExecutionTime)),
+                It.IsAny<CancellationToken>()));
         }
 
         [TestMethod]

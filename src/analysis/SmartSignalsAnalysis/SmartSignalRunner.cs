@@ -69,7 +69,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         {
             // Read the signal's package
             this.tracer.TraceInformation($"Loading signal package for signal ID {request.SignalId}");
-            SmartSignalPackage signalPackage = await this.smartSignalRepository.ReadSignalPackageAsync(request.SignalId);
+            SmartSignalPackage signalPackage = await this.smartSignalRepository.ReadSignalPackageAsync(request.SignalId, cancellationToken);
             SmartSignalManifest signalManifest = signalPackage.Manifest;
             this.tracer.TraceInformation($"Read signal package, ID {signalManifest.Id}, Version {signalManifest.Version}");
 

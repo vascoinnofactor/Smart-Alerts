@@ -8,6 +8,7 @@ namespace ManagementApiTests.EndpointsLogic
 {
     using System;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
@@ -44,11 +45,10 @@ namespace ManagementApiTests.EndpointsLogic
                 Schedule = "0 0 */1 * *"
             };
 
-            this.alertRuleStoreMock.Setup(s => s.AddOrReplaceAlertRuleAsync(It.IsAny<AlertRule>()))
-                                                  .Returns(Task.CompletedTask);
+            this.alertRuleStoreMock.Setup(s => s.AddOrReplaceAlertRuleAsync(It.IsAny<AlertRule>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             // This shouldn't throw any exception
-            await this.alertRuleApi.AddAlertRuleAsync(addSignalModel);
+            await this.alertRuleApi.AddAlertRuleAsync(addSignalModel, CancellationToken.None);
         }
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace ManagementApiTests.EndpointsLogic
 
             try
             {
-                await this.alertRuleApi.AddAlertRuleAsync(addSignalModel);
+                await this.alertRuleApi.AddAlertRuleAsync(addSignalModel, CancellationToken.None);
             }
             catch (SmartSignalsManagementApiException e)
             {
@@ -86,7 +86,7 @@ namespace ManagementApiTests.EndpointsLogic
 
             try
             {
-                await this.alertRuleApi.AddAlertRuleAsync(addSignalModel);
+                await this.alertRuleApi.AddAlertRuleAsync(addSignalModel, CancellationToken.None);
             }
             catch (SmartSignalsManagementApiException e)
             {
@@ -109,7 +109,7 @@ namespace ManagementApiTests.EndpointsLogic
 
             try
             {
-                await this.alertRuleApi.AddAlertRuleAsync(addSignalModel);
+                await this.alertRuleApi.AddAlertRuleAsync(addSignalModel, CancellationToken.None);
             }
             catch (SmartSignalsManagementApiException e)
             {
@@ -130,12 +130,12 @@ namespace ManagementApiTests.EndpointsLogic
                 Schedule = "0 0 */1 * *"
             };
 
-            this.alertRuleStoreMock.Setup(s => s.AddOrReplaceAlertRuleAsync(It.IsAny<AlertRule>()))
+            this.alertRuleStoreMock.Setup(s => s.AddOrReplaceAlertRuleAsync(It.IsAny<AlertRule>(), It.IsAny<CancellationToken>()))
                                                   .ThrowsAsync(new AlertRuleStoreException(string.Empty, new Exception()));
 
             try
             {
-                await this.alertRuleApi.AddAlertRuleAsync(addSignalModel);
+                await this.alertRuleApi.AddAlertRuleAsync(addSignalModel, CancellationToken.None);
             }
             catch (SmartSignalsManagementApiException e)
             {

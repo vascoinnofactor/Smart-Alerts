@@ -7,6 +7,7 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -24,7 +25,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
         /// Adds or updates an alert rule in the store.
         /// </summary>
         /// <param name="alertRule">The alert rule to add to the store.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
-        Task AddOrReplaceAlertRuleAsync(AlertRule alertRule);
+        Task AddOrReplaceAlertRuleAsync(AlertRule alertRule, CancellationToken cancellationToken);
     }
 }

@@ -9,6 +9,7 @@ namespace ManagementApiTests.EndpointsLogic
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
@@ -39,13 +40,13 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenGettingAllSignalsHappyFlow()
         {
-            this.smartSignalsRepository.Setup(repository => repository.ReadAllSignalsManifestsAsync())
+            this.smartSignalsRepository.Setup(repository => repository.ReadAllSignalsManifestsAsync(It.IsAny<CancellationToken>()))
                                        .ReturnsAsync(() => new List<SmartSignalManifest>()
                 {
                     new SmartSignalManifest("someId", "someName", "someDescription", Version.Parse("1.0"), "someAssemblyName", "someClassName", new List<ResourceType> { ResourceType.ResourceGroup }, new List<int> { 60 })
                 });
 
-            ListSmartSignalsResponse response = await this.signalsLogic.GetAllSmartSignalsAsync();
+            ListSmartSignalsResponse response = await this.signalsLogic.GetAllSmartSignalsAsync(CancellationToken.None);
 
             Assert.AreEqual(1, response.Signals.Count);
             Assert.AreEqual("someId", response.Signals.First().Id);
@@ -55,12 +56,12 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenGettingAllSignalsButSignalsRepositoryThrowsExceptionThenThrowsWrappedException()
         {
-            this.smartSignalsRepository.Setup(repository => repository.ReadAllSignalsManifestsAsync())
+            this.smartSignalsRepository.Setup(repository => repository.ReadAllSignalsManifestsAsync(It.IsAny<CancellationToken>()))
                                        .ThrowsAsync(new AlertRuleStoreException("some message", new Exception()));
 
             try
             {
-                await this.signalsLogic.GetAllSmartSignalsAsync();
+                await this.signalsLogic.GetAllSmartSignalsAsync(CancellationToken.None);
             }
             catch (SmartSignalsManagementApiException)
             {

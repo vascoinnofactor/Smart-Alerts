@@ -73,6 +73,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, this.analysisUrl);
             string requestBody = JsonConvert.SerializeObject(analysisRequest);
             requestMessage.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+            requestMessage.Headers.Add("x-functions-key", ConfigurationReader.ReadConfigConnectionString("AnalyzeFunctionKey", true));
+
             this.tracer.TraceVerbose($"Sending analysis request {requestBody}");
 
             // Send the request

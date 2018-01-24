@@ -6,6 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
 
@@ -19,7 +20,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         /// </summary>
         /// <returns>A task represents this operation.</returns>
         /// <param name="addAlertRule">The model that contains all the require parameters for adding alert rule.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SmartSignalsManagementApiException">This exception is thrown when we failed to add the alert rule.</exception>
-        Task AddAlertRuleAsync(AddAlertRule addAlertRule);
+        Task AddAlertRuleAsync(AddAlertRule addAlertRule, CancellationToken cancellationToken);
     }
 }

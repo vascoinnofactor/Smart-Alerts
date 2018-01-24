@@ -46,6 +46,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// <summary>
         /// Runs the analysis flow for the requested signal.
         /// </summary>
+        /// <remarks>
+        /// Right now the authorization requires function key, once we move to scheduler outside the SiRA we will need to change to AAD authorization. 
+        /// </remarks>
         /// <param name="request">The request which initiated the analysis.</param>
         /// <param name="log">The Azure Function log writer.</param>
         /// <param name="context">The function's execution context.</param>
@@ -53,7 +56,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// <returns>The analysis response.</returns>
         [FunctionName("Analyze")]
         public static async Task<HttpResponseMessage> RunAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post")]HttpRequestMessage request,
+            [HttpTrigger(AuthorizationLevel.Function, "post")]HttpRequestMessage request,
             TraceWriter log,
             ExecutionContext context,
             CancellationToken cancellationToken)

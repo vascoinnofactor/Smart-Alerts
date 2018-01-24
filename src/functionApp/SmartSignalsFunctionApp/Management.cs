@@ -12,12 +12,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Azure.WebJobs.Host;
@@ -39,9 +39,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
             ServicePointManager.DefaultConnectionLimit = 100;
             ThreadPool.SetMinThreads(100, 100);
 
-            Container = new UnityContainer()
-                .RegisterType<ICloudStorageProviderFactory, CloudStorageProviderFactory>()
-                .RegisterType<ISmartSignalRepository, SmartSignalRepository>()
+            Container = DependenciesInjector.GetContainer()
+                .RegisterType<IAuthorizationManagementClient, AuthorizationManagementClient>()
                 .RegisterType<ISignalApi, SignalApi>()
                 .RegisterType<IAlertRuleApi, AlertRuleApi>()
                 .RegisterType<ISignalResultApi, SignalResultApi>();
@@ -52,17 +51,26 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// </summary>
         /// <param name="req">The incoming request.</param>
         /// <param name="log">The logger.</param>
+        /// <param name="cancellationToken">A cancellation token to control the function's execution.</param>
         /// <returns>The signal results.</returns>
         [FunctionName("signalResult")]
-        public static async Task<HttpResponseMessage> GetAllSmartSignalResults([HttpTrigger(AuthorizationLevel.Anonymous, "get")]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> GetAllSmartSignalResults([HttpTrigger(AuthorizationLevel.Anonymous, "get")]HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {
                 ITracer tracer = childContainer.Resolve<ITracer>();
-                var signalResultApi = childContainer.Resolve<SignalResultApi>();
+                var signalResultApi = childContainer.Resolve<ISignalResultApi>();
+                var authorizationManagementClient = childContainer.Resolve<IAuthorizationManagementClient>();
 
                 try
                 {
+                    // Check authorization
+                    bool isAuthorized = await authorizationManagementClient.IsAuthorizedAsync(req, cancellationToken);
+                    if (!isAuthorized)
+                    {
+                        return req.CreateErrorResponse(HttpStatusCode.Forbidden, "The client is not authorized to perform this action");
+                    }
+
                     // Extract the url parameters
                     NameValueCollection queryParameters = req.RequestUri.ParseQueryString();
 
@@ -78,7 +86,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                         return req.CreateErrorResponse(HttpStatusCode.BadRequest, "Given end time is not in valid format");
                     }
 
-                    ListSmartSignalsResultsResponse smartSignalsResultsResponse = await signalResultApi.GetAllSmartSignalResultsAsync(startTime, endTime, CancellationToken.None);
+                    ListSmartSignalsResultsResponse smartSignalsResultsResponse = await signalResultApi.GetAllSmartSignalResultsAsync(startTime, endTime, cancellationToken);
 
                     return req.CreateResponse(smartSignalsResultsResponse);
                 }
@@ -102,18 +110,27 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// </summary>
         /// <param name="req">The incoming request.</param>
         /// <param name="log">The logger.</param>
+        /// <param name="cancellationToken">A cancellation token to control the function's execution.</param>
         /// <returns>The smart signals encoded as JSON.</returns>
         [FunctionName("signal")]
-        public static async Task<HttpResponseMessage> GetAllSmartSignals([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> GetAllSmartSignals([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {
                 ITracer tracer = childContainer.Resolve<ITracer>();
-                var signalApi = childContainer.Resolve<SignalApi>();
+                var signalApi = childContainer.Resolve<ISignalApi>();
+                var authorizationManagementClient = childContainer.Resolve<IAuthorizationManagementClient>();
 
                 try
                 {
-                    ListSmartSignalsResponse smartSignals = await signalApi.GetAllSmartSignalsAsync();
+                    // Check authorization
+                    bool isAuthorized = await authorizationManagementClient.IsAuthorizedAsync(req, cancellationToken);
+                    if (!isAuthorized)
+                    {
+                        return req.CreateErrorResponse(HttpStatusCode.Forbidden, "The client is not authorized to perform this action");
+                    }
+
+                    ListSmartSignalsResponse smartSignals = await signalApi.GetAllSmartSignalsAsync(cancellationToken);
 
                     return req.CreateResponse(smartSignals);
                 }
@@ -137,21 +154,30 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// </summary>
         /// <param name="req">The incoming request.</param>
         /// <param name="log">The logger.</param>
+        /// <param name="cancellationToken">A cancellation token to control the function's execution.</param>
         /// <returns>200 if request was successful, 500 if not.</returns>
         [FunctionName("alertRule")]
-        public static async Task<HttpResponseMessage> AddAlertRule([HttpTrigger(AuthorizationLevel.Function, "put")] HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> AddAlertRule([HttpTrigger(AuthorizationLevel.Anonymous, "put")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {
                 ITracer tracer = childContainer.Resolve<ITracer>();
-                var alertRuleApi = childContainer.Resolve<AlertRuleApi>();
+                var alertRuleApi = childContainer.Resolve<IAlertRuleApi>();
+                var authorizationManagementClient = childContainer.Resolve<IAuthorizationManagementClient>();
 
                 // Read given parameters from body
                 var addAlertRule = await req.Content.ReadAsAsync<AddAlertRule>();
 
                 try
                 {
-                    await alertRuleApi.AddAlertRuleAsync(addAlertRule);
+                    // Check authorization
+                    bool isAuthorized = await authorizationManagementClient.IsAuthorizedAsync(req, cancellationToken);
+                    if (!isAuthorized)
+                    {
+                        return req.CreateErrorResponse(HttpStatusCode.Forbidden, "The client is not authorized to perform this action");
+                    }
+
+                    await alertRuleApi.AddAlertRuleAsync(addAlertRule, cancellationToken);
 
                     return req.CreateResponse(HttpStatusCode.OK);
                 }

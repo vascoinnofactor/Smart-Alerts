@@ -8,6 +8,7 @@ namespace SmartSignalSchedulerTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
@@ -44,7 +45,7 @@ namespace SmartSignalSchedulerTests
         {
             await this.publisher.PublishSignalResultItemsAsync("signalId", new List<SmartSignalResultItemPresentation>());
 
-            this.containerMock.Verify(m => m.UploadBlobAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            this.containerMock.Verify(m => m.UploadBlobAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
             this.tracerMock.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Never);
         }
 
@@ -56,7 +57,7 @@ namespace SmartSignalSchedulerTests
             var signalId = "signalId";
             var todayString = DateTime.UtcNow.ToString("yyyy-MM-dd");
             var blobName = $"{signalId}/{todayString}/id1";
-            this.containerMock.Setup(m => m.UploadBlobAsync(blobName, It.IsAny<string>())).Throws(new StorageException());
+            this.containerMock.Setup(m => m.UploadBlobAsync(blobName, It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws(new StorageException());
 
             var resultItems = new List<SmartSignalResultItemPresentation>
             {
@@ -83,8 +84,8 @@ namespace SmartSignalSchedulerTests
             var blobUri2 = new Uri($"https://storage.blob.core.windows.net/result/{blobName2}");
             blobMock2.Setup(m => m.Uri).Returns(blobUri2);
 
-            this.containerMock.Setup(m => m.UploadBlobAsync(blobName1, It.IsAny<string>())).ReturnsAsync(blobMock1.Object);
-            this.containerMock.Setup(m => m.UploadBlobAsync(blobName2, It.IsAny<string>())).ReturnsAsync(blobMock2.Object);
+            this.containerMock.Setup(m => m.UploadBlobAsync(blobName1, It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(blobMock1.Object);
+            this.containerMock.Setup(m => m.UploadBlobAsync(blobName2, It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(blobMock2.Object);
 
             var resultItems = new List<SmartSignalResultItemPresentation>
             {

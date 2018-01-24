@@ -9,6 +9,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
@@ -99,7 +100,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker
                 SignalId = signalExecutionInfo.SignalId,
                 LastSuccessfulExecutionTime = signalExecutionInfo.CurrentExecutionTime
             });
-            await this.trackingTable.ExecuteAsync(operation);
+            await this.trackingTable.ExecuteAsync(operation, CancellationToken.None);
         }
     }
 }

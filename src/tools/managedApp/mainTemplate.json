@@ -36,6 +36,7 @@
     "storageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
     "resourceGroupName": "[resourceGroup().name]",
     "functionBaseUrl": "[concat('https://', variables('functionsAppName'), '.azurewebsites.net')]",
+    "analyzeFunctionName": "Analyze",
     "packageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignals.zip"
   },
   "resources": [
@@ -169,6 +170,10 @@
           "properties": {
             "StorageConnectionString": {
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'),'2015-05-01-preview').key1)]",
+              "type": "Custom"
+            },
+            "AnalyzeFunctionKey": {
+              "value": "[listSecrets(resourceId('Microsoft.Web/sites/functions', variables('functionsAppName'), variables('analyzeFunctionName')),'2015-08-01').key]",
               "type": "Custom"
             }
           }

@@ -10,6 +10,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
@@ -38,13 +39,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         /// <summary>
         /// List all the smart signals.
         /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The smart signals.</returns>
         /// <exception cref="SmartSignalsManagementApiException">This exception is thrown when we failed to retrieve smart signals.</exception>
-        public async Task<ListSmartSignalsResponse> GetAllSmartSignalsAsync()
+        public async Task<ListSmartSignalsResponse> GetAllSmartSignalsAsync(CancellationToken cancellationToken)
         {
             try
             {
-                IList<SmartSignalManifest> smartSignalManifests = await this.smartSignalsRepository.ReadAllSignalsManifestsAsync();
+                IList<SmartSignalManifest> smartSignalManifests = await this.smartSignalsRepository.ReadAllSignalsManifestsAsync(cancellationToken);
 
                 // Convert smart signals to the required response
                 var signals = smartSignalManifests.Select(manifest => new Signal

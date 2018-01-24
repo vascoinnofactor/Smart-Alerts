@@ -10,6 +10,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
@@ -43,15 +44,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
         /// Reads all the smart signals manifests from the repository.
         /// For each signal we return the latest version's manifest.
         /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task{TResult}"/> returning the smart signals manifests</returns>
-        public async Task<IList<SmartSignalManifest>> ReadAllSignalsManifestsAsync()
+        public async Task<IList<SmartSignalManifest>> ReadAllSignalsManifestsAsync(CancellationToken cancellationToken)
         {
             // We don't want to open the signal packages to get the manifest so we read it from the blob's metadata
             this.tracer.TraceInformation("Getting all smart signals manifests from the blob metadata");
             try
             {
                 var allSignalsManifests = new List<SmartSignalManifest>();
-                IEnumerable<CloudBlob> blobs = (await this.containerClient.ListBlobsAsync(string.Empty, true, BlobListingDetails.Metadata)).Cast<CloudBlob>().Where(blob => blob.Metadata.ContainsKey("id"));
+                IEnumerable<CloudBlob> blobs = (await this.containerClient.ListBlobsAsync(string.Empty, true, BlobListingDetails.Metadata, cancellationToken)).Cast<CloudBlob>().Where(blob => blob.Metadata.ContainsKey("id"));
 
                 ILookup<string, CloudBlob> signalIdToAllVersionsLookup = blobs.ToLookup(blob => blob.Metadata["id"], blob => blob);
                 foreach (IGrouping<string, CloudBlob> signalVersionsGroup in signalIdToAllVersionsLookup)
@@ -85,19 +87,20 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
         /// Reads a smart signal's package from the repository
         /// </summary>
         /// <param name="signalId">The signal's ID</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task{TResult}"/> returning the signal package</returns>
-        public async Task<SmartSignalPackage> ReadSignalPackageAsync(string signalId)
+        public async Task<SmartSignalPackage> ReadSignalPackageAsync(string signalId, CancellationToken cancellationToken)
         {
             this.tracer.TraceInformation($"Getting smart signal {signalId} package");
             try
             {
-                CloudBlob latestVersionSignalBlob = await this.GetLatestSignalBlobVersionAsync(signalId);
+                CloudBlob latestVersionSignalBlob = await this.GetLatestSignalBlobVersionAsync(signalId, cancellationToken);
                 this.tracer.TraceInformation($"Last version signal BLOB is {latestVersionSignalBlob.Name}");
 
                 using (var blobMemoryStream = new MemoryStream())
                 {
                     // Download the blob to a stream and generate the signal package from it
-                    await latestVersionSignalBlob.DownloadToStreamAsync(blobMemoryStream);
+                    await latestVersionSignalBlob.DownloadToStreamAsync(blobMemoryStream, cancellationToken);
                     return SmartSignalPackage.CreateFromStream(blobMemoryStream, this.tracer);
                 }
             }
@@ -111,10 +114,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
         /// Gets the latest signal blob version
         /// </summary>
         /// <param name="signalId">The signal ID</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="CloudBlob"/> representing the signal package blob</returns>
-        private async Task<CloudBlob> GetLatestSignalBlobVersionAsync(string signalId)
+        private async Task<CloudBlob> GetLatestSignalBlobVersionAsync(string signalId, CancellationToken cancellationToken)
         {
-            List<CloudBlob> blobs = (await this.containerClient.ListBlobsAsync($"{signalId}/", true, BlobListingDetails.Metadata)).Cast<CloudBlob>().ToList();
+            List<CloudBlob> blobs = (await this.containerClient.ListBlobsAsync($"{signalId}/", true, BlobListingDetails.Metadata, cancellationToken)).Cast<CloudBlob>().ToList();
             if (!blobs.Any())
             {
                 throw new SmartSignalRepositoryException($"No Signal package exists for signal {signalId}");

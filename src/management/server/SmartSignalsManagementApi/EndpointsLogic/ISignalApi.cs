@@ -6,6 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Responses;
 
@@ -17,8 +18,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         /// <summary>
         /// Gets all the smart signals.
         /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The smart signals.</returns>
         /// <exception cref="SmartSignalsManagementApiException">This exception is thrown when we failed to retrieve smart signals.</exception>
-        Task<ListSmartSignalsResponse> GetAllSmartSignalsAsync();
+        Task<ListSmartSignalsResponse> GetAllSmartSignalsAsync(CancellationToken cancellationToken);
     }
 }
