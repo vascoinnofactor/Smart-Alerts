@@ -13,7 +13,7 @@ import ActiveDirectoryAuthenticator from '../../utils/adal/ActiveDirectoryAuthen
 import StoreState from '../../store/StoreState';
 import { loginSuccessed } from '../../actions/authentication/authenticationActions';
 import User from '../../models/User';
-import ActiveDirectoryAuthenticatorFactory from '../../factories/activeDirectoryAuthenticatorFactory';
+import ActiveDirectoryAuthenticatorFactory from '../../factories/ActiveDirectoryAuthenticatorFactory';
 
 /**
  * Represents the Login component props for the dispatch functions

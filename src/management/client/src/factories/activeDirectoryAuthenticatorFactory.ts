@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="activeDirectoryAuthenticatorFactory.ts" company="Microsoft Corporation">
+// <copyright file="ActiveDirectoryAuthenticatorFactory.ts" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------

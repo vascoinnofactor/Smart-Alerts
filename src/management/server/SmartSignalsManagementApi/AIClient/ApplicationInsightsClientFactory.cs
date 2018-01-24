@@ -6,6 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
 {
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
 
     /// <summary>
@@ -13,6 +14,17 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
     /// </summary>
     public class ApplicationInsightsClientFactory : IApplicationInsightsClientFactory
     {
+        private readonly ICredentialsFactory credentialsFactory;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationInsightsClientFactory"/> class.
+        /// </summary>
+        /// <param name="credentialsFactory">The credentials factory.</param>
+        public ApplicationInsightsClientFactory(ICredentialsFactory credentialsFactory)
+        {
+            this.credentialsFactory = credentialsFactory;
+        }
+
         /// <summary>
         /// Creates a new Application Insights Client instance.
         /// </summary>
@@ -21,7 +33,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
         {
             string applicationId = ConfigurationReader.ReadConfig("TelemetryApplicationId", required: true);
 
-            return new ApplicationInsightsClient(applicationId);
+            return new ApplicationInsightsClient(applicationId, this.credentialsFactory);
         }
     }
 }

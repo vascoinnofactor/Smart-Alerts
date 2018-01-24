@@ -25,7 +25,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     /// </summary>
     public class SignalResultApi : ISignalResultApi
     {
+        /// <summary>
+        /// The event name in the Signal Result store (Application Insights) that contains the signal result
+        /// </summary>
         private const string EventName = "SmartSignalResult";
+
         private readonly IApplicationInsightsClient applicationInsightsClient;
         private readonly ICloudBlobContainerWrapper signalResultStorageContainer;
 
@@ -79,6 +83,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
                 throw new SmartSignalsManagementApiException("Failed to de-serialize signals results items", e, HttpStatusCode.InternalServerError);
             }
             catch (StorageException e)
+            {
+                throw new SmartSignalsManagementApiException("Failed to get signals results items from storage", e, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception e)
             {
                 throw new SmartSignalsManagementApiException("Failed to get signals results items from storage", e, HttpStatusCode.InternalServerError);
             }

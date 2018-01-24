@@ -7,6 +7,7 @@
 import baseUrl from './baseUrl';
 import ApiError from './apiError';
 import ListSmartSignalResultResponse from './models/ListSmartSignalResultResponse';
+import ActiveDirectoryAuthenticatorFactory from '../factories/ActiveDirectoryAuthenticatorFactory';
 
 /**
  * Gets a list of signals results without any flitering
@@ -14,9 +15,19 @@ import ListSmartSignalResultResponse from './models/ListSmartSignalResultRespons
 export async function getSignalsResultsAsync(): Promise<ListSmartSignalResultResponse> {
     const requestUrl = `${baseUrl}/api/signalResult?startTime=1/23/2018 05:04`;
 
-    // Throws TypeError for network error. 
-    // See for details: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-    const response = await fetch(requestUrl);
+    // Get the user AAD token
+    let userAccessToken = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator().accessToken;
+
+    const headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + userAccessToken);
+
+    const requestInit: RequestInit = {
+        headers,
+        method: 'GET',
+        mode: 'cors'
+    };
+
+    const response = await fetch(requestUrl, requestInit);
   
     if (response.ok) {
       return await response.json();

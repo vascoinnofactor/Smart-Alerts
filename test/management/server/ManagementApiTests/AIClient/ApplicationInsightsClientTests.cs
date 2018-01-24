@@ -13,11 +13,13 @@ namespace ManagementApiTests.AIClient
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
+    using SmartSignalsSharedTests;
 
     [TestClass]
     public class ApplicationInsightsClientTests
@@ -26,13 +28,17 @@ namespace ManagementApiTests.AIClient
         private const string EventName = "eventName";
 
         private Mock<IHttpClientWrapper> httpClientMock;
+        private Mock<ICredentialsFactory> credentialsFactoryMock;
         private IApplicationInsightsClient applicationInsightsClient;
 
         [TestInitialize]
         public void Initialize()
         {
             this.httpClientMock = new Mock<IHttpClientWrapper>();
-            this.applicationInsightsClient = new ApplicationInsightsClient(ApplicationId, this.httpClientMock.Object);
+            this.credentialsFactoryMock = new Mock<ICredentialsFactory>();
+            this.credentialsFactoryMock.Setup(cf => cf.Create(It.IsAny<string>())).Returns(new EmptyCredentials());
+
+            this.applicationInsightsClient = new ApplicationInsightsClient(ApplicationId, this.httpClientMock.Object, this.credentialsFactoryMock.Object);
         }
 
         [TestMethod]

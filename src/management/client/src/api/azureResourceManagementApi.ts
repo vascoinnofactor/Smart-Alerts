@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import ActiveDirectoryAuthenticatorFactory from '../factories/activeDirectoryAuthenticatorFactory';
+import ActiveDirectoryAuthenticatorFactory from '../factories/ActiveDirectoryAuthenticatorFactory';
 
 /**
  * Execute a ARM query in order to get the Application Insights application id by a given resource id
@@ -14,7 +14,7 @@ export async function getApplicationId(applicationResourceId: string): Promise<s
         let activeDirectoryAuthenticator = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator();
         
         activeDirectoryAuthenticator.getResourceToken('https://management.core.windows.net/',
-                                                      async (message, token) => {
+                                                      async (message: string, token: string) => {
             // In case failed to get token - stop processing
             if (message) {
                 reject({ message });
@@ -56,7 +56,7 @@ export async function getWorkspaceId(applicationResourceId: string): Promise<str
         let activeDirectoryAuthenticator = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator();
         
         activeDirectoryAuthenticator.getResourceToken('https://management.core.windows.net/',
-                                                      async (message, token) => {
+                                                      async (message: string, token: string) => {
             // In case failed to get token - stop processing
             if (message) {
                 reject({ message });

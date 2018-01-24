@@ -18,7 +18,7 @@ import { executeQuery as executeLogAnalyticsQuery } from '../../api/logAnalytics
 import DataTable from '../../models/DataTable';
 import ActiveDirectoryAuthenticator from '../../utils/adal/ActiveDirectoryAuthenticator';
 import QueryRunInfo from '../../models/QueryRunInfo';
-import ActiveDirectoryAuthenticatorFactory from '../../factories/activeDirectoryAuthenticatorFactory';
+import ActiveDirectoryAuthenticatorFactory from '../../factories/ActiveDirectoryAuthenticatorFactory';
 import { DataSource } from '../../enums/DataSource';
 
 /**

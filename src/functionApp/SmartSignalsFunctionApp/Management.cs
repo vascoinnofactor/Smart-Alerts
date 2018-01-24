@@ -13,6 +13,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient;
@@ -20,6 +21,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Azure.WebJobs.Host;
@@ -48,7 +51,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                 .RegisterType<IApplicationInsightsClientFactory, ApplicationInsightsClientFactory>()
                 .RegisterType<ISignalApi, SignalApi>()
                 .RegisterType<IAlertRuleApi, AlertRuleApi>()
-                .RegisterType<ISignalResultApi, SignalResultApi>();
+                .RegisterType<ISignalResultApi, SignalResultApi>()
+                .RegisterType<IHttpClientWrapper, HttpClientWrapper>()
+                .RegisterType<ICredentialsFactory, MsiCredentialsFactory>();
         }
 
         /// <summary>
@@ -90,20 +95,28 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                     // Endtime parameter is optional
                     DateTime endTime = new DateTime();
                     string endTimeValue = queryParameters.Get("endTime");
-                    bool hasEndTime = !string.IsNullOrWhiteSpace(endTimeValue);
-                    if (hasEndTime && !DateTime.TryParse(endTimeValue, out endTime))
+                    bool hasEndTime = false;
+
+                    // Check if we have an 'endTime' value in the url
+                    if (!string.IsNullOrWhiteSpace(endTimeValue))
                     {
-                        return req.CreateErrorResponse(HttpStatusCode.BadRequest, "Given end time is not in valid format");
+                        // Check value is a legal datetime
+                        if (!DateTime.TryParse(endTimeValue, out endTime))
+                        {
+                            return req.CreateErrorResponse(HttpStatusCode.BadRequest, "Given end time is not in valid format");
+                        }
+
+                        hasEndTime = true;
                     }
 
                     // Get all the smart signal results based on the given time range
                     if (hasEndTime)
                     {
-                        smartSignalsResultsResponse = await signalResultApi.GetAllSmartSignalResultsAsync(startTime, endTime);
+                        smartSignalsResultsResponse = await signalResultApi.GetAllSmartSignalResultsAsync(startTime, endTime, cancellationToken);
                     }
                     else
                     {
-                        smartSignalsResultsResponse = await signalResultApi.GetAllSmartSignalResultsAsync(startTime);
+                        smartSignalsResultsResponse = await signalResultApi.GetAllSmartSignalResultsAsync(startTime, cancellationToken: cancellationToken);
                     }
 
                     return req.CreateResponse(smartSignalsResultsResponse);
