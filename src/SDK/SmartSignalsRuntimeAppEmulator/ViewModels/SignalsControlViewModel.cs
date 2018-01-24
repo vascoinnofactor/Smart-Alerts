@@ -270,7 +270,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <returns>A task that returns the resource types</returns>
         private async Task<ObservableCollection<string>> GetResourceTypesAsync()
         {
-            var supportedResourceTypes = new List<ResourceType>() { ResourceType.ApplicationInsights, ResourceType.LogAnalytics, ResourceType.VirtualMachine };
+            var supportedResourceTypes = new List<ResourceType>() { ResourceType.ApplicationInsights, ResourceType.LogAnalytics, ResourceType.VirtualMachine, ResourceType.VirtualMachineScaleSet };
             var groups = (await this.azureResourceManagerClient.GetAllResourcesInResourceGroupAsync(this.SelectedSubscription.Id, this.SelectedResourceGroup, supportedResourceTypes, CancellationToken.None)).ToList()
                 .GroupBy(resourceIndentifier => resourceIndentifier.ResourceType)
                 .Select(group => group.Key.ToString()).ToList();

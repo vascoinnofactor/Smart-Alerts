@@ -31,6 +31,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         VirtualMachine,
 
         /// <summary>
+        /// The Virtual Machine Scale Set resource type.
+        /// </summary>
+        VirtualMachineScaleSet,
+
+        /// <summary>
         /// The Application Instance resource type.
         /// </summary>
         ApplicationInsights,

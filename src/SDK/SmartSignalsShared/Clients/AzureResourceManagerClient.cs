@@ -50,6 +50,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         private static readonly Dictionary<ResourceType, string> MapResourceTypeToString = new Dictionary<ResourceType, string>()
         {
             [ResourceType.VirtualMachine] = "Microsoft.Compute/virtualMachines",
+            [ResourceType.VirtualMachineScaleSet] = "Microsoft.Compute/virtualMachineScaleSets",
             [ResourceType.ApplicationInsights] = "Microsoft.Insights/components",
             [ResourceType.LogAnalytics] = "Microsoft.OperationalInsights/workspaces"
         };
