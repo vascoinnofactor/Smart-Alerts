@@ -6,12 +6,10 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.Build
 {
-    using System;
     using System.IO;
     using System.Security;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Build.Utilities;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Represents the build task of a Smart Signal

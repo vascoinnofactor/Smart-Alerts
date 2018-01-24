@@ -4,10 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
+namespace Microsoft.Azure.Monitoring.SmartSignals.SignalLoader
 {
-    using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
 
     /// <summary>
@@ -16,10 +14,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     public interface ISmartSignalLoader
     {
         /// <summary>
-        /// Load a signal from its package
+        /// Load a signal from its package.
         /// </summary>
-        /// <param name="signalPackage">The signal package</param>
-        /// <returns>The signal instance</returns>
+        /// <param name="signalPackage">The signal package.</param>
+        /// <returns>The signal instance.</returns>
         ISmartSignal LoadSignal(SmartSignalPackage signalPackage);
     }
 }

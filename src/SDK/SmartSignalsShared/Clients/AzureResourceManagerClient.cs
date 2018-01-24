@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient
+namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
     using System;
     using System.Collections.Concurrent;
@@ -16,8 +16,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerCli
     using System.Threading.Tasks;
     using Microsoft.Azure.Management.ResourceManager.Fluent;
     using Microsoft.Azure.Management.ResourceManager.Fluent.Models;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.Extensions;
+    using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
     using Microsoft.Rest;
     using Microsoft.Rest.Azure;
     using Microsoft.Rest.Azure.OData;
@@ -51,6 +50,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerCli
         private static readonly Dictionary<ResourceType, string> MapResourceTypeToString = new Dictionary<ResourceType, string>()
         {
             [ResourceType.VirtualMachine] = "Microsoft.Compute/virtualMachines",
+            [ResourceType.VirtualMachineScaleSet] = "Microsoft.Compute/virtualMachineScaleSets",
             [ResourceType.ApplicationInsights] = "Microsoft.Insights/components",
             [ResourceType.LogAnalytics] = "Microsoft.OperationalInsights/workspaces"
         };

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Shared
+namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
     using Microsoft.Rest;
 

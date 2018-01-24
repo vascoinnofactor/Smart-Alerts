@@ -8,6 +8,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
@@ -73,8 +74,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
         /// Adds or updates an alert rule in the store.
         /// </summary>
         /// <param name="alertRule">The alert rule to add to the store.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> object that represents the asynchronous operation.</returns>
-        public async Task AddOrReplaceAlertRuleAsync(AlertRule alertRule)
+        public async Task AddOrReplaceAlertRuleAsync(AlertRule alertRule, CancellationToken cancellationToken)
         {
             try
             {
@@ -89,7 +91,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
                     CrontabSchedule = alertRule.Schedule.ToString()
                 });
 
-                await this.alertRulesTable.ExecuteAsync(operation);
+                await this.alertRulesTable.ExecuteAsync(operation, cancellationToken);
 
                 this.tracer.TraceInformation($"updated alert rule: {alertRule.Id}");
             }

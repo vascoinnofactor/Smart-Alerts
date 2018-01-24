@@ -7,6 +7,7 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.WindowsAzure.Storage.Table;
 
@@ -39,10 +40,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
         /// Initiates an asynchronous operation that executes an asynchronous table operation.
         /// </summary>
         /// <param name="operation">A <see cref="TableOperation"/> object that represents the operation to perform.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="System.Threading.Tasks.Task"/> object of type <see cref="TableResult"/> that represents the asynchronous operation.</returns>
-        public Task<TableResult> ExecuteAsync(TableOperation operation)
+        public Task<TableResult> ExecuteAsync(TableOperation operation, CancellationToken cancellationToken)
         {
-            return this.cloudTable.ExecuteAsync(operation);
+            return this.cloudTable.ExecuteAsync(operation, cancellationToken);
         }
 
         /// <summary>

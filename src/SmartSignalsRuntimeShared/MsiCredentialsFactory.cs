@@ -6,8 +6,8 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
 {
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared;
     using Microsoft.Rest;
 
     /// <summary>

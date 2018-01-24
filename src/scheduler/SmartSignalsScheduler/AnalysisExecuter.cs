@@ -12,11 +12,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
+    using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.Extensions;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Newtonsoft.Json;
     using Polly;
 
@@ -72,6 +73,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, this.analysisUrl);
             string requestBody = JsonConvert.SerializeObject(analysisRequest);
             requestMessage.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+            requestMessage.Headers.Add("x-functions-key", ConfigurationReader.ReadConfigConnectionString("AnalyzeFunctionKey", true));
+
             this.tracer.TraceVerbose($"Sending analysis request {requestBody}");
 
             // Send the request

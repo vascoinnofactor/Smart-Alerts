@@ -10,9 +10,6 @@
     <PackageReference Include="StyleCop.MSBuild" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SDK\SmartSignalsPackage\SmartSignalsPackage.csproj"></ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -26,5 +23,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SDK\SmartSignalsSDK\SmartSignalsSDK.csproj" />
+    <ProjectReference Include="..\..\src\SDK\SmartSignalsShared\SmartSignalsShared.csproj" />
   </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using SendGrid;
     using SendGrid.Helpers.Mail;
     using Unity.Attributes;

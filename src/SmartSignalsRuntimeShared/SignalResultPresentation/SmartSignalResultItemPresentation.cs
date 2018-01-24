@@ -10,9 +10,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Extensions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient;
     using Newtonsoft.Json;
     using SmartFormat;
 

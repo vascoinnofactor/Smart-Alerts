@@ -50,6 +50,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -65,7 +66,7 @@
     <Resource Include="Media\ic_power_settings_new_white_48dp_2x.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SmartSignalsShared\SmartSignalsShared.csproj" />
     <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj" />
+    <ProjectReference Include="..\SmartSignalsShared\SmartSignalsShared.csproj" />
   </ItemGroup>
 </Project>

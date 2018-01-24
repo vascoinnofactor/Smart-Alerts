@@ -12,12 +12,12 @@ namespace SmartSignalSchedulerTests
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker;
-    using Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 

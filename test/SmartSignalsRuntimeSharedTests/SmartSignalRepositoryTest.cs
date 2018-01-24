@@ -4,12 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace SmartSignalsInfrastructureTests
+namespace SmartSignalsRuntimeSharedTests
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
@@ -42,11 +43,11 @@ namespace SmartSignalsInfrastructureTests
         [TestMethod]
         public async Task WhenStorageExceptionIsThrownWhenReadingAllManifestsThenCorrectExceptionIsThrown()
         {
-            this.blobContainerMock.Setup(m => m.ListBlobsAsync(string.Empty, true, BlobListingDetails.Metadata)).Throws(new StorageException());
+            this.blobContainerMock.Setup(m => m.ListBlobsAsync(string.Empty, true, BlobListingDetails.Metadata, It.IsAny<CancellationToken>())).Throws(new StorageException());
 
             try
             {
-                await this.smartSignalRepository.ReadAllSignalsManifestsAsync();
+                await this.smartSignalRepository.ReadAllSignalsManifestsAsync(CancellationToken.None);
             }
             catch (SmartSignalRepositoryException e)
             {
@@ -65,11 +66,11 @@ namespace SmartSignalsInfrastructureTests
         public async Task WhenStorageExceptionIsThrownWhenReadingSignalPackageThenCorrectExceptionIsThrown()
         {
             const string SignalId = "someId";
-            this.blobContainerMock.Setup(m => m.ListBlobsAsync($"{SignalId}/", true, BlobListingDetails.Metadata)).Throws(new StorageException());
+            this.blobContainerMock.Setup(m => m.ListBlobsAsync($"{SignalId}/", true, BlobListingDetails.Metadata, It.IsAny<CancellationToken>())).Throws(new StorageException());
 
             try
             {
-                await this.smartSignalRepository.ReadSignalPackageAsync(SignalId);
+                await this.smartSignalRepository.ReadSignalPackageAsync(SignalId, CancellationToken.None);
             }
             catch (SmartSignalRepositoryException e)
             {
@@ -115,9 +116,9 @@ namespace SmartSignalsInfrastructureTests
                 secondSignalNewVersion
             };
 
-            this.blobContainerMock.Setup(m => m.ListBlobsAsync(string.Empty, true, BlobListingDetails.Metadata)).ReturnsAsync(blobs);
+            this.blobContainerMock.Setup(m => m.ListBlobsAsync(string.Empty, true, BlobListingDetails.Metadata, It.IsAny<CancellationToken>())).ReturnsAsync(blobs);
 
-            var signalsManifests = await this.smartSignalRepository.ReadAllSignalsManifestsAsync();
+            var signalsManifests = await this.smartSignalRepository.ReadAllSignalsManifestsAsync(CancellationToken.None);
             Assert.AreEqual(2, signalsManifests.Count);
 
             this.AssertMetadata(signalsManifests.First(), firstSignalNewVersionMetadata);

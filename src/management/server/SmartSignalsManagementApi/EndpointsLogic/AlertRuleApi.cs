@@ -8,11 +8,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
 {
     using System;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using NCrontab;
 
     /// <summary>
@@ -38,8 +39,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         /// </summary>
         /// <returns>A task represents this operation.</returns>
         /// <param name="addAlertRule">The model that contains all the require parameters for adding alert rule.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SmartSignalsManagementApiException">This exception is thrown when we failed to add the alert rule.</exception>
-        public async Task AddAlertRuleAsync(AddAlertRule addAlertRule)
+        public async Task AddAlertRuleAsync(AddAlertRule addAlertRule, CancellationToken cancellationToken)
         {
             Diagnostics.EnsureArgumentNotNull(() => addAlertRule);
 
@@ -51,13 +53,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
 
             try
             {
-                await this.alertRuleStore.AddOrReplaceAlertRuleAsync(new AlertRule()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    SignalId = addAlertRule.SignalId,
-                    ResourceType = addAlertRule.ResourceType,
-                    Schedule = CrontabSchedule.Parse(addAlertRule.Schedule)
-                });
+                await this.alertRuleStore.AddOrReplaceAlertRuleAsync(
+                    new AlertRule
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        SignalId = addAlertRule.SignalId,
+                        ResourceType = addAlertRule.ResourceType,
+                        Schedule = CrontabSchedule.Parse(addAlertRule.Schedule)
+                    },
+                    cancellationToken);
             }
             catch (AlertRuleStoreException e)
             {

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Shared.AzureResourceManagerClient
+namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
     using System.Collections.Generic;
     using System.Threading;

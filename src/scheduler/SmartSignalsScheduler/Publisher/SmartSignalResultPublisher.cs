@@ -9,12 +9,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
     using Newtonsoft.Json;
@@ -61,7 +63,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
                 {
                     var blobName = $"{signalId}/{todayString}/{resultItem.Id}";
                     var resultItemString = JsonConvert.SerializeObject(resultItem);
-                    ICloudBlob blob = await this.containerClient.UploadBlobAsync(blobName, resultItemString);
+                    ICloudBlob blob = await this.containerClient.UploadBlobAsync(blobName, resultItemString, CancellationToken.None);
 
                     var eventProperties = new Dictionary<string, string>
                     {

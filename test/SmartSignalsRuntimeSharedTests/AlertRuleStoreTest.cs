@@ -4,10 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace SmartSignalsInfrastructureTests
+namespace SmartSignalsRuntimeSharedTests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
@@ -49,14 +50,16 @@ namespace SmartSignalsInfrastructureTests
                 ResourceType = ResourceType.VirtualMachine
             };
 
-            await this.alertRuleStore.AddOrReplaceAlertRuleAsync(ruleToUpdate);
+            await this.alertRuleStore.AddOrReplaceAlertRuleAsync(ruleToUpdate, CancellationToken.None);
 
-            this.tableMock.Verify(m => m.ExecuteAsync(It.Is<TableOperation>(operation =>
-                operation.OperationType == TableOperationType.InsertOrReplace &&
-                operation.Entity.RowKey.Equals(ruleToUpdate.Id) &&
-                ((AlertRuleEntity)operation.Entity).SignalId.Equals(ruleToUpdate.SignalId) &&
-                ((AlertRuleEntity)operation.Entity).CrontabSchedule.Equals(CronSchedule) &&
-                ((AlertRuleEntity)operation.Entity).ResourceType.Equals(ruleToUpdate.ResourceType))));
+            this.tableMock.Verify(m => m.ExecuteAsync(
+                It.Is<TableOperation>(operation =>
+                    operation.OperationType == TableOperationType.InsertOrReplace &&
+                    operation.Entity.RowKey.Equals(ruleToUpdate.Id) &&
+                    ((AlertRuleEntity)operation.Entity).SignalId.Equals(ruleToUpdate.SignalId) &&
+                    ((AlertRuleEntity)operation.Entity).CrontabSchedule.Equals(CronSchedule) &&
+                    ((AlertRuleEntity)operation.Entity).ResourceType.Equals(ruleToUpdate.ResourceType)),
+                It.IsAny<CancellationToken>()));
         }
 
         [TestMethod]

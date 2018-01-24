@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
+namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Trace
 {
     /// <summary>
     /// A static class holding Azure function environment variables

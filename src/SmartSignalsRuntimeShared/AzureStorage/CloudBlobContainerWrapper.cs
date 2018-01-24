@@ -7,6 +7,7 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.WindowsAzure.Storage.Blob;
 
@@ -32,14 +33,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
         /// <param name="prefix">A string containing the blob name prefix.</param>
         /// <param name="useFlatBlobListing">A boolean value that specifies whether to list blobs in a flat listing, or whether to list blobs hierarchically, by virtual directory.</param>
         /// <param name="blobListingDetails">A BlobListingDetails enumeration describing which items to include in the listing.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A list of objects that implement <see cref="IListBlobItem"/></returns>
-        public async Task<IList<IListBlobItem>> ListBlobsAsync(string prefix, bool useFlatBlobListing, BlobListingDetails blobListingDetails)
+        public async Task<IList<IListBlobItem>> ListBlobsAsync(string prefix, bool useFlatBlobListing, BlobListingDetails blobListingDetails, CancellationToken cancellationToken)
         {
             var blobs = new List<IListBlobItem>();
             BlobContinuationToken token = null;
             do
             {
-                var resultSegment = await this.cloudBlobContainer.ListBlobsSegmentedAsync(prefix, useFlatBlobListing, blobListingDetails, null, token, null, null);
+                var resultSegment = await this.cloudBlobContainer.ListBlobsSegmentedAsync(prefix, useFlatBlobListing, blobListingDetails, null, token, null, null, cancellationToken);
                 token = resultSegment.ContinuationToken;
                 blobs.AddRange(resultSegment.Results);
             }
@@ -53,11 +55,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
         /// </summary>
         /// <param name="blobName">The blob name.</param>
         /// <param name="blobContent">The content to upload.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="ICloudBlob"/> reference to the blob in the container</returns>
-        public async Task<ICloudBlob> UploadBlobAsync(string blobName, string blobContent)
+        public async Task<ICloudBlob> UploadBlobAsync(string blobName, string blobContent, CancellationToken cancellationToken)
         {
             CloudBlockBlob blob = this.cloudBlobContainer.GetBlockBlobReference(blobName);
-            await blob.UploadTextAsync(blobContent);
+            await blob.UploadTextAsync(blobContent, cancellationToken);
             return blob;
         }
 
