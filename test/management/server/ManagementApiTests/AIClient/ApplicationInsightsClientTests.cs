@@ -53,7 +53,7 @@ namespace ManagementApiTests.AIClient
                               {
                                 Content = new StringContent(File.ReadAllText("AIClient\\AIEndpointResponses\\SuccessfulResponse.txt"))
                               });
-                
+
             // Get data using AI client
             var customEvents = await this.applicationInsightsClient.GetCustomEventsAsync(EventName);
 

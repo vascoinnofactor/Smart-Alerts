@@ -24,6 +24,7 @@ For information one the runtime application, and release notes see here: https:/
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="StyleCop.MSBuild" Version="5.0.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.3" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -32,7 +33,6 @@ For information one the runtime application, and release notes see here: https:/
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
 </Project>
