@@ -143,8 +143,8 @@
           "properties": {
             "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]",
             "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]",
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName')), '2014-04-01').InstrumentationKey]",
             "SendVerboseTracesToAI": "[parameters('logVerboseTraces')]",
-            "TelemetryInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName')), '2014-04-01').InstrumentationKey]",
             "ResourceGroupName": "[variables('resourceGroupName')]",
             "SubscriptionId": "[subscription().subscriptionId]",
             "FunctionBaseUrl": "[variables('functionBaseUrl')]",
