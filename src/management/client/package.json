@@ -9,18 +9,27 @@
     "@types/react-dom": "^16.0.3",
     "@types/react-router-dom": "^4.2.1",
     "@types/recharts": "^1.0.6",
+    "@types/redux-immutable-state-invariant": "^2.0.4",
+    "@types/react-redux": "^5.0.14",  
+    "@types/adal": "^1.0.29",  
     "node-sass": "^4.6.1",
-    "npm-run-all": "^4.1.2"
+    "npm-run-all": "^4.1.2",
+    "redux-immutable-state-invariant": "^2.1.0"
   },
   "dependencies": {
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
-    "react-md": "^1.2.8",
+    "react-md": "^1.2.9",
     "react-scripts-ts": "2.8.0",
     "react-router-dom": "^4.2.2",
     "react-flexbox-grid": "^2.0.0",
     "moment": "^2.19.2",
-    "recharts": "^1.0.0-beta.2"
+    "recharts": "^1.0.0-beta.7",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "react-redux": "^5.0.6",
+    "adal-angular": "^1.0.16",
+    "expose-loader": "^0.7.4"
   },
   "scripts": {
     "css:build": "node-sass src/ -o src/",
@@ -28,7 +37,7 @@
     "client:start": "react-scripts-ts start",
     "start": "npm-run-all -p css:watch client:start",
     "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "lint": "tslint --project .",
+    "test": "react-scripts-ts test --env=jsdom"
   }
 }

@@ -9,11 +9,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
+    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.IdentityModel.Clients.ActiveDirectory;
+    using Microsoft.Rest;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
@@ -22,17 +25,25 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
     /// </summary>
     public class ApplicationInsightsClient : IApplicationInsightsClient
     {
+        /// <summary>
+        /// The Application Insights resource id (used for getting credentials)
+        /// </summary>
+        private const string ApplicationInsightsResource = "https://api.applicationinsights.io";
+
         private readonly IHttpClientWrapper httpClient;
+        private readonly ServiceClientCredentials credentials;
         private readonly string applicationId;
-        private readonly Uri applicationInsightUri = new Uri("https://api.applicationinsights.io/beta/apps");
+        private readonly Uri applicationInsightUri = new Uri("https://api.applicationinsights.io");
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationInsightsClient"/> class.
         /// </summary>
         /// <param name="applicationId">The AI application id.</param>
-        public ApplicationInsightsClient(string applicationId)
+        /// <param name="credentialsFactory">The credentials factory (for AI authentication)</param>
+        public ApplicationInsightsClient(string applicationId, ICredentialsFactory credentialsFactory)
         {
             this.applicationId = applicationId;
+            this.credentials = credentialsFactory.Create(ApplicationInsightsResource);
             this.httpClient = new HttpClientWrapper();
         }
 
@@ -42,10 +53,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
         /// </summary>
         /// <param name="applicationId">The AI application id.</param>
         /// <param name="httpClient">The HTTP client.</param>
-        internal ApplicationInsightsClient(string applicationId, IHttpClientWrapper httpClient)
+        /// <param name="credentialsFactory">The credentials factory (for AI authentication)</param>
+        internal ApplicationInsightsClient(string applicationId, IHttpClientWrapper httpClient, ICredentialsFactory credentialsFactory)
         {
             this.applicationId = applicationId;
             this.httpClient = httpClient;
+            this.credentials = credentialsFactory.Create(ApplicationInsightsResource);
         }
 
         /// <summary>
@@ -75,23 +88,24 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
                 // Add timestamp filters in case it's required
                 if (startTime.HasValue && endTime.HasValue)
                 {
-                    appInsightsRelativeUrl += $" AND timestamp ge {startTime} AND timestamp le {endTime}";
+                    appInsightsRelativeUrl += $" and timestamp ge {startTime.Value.ToQueryTimeFormat()} and timestamp le {endTime.Value.ToQueryTimeFormat()}";
                 }
                 else if (startTime.HasValue)
                 {
-                    appInsightsRelativeUrl += $" AND timestamp ge {startTime}";
+                    appInsightsRelativeUrl += $" and timestamp ge {startTime.Value.ToQueryTimeFormat()}";
                 }
                 else if (endTime.HasValue)
                 {
-                    appInsightsRelativeUrl += $" AND timestamp le {endTime}";
+                    appInsightsRelativeUrl += $" and timestamp le {endTime.Value.ToQueryTimeFormat()}";
                 }
 
-                // TODO - generate a token for talking with AI
                 // Send the AI Rest API request
                 using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(this.applicationInsightUri, appInsightsRelativeUrl)))
                 {
-                    httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "TokenWillBeHere");
+                    // Add the authorization token
+                    await this.credentials.ProcessHttpRequestAsync(httpRequestMessage, cancellationToken);
 
+                    // Add the authorization token
                     using (HttpResponseMessage response = await this.httpClient.SendAsync(httpRequestMessage, cancellationToken))
                     {
                         string responseContent = await response.Content.ReadAsStringAsync();

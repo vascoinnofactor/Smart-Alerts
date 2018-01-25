@@ -63,5 +63,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
             await blob.UploadTextAsync(blobContent, cancellationToken);
             return blob;
         }
+
+        /// <summary>
+        /// Downloads the content of a given blob name.
+        /// </summary>
+        /// <param name="blobName">The blob name.</param>
+        /// <returns>The blob's content.</returns>
+        public async Task<string> DownloadBlobContentAsync(string blobName)
+        {
+            CloudBlockBlob blob = this.cloudBlobContainer.GetBlockBlobReference(blobName);
+            return await blob.DownloadTextAsync();
+        }
     }
 }

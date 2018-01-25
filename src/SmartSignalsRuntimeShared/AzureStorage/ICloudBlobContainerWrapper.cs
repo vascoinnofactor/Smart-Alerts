@@ -34,5 +34,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> object that represents the asynchronous operation.</returns>
         Task<ICloudBlob> UploadBlobAsync(string blobName, string blobContent, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Downloads the content of a given blob name.
+        /// </summary>
+        /// <param name="blobName">The blob name.</param>
+        /// <returns>The blob's content.</returns>
+        Task<string> DownloadBlobContentAsync(string blobName);
     }
 }

@@ -1,20 +1,39 @@
+// -----------------------------------------------------------------------
+// <copyright file="index.tsx" company="Microsoft Corporation">
+//        Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 import * as React from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
-import Navbar from '../Navbar';
+import StoreState from '../../store/StoreState';
+import Routes from '../../routes';
 
-class App extends React.Component<any, any> {
+interface AppStateProps {
+  isAuthenticated: boolean;
+}
 
-  render() {
-    var { children } = this.props;
-
+class App extends React.Component<AppStateProps> {
+  public render() {
     return (
       <div>
-        <Navbar>
-          {children}
-        </Navbar>
+        <Routes isAuthenticated={this.props.isAuthenticated} />
       </div>
     );
   }
 }
 
-export default App;
+/**
+ * Map between the given state to this component props.
+ * @param state The current state
+ * @param ownProps the component's props
+ */
+function mapStateToProps(state: StoreState): AppStateProps {
+    return {
+        isAuthenticated: state.isAuthenticated
+    };
+}
+
+export default withRouter(connect(mapStateToProps)(App));

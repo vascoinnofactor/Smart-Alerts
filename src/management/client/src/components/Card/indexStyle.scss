@@ -1,0 +1,55 @@
+// -----------------------------------------------------------------------
+// <copyright file="indexStyle.scss" company="Microsoft Corporation">
+//        Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
+.cardContainer {
+    margin-bottom: 30px;
+    font-family: "Segoe UI";
+
+    .cardHeader {
+        display: flex;
+
+        .insightTimestamp {
+            font-family: "Segoe UI";
+            font-size: 12px;
+            white-space: nowrap;
+        }
+    }
+
+    .cardContent {
+        display: flex;
+        justify-content: space-between;
+        
+        .presentedValue {
+            font-weight: 500;
+            font-family: "Segoe UI Semibold";
+            padding-bottom: 0px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    
+        .resourceName {
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .chart-container {
+            width: 50%;
+        }
+    }
+}
+
+.md-card {
+    .md-text--secondary {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+}
+
+.md-card-title--title-block {
+    width: 50%;
+}

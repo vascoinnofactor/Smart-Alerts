@@ -8,6 +8,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
     /// <summary>

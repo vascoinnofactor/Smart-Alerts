@@ -14,7 +14,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
+    using Microsoft.WindowsAzure.Storage;
+    using Microsoft.WindowsAzure.Storage.Blob;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -22,16 +25,23 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     /// </summary>
     public class SignalResultApi : ISignalResultApi
     {
+        /// <summary>
+        /// The event name in the Signal Result store (Application Insights) that contains the signal result
+        /// </summary>
         private const string EventName = "SmartSignalResult";
+
         private readonly IApplicationInsightsClient applicationInsightsClient;
+        private readonly ICloudBlobContainerWrapper signalResultStorageContainer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignalResultApi"/> class.
         /// </summary>
-        /// <param name="applicationInsightsClient">The application insights client.</param>
-        public SignalResultApi(IApplicationInsightsClient applicationInsightsClient)
+        /// <param name="storageProviderFactory">The storage provider factory.</param>
+        /// <param name="applicationInsightsClientFactory">The application insights client factory.</param>
+        public SignalResultApi(ICloudStorageProviderFactory storageProviderFactory, IApplicationInsightsClientFactory applicationInsightsClientFactory)
         {
-            this.applicationInsightsClient = applicationInsightsClient;
+            this.signalResultStorageContainer = storageProviderFactory.GetSmartSignalResultStorageContainer();
+            this.applicationInsightsClient = applicationInsightsClientFactory.GetApplicationInsightsClient();
         }
 
         /// <summary>
@@ -41,18 +51,23 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         /// <param name="endTime">The query end time.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The Smart Signals results response.</returns>
-        public async Task<ListSmartSignalsResultsResponse> GetAllSmartSignalResultsAsync(DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+        public async Task<ListSmartSignalsResultsResponse> GetAllSmartSignalResultsAsync(DateTime startTime, DateTime? endTime = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             try
             {
                 // Get the custom events from 
                 IEnumerable<ApplicationInsightsEvent> events = await this.applicationInsightsClient.GetCustomEventsAsync(EventName, startTime, endTime, cancellationToken);
 
-                // Deserialize the smart signal part from the custom dimension
-                var signalResults = events.Where(result => result.CustomDimensions.ContainsKey("ResultItem")).Select(result => result.CustomDimensions["ResultItem"]);
+                // Take all the blobs uris that contains the signals results items
+                IEnumerable<string> signalResultsBlobsUri = events.Where(result => result.CustomDimensions.ContainsKey("ResultItemBlobUri"))
+                                                                  .Select(result => result.CustomDimensions["ResultItemBlobUri"]);
 
-                // Deserialize and return
-                IEnumerable<SmartSignalResultItemPresentation> smartSignalsResults = signalResults.Select(JsonConvert.DeserializeObject<SmartSignalResultItemPresentation>);
+                // Get the blobs content (as we are getting blob uri, we are creating new CloudBlockBlob for each and extracting the blob name 
+                var blobsContent = await Task.WhenAll(signalResultsBlobsUri.Select(blobUri => this.signalResultStorageContainer
+                                                                                              .DownloadBlobContentAsync(new CloudBlockBlob(new Uri(blobUri)).Name)));
+                
+                // Deserialize the blobs content to result item
+                IEnumerable<SmartSignalResultItemPresentation> smartSignalsResults = blobsContent.Select(JsonConvert.DeserializeObject<SmartSignalResultItemPresentation>);
 
                 return new ListSmartSignalsResultsResponse
                 {
@@ -66,6 +81,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
             catch (JsonException e)
             {
                 throw new SmartSignalsManagementApiException("Failed to de-serialize signals results items", e, HttpStatusCode.InternalServerError);
+            }
+            catch (StorageException e)
+            {
+                throw new SmartSignalsManagementApiException("Failed to get signals results items from storage", e, HttpStatusCode.InternalServerError);
+            }
+            catch (Exception e)
+            {
+                throw new SmartSignalsManagementApiException("Failed to get signals results items from storage", e, HttpStatusCode.InternalServerError);
             }
         }
     }

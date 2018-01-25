@@ -1,41 +1,69 @@
+// -----------------------------------------------------------------------
+// <copyright file="index.tsx" company="Microsoft Corporation">
+//        Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 import * as React from 'react';
-import * as moment from 'moment';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+import Visualization, { VisualizationProps } from '../VisualizationBase';
 import FormatUtils from '../../../utils/FormatUtils';
+import TimelineChart from '../../../models/Charts/TimelineChart';
 
-interface ITimelineProps {
-    data: object[];
-    className?: string;
+interface TimelineProps extends VisualizationProps {
+    timelineChart: TimelineChart;
 }
 
-export default class Timeline extends React.Component<ITimelineProps> {
-    constructor(props: ITimelineProps) {
-        super(props);
+/**
+ * This component represents the timeline visualization rendering
+ */
+export default class Timeline extends Visualization<TimelineProps> {
+    public render() {
+        const { timelineChart } = this.props;
+
+        return (
+            <ResponsiveContainer height={this.props.height}>
+                <LineChart 
+                           data={timelineChart.data} 
+                           margin={{ top: 5, right: 30, left: 20, bottom: 5 }} 
+                           className={this.props.className}
+                >
+                    <XAxis 
+                        dataKey={timelineChart.timestampDataKey} 
+                        tickFormatter={this.hourFormat} 
+                        minTickGap={20} 
+                        hide={this.props.hideXAxis}
+                    />
+                    <YAxis 
+                        type="number"
+                        tickFormatter={FormatUtils.kmNumber}
+                        hide={this.props.hideYAxis} 
+                    />
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={false} />
+                    <Tooltip />
+                    {
+                        !this.props.hideLegend &&
+                        <Legend />
+                    }
+                    <Line dataKey="number" key="timeValue" type="monotone" strokeWidth={2} dot={false} />
+                    {this.createLineElements(timelineChart)}
+                </LineChart>
+            </ResponsiveContainer>
+        );
     }
 
-    private hourFormat(time: string) {
-        return moment(time).format('HH:mm');
-    }
-
-    private createLineElements(data: object[]) : JSX.Element[] {
-        // 1. Calculates which fields we should create lines for
-        let fields: string[] = [];
-        for (var key in data[0]) {
-            // Ignore 'time' and 'number' fields
-            if (key != 'time' && key != 'number') {
-                fields.push(key);
-            }
-        }
-
-        // 2. Create the lines
+    /**
+     * Create a line element for each series
+     * @param data The chart data
+     */
+    private createLineElements(timelineChartData: TimelineChart): JSX.Element[] {
         var lineElements: JSX.Element[] = [];
-        if (fields && fields.length > 0) {
-          lineElements = fields.map((line, idx) => {
+        if (timelineChartData.numericDataKeys && timelineChartData.numericDataKeys.length > 0) {
+          lineElements = timelineChartData.numericDataKeys.map((line, idx) => {
             return (
               <Line
                 stroke="#ff7300"
-                strokeWidth={9}
                 key={idx}
                 type="monotone"
                 dataKey={line}
@@ -46,23 +74,5 @@ export default class Timeline extends React.Component<ITimelineProps> {
         }
 
         return lineElements;
-    }
-
-    render() {
-        var { data } = this.props;
-
-        return (
-            <ResponsiveContainer width="90%" height={300}>
-                <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }} className={this.props.className}>
-                    <XAxis dataKey="time" tickFormatter={this.hourFormat} minTickGap={20} />
-                    <YAxis dataKey="number" type="number" tickFormatter={FormatUtils.kmNumber} />
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip />
-                    <Legend />
-                    <Line dataKey="number" key="timeValue" type="monotone" strokeWidth={2} dot={false} />
-                    {this.createLineElements(this.props.data)}
-                </LineChart>
-            </ResponsiveContainer>
-        );
     }
 }
