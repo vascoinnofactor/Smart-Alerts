@@ -46,7 +46,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Trace
                     if (!telemetryConfigurationWasSet)
                     {
                         // Get the main Ikey
-                        TelemetryConfiguration.Active.InstrumentationKey = ConfigurationReader.ReadConfig("APPINSIGHTS_INSTRUMENTATIONKEY", true);
+                        TelemetryConfiguration.Active.InstrumentationKey = ConfigurationReader.ReadConfig("TelemetryInstrumentationKey", true);
 
                         // make sure the telemetry channel is ServerTelemetryChannel
                         if (!(TelemetryConfiguration.Active.TelemetryChannel is ServerTelemetryChannel))

@@ -15,6 +15,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.Analysis;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -71,6 +72,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
                 try
                 {
+                    // Trace performance counters (before analysis)
+                    tracer.TracePerformanceCounters();
+
                     // Read the request
                     SmartSignalRequest smartSignalRequest = await request.Content.ReadAsAsync<SmartSignalRequest>(cancellationToken);
                     tracer.AddCustomProperty("SignalId", smartSignalRequest.SignalId);
@@ -80,6 +84,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                     ISmartSignalRunner runner = childContainer.Resolve<ISmartSignalRunner>();
                     List<SmartSignalResultItemPresentation> resultPresentations = await runner.RunAsync(smartSignalRequest, cancellationToken);
                     tracer.TraceInformation($"Analyze completed, returning {resultPresentations.Count} results");
+
+                    // Trace performance counters (after analysis)
+                    tracer.TracePerformanceCounters();
 
                     // Return the generated presentations
                     return request.CreateResponse(HttpStatusCode.OK, resultPresentations);
