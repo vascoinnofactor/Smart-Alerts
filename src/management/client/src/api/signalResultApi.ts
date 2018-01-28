@@ -4,6 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+import * as moment from 'moment';
+
 import baseUrl from './baseUrl';
 import ApiError from './apiError';
 import ListSmartSignalResultResponse from './models/ListSmartSignalResultResponse';
@@ -13,16 +15,19 @@ import ActiveDirectoryAuthenticatorFactory from '../factories/ActiveDirectoryAut
  * Gets a list of signals results without any flitering
  */
 export async function getSignalsResultsAsync(): Promise<ListSmartSignalResultResponse> {
-    const requestUrl = `${baseUrl}/api/signalResult?startTime=1/23/2018 05:04`;
+    const utcNowMinusDay = moment.utc().add(-1, 'days');
+    const requestUrl = `${baseUrl}/api/signalResult?startTime=${utcNowMinusDay.format('DD/MM/YYYY HH:mm')}`;
 
     // Get the user AAD token
-    let userAccessToken = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator().accessToken;
+    let userAccessToken = await ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator()
+                                                        .getResourceTokenAsync('https://management.core.windows.net/');
 
     const headers = new Headers();
-    headers.append('Authorization', 'Bearer ' + userAccessToken);
+    headers.set('Authorization', 'Bearer ' + userAccessToken);
+    headers.set('Content-Type', 'application/json');
 
     const requestInit: RequestInit = {
-        headers,
+        headers: headers,
         method: 'GET',
         mode: 'cors'
     };

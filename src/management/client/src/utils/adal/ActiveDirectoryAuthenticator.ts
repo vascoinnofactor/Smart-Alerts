@@ -65,7 +65,15 @@ export default class ActiveDirectoryAuthenticator {
         return this.accessToken && this.userInfo; 
     }
 
-    public getResourceToken(resource: string, callback: (message: string, token: string) => void): void {
-        this.context.acquireToken(resource, callback);
+    public getResourceTokenAsync(resource: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            this.context.acquireToken(resource, (message: string, token: string) => {
+                if (message) {
+                    reject(message);
+                }
+
+                resolve(token);
+            });
+        });
     }
 }

@@ -31,7 +31,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
         /// <returns>A Application Insights client instance.</returns>
         public IApplicationInsightsClient GetApplicationInsightsClient()
         {
-            string applicationId = ConfigurationReader.ReadConfig("TelemetryApplicationId", required: true);
+            string applicationId = ConfigurationReader.ReadConfig("APPINSIGHTS_APPLICATIONID", required: true);
 
             return new ApplicationInsightsClient(applicationId, this.credentialsFactory);
         }

@@ -10,82 +10,51 @@ import ActiveDirectoryAuthenticatorFactory from '../factories/ActiveDirectoryAut
  * Execute a ARM query in order to get the Application Insights application id by a given resource id
  */
 export async function getApplicationId(applicationResourceId: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        let activeDirectoryAuthenticator = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator();
-        
-        activeDirectoryAuthenticator.getResourceToken('https://management.core.windows.net/',
-                                                      async (message: string, token: string) => {
-            // In case failed to get token - stop processing
-            if (message) {
-                reject({ message });
-            }
+    let armResponse = getResourceFromArm(applicationResourceId);
 
-            const requestUrl = `https://management.azure.com${applicationResourceId}?api-version=2014-04-01`;
-            
-            const headers = new Headers();
-
-            // Add the required headers
-            headers.append('Authorization', 'Bearer ' + token);
-        
-            // Create the request data
-            const requestInit: RequestInit = {
-                headers,
-                method: 'GET',
-                mode: 'cors'
-            };
-        
-            // Execute the reqest
-            const response = await fetch(requestUrl, requestInit);
-        
-            if (response.ok) {
-                let applicationId = (await response.json()).properties.AppId;
-                
-                return resolve(applicationId);
-            } else {
-                reject(response.status);
-            }
-        });
-    });
+    // tslint:disable-next-line:no-string-literal
+    return armResponse['properties']['AppId'];
 }
 
 /**
  * Execute a ARM query in order to get the Log Analytics workspace id by a given resource id
  */
-export async function getWorkspaceId(applicationResourceId: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        let activeDirectoryAuthenticator = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator();
-        
-        activeDirectoryAuthenticator.getResourceToken('https://management.core.windows.net/',
-                                                      async (message: string, token: string) => {
-            // In case failed to get token - stop processing
-            if (message) {
-                reject({ message });
-            }
+export async function getWorkspaceId(workspaceResourceId: string): Promise<string> {
+    let armResponse = getResourceFromArm(workspaceResourceId);
 
-            const requestUrl = `https://management.azure.com${applicationResourceId}?api-version=2017-04-26-preview`;
-            
-            const headers = new Headers();
+    // tslint:disable-next-line:no-string-literal
+    return armResponse['properties']['customerId'];
+}
 
-            // Add the required headers
-            headers.append('Authorization', 'Bearer ' + token);
-        
-            // Create the request data
-            const requestInit: RequestInit = {
-                headers,
-                method: 'GET',
-                mode: 'cors'
-            };
-        
-            // Execute the reqest
-            const response = await fetch(requestUrl, requestInit);
-        
-            if (response.ok) {
-                let applicationId = (await response.json()).properties.customerId;
-                
-                return resolve(applicationId);
-            } else {
-                reject(response.status);
-            }
-        });
-    });
+/**
+ * By a given resource id, get the resource metadata from the ARM endpoint
+ * @param resourceId The resource id
+ */
+async function getResourceFromArm(resourceId: string): Promise<{}> {
+    // 1. Get a resource token against ARM
+    let activeDirectoryAuthenticator = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator();
+    let armResourceToken = await activeDirectoryAuthenticator
+                                        .getResourceTokenAsync('https://management.core.windows.net/');
+
+    // 2. Query ARM against the given application resource id
+    const requestUrl = `https://management.azure.com${resourceId}?api-version=2014-04-01`;
+
+    const headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + armResourceToken);
+
+    // Create the request data
+    const requestInit: RequestInit = {
+        headers,
+        method: 'GET',
+        mode: 'cors'
+    };
+
+    // Execute the reqest
+    const response = await fetch(requestUrl, requestInit);
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        throw new Error(response.statusText);
+    }    
 }

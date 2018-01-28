@@ -16,10 +16,12 @@ export async function getSignalsAsync(): Promise<ListSmartSignalResponse> {
     const requestUrl = `${baseUrl}/api/signal`;
 
     // Get the user AAD token
-    let userAccessToken = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator().accessToken;
+    let userAccessToken = await ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator()
+                                                        .getResourceTokenAsync('https://management.core.windows.net/');
 
     const headers = new Headers();
-    headers.append('Authorization', 'Bearer ' + userAccessToken);
+    headers.set('Authorization', 'Bearer ' + userAccessToken);
+    headers.set('Content-Type', 'application/json');
 
     const requestInit: RequestInit = {
         headers,
