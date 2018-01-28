@@ -12,6 +12,8 @@ import { PropertyCategory } from '../enums/PropertyCategory';
  * A utility class for SignalResultProperty object
  */
 export class SignalResultPropertyUtils {
+    private static findRenderTypeRegex = new RegExp('.* render (.*)[ ]?.*');
+
     /**
      * Gets the chart type from the given Signal Result property
      * @param signalResultProperty The signal result property
@@ -21,17 +23,27 @@ export class SignalResultPropertyUtils {
             return ChartType.None;
         }
         
-        let queryLastWord = signalResultProperty.value.split(' ').pop();
+        // In case no 'render' command mentioned - choose timeline as default 
+        if (!this.findRenderTypeRegex.test(signalResultProperty.value)) {
+            return ChartType.Timeline;
+        }
 
-        switch (queryLastWord) {
+        let regexResults = this.findRenderTypeRegex.exec(signalResultProperty.value);
+        if (!regexResults || regexResults.length === 0) {
+            return ChartType.None;
+        }
+
+        let chartRenderType: string = regexResults[1];
+
+        switch (chartRenderType) {
             case 'barchart':
                 return ChartType.Bars;
             case 'timechart':
                 return ChartType.Timeline;
-            case 'piechat':
+            case 'piechart':
                 return ChartType.Pie;
             default:
-                return ChartType.Timeline;
+                return ChartType.None;
         }
     }
 }

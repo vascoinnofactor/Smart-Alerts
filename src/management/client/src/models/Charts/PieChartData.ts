@@ -10,4 +10,8 @@ import ChartDataBase from './ChartDataBase';
  * Represents the model of a pie chart
  */
 export default interface PieChartData extends ChartDataBase {
+    /**
+     * Gets the sectors data keys
+     */
+    sectorDataKeys: string[];
 }

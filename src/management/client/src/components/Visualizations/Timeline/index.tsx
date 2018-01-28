@@ -46,7 +46,6 @@ export default class Timeline extends Visualization<TimelineProps> {
                         !this.props.hideLegend &&
                         <Legend />
                     }
-                    <Line dataKey="number" key="timeValue" type="monotone" strokeWidth={2} dot={false} />
                     {this.createLineElements(timelineChart)}
                 </LineChart>
             </ResponsiveContainer>
@@ -59,8 +58,8 @@ export default class Timeline extends Visualization<TimelineProps> {
      */
     private createLineElements(timelineChartData: TimelineChart): JSX.Element[] {
         var lineElements: JSX.Element[] = [];
-        if (timelineChartData.numericDataKeys && timelineChartData.numericDataKeys.length > 0) {
-          lineElements = timelineChartData.numericDataKeys.map((line, idx) => {
+        if (timelineChartData.linesDataKeys && timelineChartData.linesDataKeys.length > 0) {
+          lineElements = timelineChartData.linesDataKeys.map((line, idx) => {
             return (
               <Line
                 stroke="#ff7300"

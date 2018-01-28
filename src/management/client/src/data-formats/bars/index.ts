@@ -54,7 +54,7 @@ export default function barsDataFormat(dataTable: DataTable): BarsChart  {
     return {
         data: dataTable.data,
         numericDataKeys: numericColumns.map(column => column.name),
-        xAxisDataKey: timestampColumn[1].name,
-        barsDataKeys: lines
+        xAxisDataKey: timestampColumn[0].name,
+        barsDataKeys: numericColumns.map(column => column.name)
     };
 }

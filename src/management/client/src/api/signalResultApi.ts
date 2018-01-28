@@ -16,7 +16,7 @@ import ActiveDirectoryAuthenticatorFactory from '../factories/ActiveDirectoryAut
  */
 export async function getSignalsResultsAsync(): Promise<ListSmartSignalResultResponse> {
     const utcNowMinusDay = moment.utc().add(-1, 'days');
-    const requestUrl = `${baseUrl}/api/signalResult?startTime=${utcNowMinusDay.format('DD/MM/YYYY HH:mm')}`;
+    const requestUrl = `${baseUrl}/api/signalResult?startTime=${utcNowMinusDay.format('MM/DD/YYYY HH:mm')}`;
 
     // Get the user AAD token
     let userAccessToken = await ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator()

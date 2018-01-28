@@ -27,6 +27,7 @@ export default class PieData extends Visualization<PieProps> {
                     <Pie 
                         data={chartData.data} 
                         dataKey={chartData.numericDataKeys[0]} 
+                        nameKey={chartData.sectorDataKeys[0]}
                         fill="#bd84d8" 
                         label={!hideLegend} 
                     >
