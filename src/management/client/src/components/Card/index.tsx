@@ -52,6 +52,7 @@ interface CardOwnProps {
     hideXAxis?: boolean;
     hideYAxis?: boolean;
     hideLegend?: boolean;
+    isSelected?: boolean;
 }
 
 // Create a type combined from all the props
@@ -78,30 +79,31 @@ class Card extends React.Component<CardProps> {
     }
 
     public render() {
-        const { title, presentedValue, bottomText, resourceName } = this.props;
+        const { title, presentedValue, bottomText, resourceName,
+                isSelected } = this.props;
 
         return (
-            <div className="cardContainer">
-                <MDCard>
-                    <div className="cardHeader">
+            <div className="card-container">
+                <MDCard style={isSelected ? { background: '#c4dee5'} : undefined}>
+                    <div className="card-header">
                         <Tooltipped label={title} position="top">
                             <CardTitle 
                                 title=""
                                 subtitle={title}
-                                children={this.getHeaderInsightTimestampElement()}
+                                children={this.getCardTitleContent()}
                             />
                         </Tooltipped>
                     </div>
                     <CardText>
-                        <div className="cardContent">
+                        <div className="card-content">
                             <div>
-                                <div className="presentedValue">
+                                <div className="presented-value">
                                     {presentedValue}
                                 </div>
-                                <div className="bottomText">
+                                <div>
                                     {bottomText}
                                 </div>
-                                <div className="resourceName">
+                                <div className="resource-name">
                                     {resourceName}
                                 </div>
                             </div>
@@ -124,10 +126,9 @@ class Card extends React.Component<CardProps> {
         );
     }
 
-    private getHeaderInsightTimestampElement(): JSX.Element {
-        // TODO - convert the given timestamp to the required format
+    private getCardTitleContent(): JSX.Element {
         return (
-            <div className="insightTimestamp">
+            <div className="signal-result-timestamp">
                 {moment(this.props.timestamp).format(this.CardTimestampFormat)}
             </div>
         );

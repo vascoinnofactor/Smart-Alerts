@@ -47,7 +47,7 @@ type signalsManagementProps = SignalsManagementDispatchProps &
 /**
  * This component represents the main view of the Smart Signals screen
  */
-export class SignalsManagement extends React.Component<signalsManagementProps> {
+export class SignalsManagement extends React.PureComponent<signalsManagementProps> {
     constructor(props: signalsManagementProps) {
         super(props);
     }

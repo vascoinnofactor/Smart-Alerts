@@ -12,7 +12,7 @@ import { PropertyCategory } from '../enums/PropertyCategory';
  * A utility class for SignalResultProperty object
  */
 export class SignalResultPropertyUtils {
-    private static findRenderTypeRegex = new RegExp('.* render (.*)[ ]?.*');
+    private static findRenderTypeRegex = new RegExp('.*render\\s(\\w*)');
 
     /**
      * Gets the chart type from the given Signal Result property

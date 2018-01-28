@@ -6,5 +6,5 @@
 
 export const logAnalyticsUrl = 'https://api.loganalytics.io/v1/workspaces';
 export const applicationInsightsUrl = 'https://api.applicationinsights.io/v1/apps';
-export const azureResourceManagementUrl = 'https://management.azure.com';
+export const azureResourceManagementUrl = 'https://management.azure.com/';
  

@@ -23,6 +23,7 @@ import './indexStyle.css';
  */
 interface SignalResultsCardsPanelProps {
     signalResults: ReadonlyArray<SignalResult>;
+    selectedCardId?: number;
 }
 
 /**
@@ -31,24 +32,23 @@ interface SignalResultsCardsPanelProps {
 export default class SignalResultsCardsPanel extends React.Component<SignalResultsCardsPanelProps> {
     constructor(props: SignalResultsCardsPanelProps) {
         super(props);
-
-        this.getInsightsCards = this.getInsightsCards.bind(this);
     }
 
     public render() {
         return (
             <div>
-                {this.getInsightsCards()}
+                {this.getSignalResultCards(this.props.signalResults, this.props.selectedCardId)}
             </div>
         );
     }
 
-    private getInsightsCards(): JSX.Element[] {
-        if (!this.props.signalResults || this.props.signalResults.length === 0) {
+    private getSignalResultCards(signalResults: ReadonlyArray<SignalResult>,
+                                 selectedCardId?: number): JSX.Element[] {
+        if (!signalResults || signalResults.length === 0) {
             return [(<CircularProgress id="signal-results-cards"/>)];
         }
 
-        return this.props.signalResults.map((signalResult, index) => {
+        return signalResults.map((signalResult, index) => {
             let cardChartMetadata: ChartMetadata | undefined;
 
             if (signalResult.summary.chart) {
@@ -62,7 +62,6 @@ export default class SignalResultsCardsPanel extends React.Component<SignalResul
                                                             .getChartTypeFromProperty(signalResult.summary.chart));
 
             }
-
             return (
                 <div key={signalResult.id}>
                     <Link to={'/signalResults/' + index}>
@@ -74,6 +73,8 @@ export default class SignalResultsCardsPanel extends React.Component<SignalResul
                             resourceName={SignalResultUtils.getResourceName(signalResult.resourceId)}
                             timestamp={signalResult.analysisTimestamp}
                             chartType={SignalResultPropertyUtils.getChartTypeFromProperty(signalResult.summary.chart)}
+                            // tslint:disable-next-line:triple-equals
+                            isSelected={selectedCardId ? index == selectedCardId : false}
                             hideXAxis
                             hideYAxis
                             hideLegend
