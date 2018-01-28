@@ -33,7 +33,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
         private readonly IHttpClientWrapper httpClient;
         private readonly ServiceClientCredentials credentials;
         private readonly string applicationId;
-        private readonly Uri applicationInsightUri = new Uri("https://api.applicationinsights.io");
+        private readonly Uri applicationInsightUri = new Uri(ApplicationInsightsResource);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationInsightsClient"/> class.
