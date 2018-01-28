@@ -54,26 +54,23 @@ export function getQueryResult(queryId: string,
                                                             .getActiveDirectoryAuthenticator();
 
         // Check which resource we should generate a token against
-        let resourceToken = queryRunInfo.type === DataSource.ApplicationInsights ? 
-                                            'https://api.applicationinsights.io' :
-                                            'https://api.loganalytics.io';
+        let resourceId = queryRunInfo.type === DataSource.ApplicationInsights ? 
+                                                            'https://api.applicationinsights.io' :
+                                                            'https://api.loganalytics.io';
 
-        authenticator.getResourceToken(resourceToken, async (message: string, token: string) => {
-            if (message) {
-                throw new Error('Failed to get AAD token: ' + message);
-            }
+        try {
+            // Generate a resource token (for AI/Log Analytics)
+            let resourceToken = await authenticator.getResourceTokenAsync(resourceId);
 
             // 3. Execute the query against the correct endpoint
-            try {
-                const queryResponse = queryRunInfo.type === DataSource.ApplicationInsights ?
-                                        await executeApplicationInsightsQuery(queryRunInfo.resourceIds, query, token) :
-                                        await executeLogAnalyticsQuery(queryRunInfo.resourceIds, query, token);
-                                        
-                dispatch(getQueryResultSuccessAction(queryId, queryResponse));
-            } catch (error) {
+            const queryResponse = queryRunInfo.type === DataSource.ApplicationInsights ?
+            await executeApplicationInsightsQuery(queryRunInfo.resourceIds, query, resourceToken) :
+            await executeLogAnalyticsQuery(queryRunInfo.resourceIds, query, resourceToken);
+            
+            dispatch(getQueryResultSuccessAction(queryId, queryResponse));
+        } catch (error) {
                 dispatch(getQueryResultFailAction(queryId, error));
-            }
-        });
+        }
     };
 }
 
