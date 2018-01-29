@@ -20,7 +20,7 @@ import SignalResult from '../../models/SignalResult';
 
 import { getSignalsResults } from '../../actions/signalResult/signalResultActions';
 
-import './style.css';
+import './indexStyle.css';
 
 /**
  * Represents the SignalResultPresentation component props for the dispatch functions
