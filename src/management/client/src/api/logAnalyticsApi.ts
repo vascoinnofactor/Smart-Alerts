@@ -8,6 +8,7 @@ import ApiError from './apiError';
 import DataTable from '../models/DataTable';
 import { ConvertLogAnalyticsResponseToDataTable } from '../utils/KustoResponseParser';
 import { getWorkspaceId } from './azureResourceManagementApi';
+import { logAnalyticsUrl } from './urls';
 
 /**
  * Execute a query against Log Analytics API
@@ -16,7 +17,7 @@ export async function executeQuery(resourceIds: string[], query: string, authent
         : Promise<DataTable> {
     let workspaceId = await getWorkspaceId(resourceIds[0]);
 
-    const requestUrl = `https://api.loganalytics.io/v1/workspaces/${workspaceId}/query`;
+    const requestUrl = `${logAnalyticsUrl}/${workspaceId}/query`;
 
     // Add the required headers    
     const headers = new Headers();

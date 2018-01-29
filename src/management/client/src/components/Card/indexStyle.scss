@@ -4,25 +4,25 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-.cardContainer {
+.card-container {
     margin-bottom: 30px;
     font-family: "Segoe UI";
 
-    .cardHeader {
+    .card-header {
         display: flex;
 
-        .insightTimestamp {
+        .signal-result-timestamp {
             font-family: "Segoe UI";
             font-size: 12px;
             white-space: nowrap;
         }
     }
 
-    .cardContent {
+    .card-content {
         display: flex;
         justify-content: space-between;
         
-        .presentedValue {
+        .presented-value {
             font-weight: 500;
             font-family: "Segoe UI Semibold";
             padding-bottom: 0px;
@@ -31,7 +31,7 @@
             overflow: hidden;
         }
     
-        .resourceName {
+        .resource-name {
             margin-top: 15px;
             margin-bottom: 10px;
         }

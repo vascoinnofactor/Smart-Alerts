@@ -7,7 +7,6 @@
 import DataTable from '../../models/DataTable';
 import BarsChart from '../../models/Charts/BarsChart';
 import Column from '../../models/Column';
-import * as moment from 'moment';
 
 /**
  * The data formater for a bars chart
@@ -17,44 +16,29 @@ export default function barsDataFormat(dataTable: DataTable): BarsChart  {
     // Get all the columns which are numeric values
     let numericColumns: Column[] = dataTable.columnsMetadata.filter(column => column.dataType === 'int' ||
                                                                               column.dataType === 'long');
+    let xAxisDataKey: string;
 
-    let timestampColumn: Column[] = dataTable.columnsMetadata.filter(column => column.dataType === 'datetime');
+    // Find the x-axis data key
+    // First we are trying to find datetime, if not - take the first column
+    let timestampColumns: Column[] = dataTable.columnsMetadata.filter(column => column.dataType === 'datetime');
 
-    let lines: string[] = [];
+    if (!timestampColumns || timestampColumns.length === 0) {
+        let firstColumn = dataTable.columnsMetadata[0];
+        xAxisDataKey = firstColumn.name;
 
-    // In case failed to find by column type - fallback to search manually
-    if (numericColumns.length === 0 || timestampColumn.length === 0) {
-        let firstRow = dataTable.data[0];
-        let index = 0;
-
-        // tslint:disable-next-line:forin
-        for (var property in firstRow) {
-            if (Number.isInteger(firstRow[property])) {
-                numericColumns.push({
-                    dataType: 'int',
-                    name: dataTable.columnsMetadata[index].name
-                });
-            }
-
-            if (moment(firstRow[property], 'yyyy-mm-ddTHH:00:00.0000000Z', true).isValid) {
-                timestampColumn.push({
-                    dataType: 'timestamp',
-                    name: dataTable.columnsMetadata[index].name
-                });
-            }
-
-            if ((typeof firstRow[property]) === 'number') {
-                lines.push(dataTable.columnsMetadata[index].name);
-            }
-
-            index++;
+        // Remove the first column (if exists) from the numeric columns
+        let xAxisInNumericColumnsIndex = numericColumns.indexOf(firstColumn);
+        if (xAxisInNumericColumnsIndex !== -1) {
+            numericColumns.splice(xAxisInNumericColumnsIndex, 1);
         }
+    } else {
+        xAxisDataKey = timestampColumns[0].name;
     }
-
+    
     return {
         data: dataTable.data,
         numericDataKeys: numericColumns.map(column => column.name),
-        xAxisDataKey: timestampColumn[1].name,
-        barsDataKeys: lines
+        xAxisDataKey: xAxisDataKey,
+        barsDataKeys: numericColumns.map(column => column.name)
     };
 }

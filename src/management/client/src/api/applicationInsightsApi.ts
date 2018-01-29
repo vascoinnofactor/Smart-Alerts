@@ -8,6 +8,7 @@ import ApiError from './apiError';
 import DataTable from '../models/DataTable';
 import { ConvertKustoResponseToDataTable } from '../utils/KustoResponseParser';
 import { getApplicationId } from './azureResourceManagementApi';
+import { applicationInsightsUrl } from './urls';
 
 /**
  * Execute a query against Application Insights API
@@ -19,7 +20,7 @@ export async function executeQuery(resourceIds: string[], query: string, authent
     let applicationId = await getApplicationId(resourceIds[0]);
 
     // Create the endpoint uri with the application id
-    const requestUrl = `https://api.applicationinsights.io/v1/apps/${applicationId}/query`;
+    const requestUrl = `${applicationInsightsUrl}/${applicationId}/query`;
     
     // Add the required headers    
     const headers = new Headers();

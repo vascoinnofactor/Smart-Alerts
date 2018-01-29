@@ -22,31 +22,6 @@ import { getSignalsResults } from '../../actions/signalResult/signalResultAction
 
 import './style.css';
 
-// TODO - this will be removed once integration with BE will be over
-// const data03 = [
-//     { time: 'Jan 04 2016', number: 1.35 },
-//     { time: 'Jan 05 2016', number: 102.71 },
-//     { time: 'Jan 06 2016', number: 60.7 },
-//     { time: 'Jan 07 2016', number: 96.45 },
-//     { time: 'Jan 08 2016', number: 23.96 },
-//     { time: 'Jan 11 2016', number: 98.53 },
-//     { time: 'Jan 12 2016', number: 35.96 },
-//     { time: 'Jan 13 2016', number: 97.39 },
-//     { time: 'Jan 14 2016', number: 78.52 }
-// ];
-
-// const data04 = [
-//     { time: 'Jan 04 2016', number: 96.35 },
-//     { time: 'Jan 05 2016', number: 99.71 },
-//     { time: 'Jan 06 2016', number: 100.7 },
-//     { time: 'Jan 07 2016', number: 96.45 },
-//     { time: 'Jan 08 2016', number: 13.96 },
-//     { time: 'Jan 11 2016', number: 98.53 },
-//     { time: 'Jan 12 2016', number: 12.96 },
-//     { time: 'Jan 13 2016', number: 97.39 },
-//     { time: 'Jan 14 2016', number: 14.52 }
-// ];
-
 /**
  * Represents the SignalResultPresentation component props for the dispatch functions
  */
@@ -76,7 +51,7 @@ type SignalResultPresentationProps = SignalResultPresentationDispatchProps &
 /**
  * This component represents ths main view of the Smart Signal Result screen
  */
-class SignalResultPresentation extends React.Component<SignalResultPresentationProps> {
+class SignalResultPresentation extends React.PureComponent<SignalResultPresentationProps> {
     /**
      * Once component mount, refresh the signals results list
      */
@@ -85,7 +60,7 @@ class SignalResultPresentation extends React.Component<SignalResultPresentationP
     }
 
     public render() {
-        const { signalsResults } = this.props;
+        const { signalsResults, selectedSignalResultNumber } = this.props;
 
         const d = [ 'subscriptionId', 'something very long sldfkjlsdkjflsdkjf' ];
         return (
@@ -98,7 +73,12 @@ class SignalResultPresentation extends React.Component<SignalResultPresentationP
                     <Row className="signal-result-content">
                         <Col xs={3} className="signal-result-cards-panel">
                             <div>
-                                <SignalResultsCardsPanel signalResults={signalsResults} />
+                                <SignalResultsCardsPanel 
+                                    signalResults={signalsResults}
+                                    selectedCardId={selectedSignalResultNumber !== null ?
+                                                        selectedSignalResultNumber :
+                                                        undefined}
+                                />
                             </div>
                         </Col>
 

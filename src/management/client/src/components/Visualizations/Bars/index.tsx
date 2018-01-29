@@ -62,6 +62,7 @@ export default class Bars extends Visualization<BarsProps> {
               <Bar
                 key={idx}
                 dataKey={line}
+                fill="#8884d8"
               />
             );
           });
