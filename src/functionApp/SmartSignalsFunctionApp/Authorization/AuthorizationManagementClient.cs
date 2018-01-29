@@ -12,9 +12,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Newtonsoft.Json;
     using Polly;

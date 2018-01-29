@@ -14,6 +14,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     using System.Threading.Tasks;
     using System.Windows;
     using Microsoft.Azure.Monitoring.SmartSignals.Clients;
+    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Extensions;
+    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
+    using Microsoft.Azure.Monitoring.SmartSignals.Package;
+    using Microsoft.Azure.Monitoring.SmartSignals.Trace;
     using Unity.Attributes;
 
     /// <summary>
@@ -21,9 +25,21 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     /// </summary>
     public class SignalsControlViewModel : ObservableObject
     {
-        private readonly AzureResourceManagerClient azureResourceManagerClient;
+        private readonly IAzureResourceManagerClient azureResourceManagerClient;
 
         private readonly ISmartSignal smartSignal;
+
+        private readonly IAnalysisServicesFactory analysisServicesFactory;
+
+        private readonly SmartSignalManifest smartSignalManifes;
+
+        private readonly ITracer tracer;
+
+        private string signalName;
+
+        private ObservableCollection<SignalCadence> cadences;
+
+        private SignalCadence selectedCadence;
 
         private ObservableTask<ObservableCollection<AzureSubscription>> readSubscriptionsTask;
 
@@ -37,29 +53,41 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
         private string selectedResourceType;
 
-        private ObservableTask<ObservableCollection<string>> readResourcesTask;
+        private ObservableTask<ObservableCollection<ResourceIdentifier>> readResourcesTask;
 
-        private string selectedResource;
+        private ResourceIdentifier selectedResource;
 
         #region Ctros
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SignalsControlViewModel"/> class for design time only.
-        /// </summary>
-        public SignalsControlViewModel()
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignalsControlViewModel"/> class.
         /// </summary>
         /// <param name="azureResourceManagerClient">The Azure resources manager client.</param>
         /// <param name="smartSignal">The smart signal.</param>
+        /// <param name="smartSignalManifest">The smart signal manifest.</param>
+        /// <param name="analysisServicesFactory">The analysis services factory.</param>
+        /// /// <param name="tracer">A tracer</param>
         [InjectionConstructor]
-        public SignalsControlViewModel(AzureResourceManagerClient azureResourceManagerClient, ISmartSignal smartSignal)
+        public SignalsControlViewModel(
+            IAzureResourceManagerClient azureResourceManagerClient, 
+            ISmartSignal smartSignal,
+            SmartSignalManifest smartSignalManifest,
+            IAnalysisServicesFactory analysisServicesFactory,
+            ITracer tracer)
         {
             this.azureResourceManagerClient = azureResourceManagerClient;
             this.smartSignal = smartSignal;
+            this.smartSignalManifes = smartSignalManifest;
+            this.analysisServicesFactory = analysisServicesFactory;
+            this.tracer = tracer;
+
+            this.SignalName = this.smartSignalManifes.Name;
+            
+            // Initialize cadences combo box
+            IEnumerable<SignalCadence> cadences = this.smartSignalManifes.SupportedCadencesInMinutes
+                    .Select(cadence => new SignalCadence(TimeSpan.FromMinutes(cadence)));
+
+            this.Cadences = new ObservableCollection<SignalCadence>(cadences);
 
             // Initialize combo boxes read tasks
             this.ReadSubscriptionsTask = new ObservableTask<ObservableCollection<AzureSubscription>>(
@@ -71,8 +99,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
             this.ReadResourceTypesTask = new ObservableTask<ObservableCollection<string>>(
                 Task.FromResult(new ObservableCollection<string>()));
 
-            this.ReadResourcesTask = new ObservableTask<ObservableCollection<string>>(
-                Task.FromResult(new ObservableCollection<string>()));
+            this.ReadResourcesTask = new ObservableTask<ObservableCollection<ResourceIdentifier>>(
+                Task.FromResult(new ObservableCollection<ResourceIdentifier>()));
 
             // Initialize commands
             this.RunSignalCommand = new CommandHandler(() => this.RunSignal());
@@ -81,6 +109,23 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         #endregion
 
         #region Binded Properties
+
+        /// <summary>
+        /// Gets the signal name.
+        /// </summary>
+        public string SignalName
+        {
+            get
+            {
+                return this.signalName;
+            }
+
+            private set
+            {
+                this.signalName = value;
+                this.OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Gets a task that returns the user's subscriptions.
@@ -154,8 +199,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
                 this.ReadResourceTypesTask = new ObservableTask<ObservableCollection<string>>(
                     this.GetResourceTypesAsync());
 
-                this.ReadResourcesTask = new ObservableTask<ObservableCollection<string>>(
-                    Task.FromResult(new ObservableCollection<string>()));
+                this.ReadResourcesTask = new ObservableTask<ObservableCollection<ResourceIdentifier>>(
+                    Task.FromResult(new ObservableCollection<ResourceIdentifier>()));
             }
         }
 
@@ -191,7 +236,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
                 this.selectedResourceType = value;
                 this.OnPropertyChanged();
 
-                this.ReadResourcesTask = new ObservableTask<ObservableCollection<string>>(
+                this.ReadResourcesTask = new ObservableTask<ObservableCollection<ResourceIdentifier>>(
                     this.GetResourcesAsync());
             }
         }
@@ -199,7 +244,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <summary>
         /// Gets a task that returns the user's resource types.
         /// </summary>
-        public ObservableTask<ObservableCollection<string>> ReadResourcesTask
+        public ObservableTask<ObservableCollection<ResourceIdentifier>> ReadResourcesTask
         {
             get
             {
@@ -216,16 +261,50 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <summary>
         /// Gets or sets the resource selected by the user.
         /// </summary>
-        public string SelectedResource
+        public ResourceIdentifier SelectedResource
         {
             get
             {
-                return this.selectedResourceType;
+                return this.selectedResource;
             }
 
             set
             {
                 this.selectedResource = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets a task that returns the user's subscriptions.
+        /// </summary>
+        public ObservableCollection<SignalCadence> Cadences
+        {
+            get
+            {
+                return this.cadences;
+            }
+
+            private set
+            {
+                this.cadences = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the subscription selected by the user.
+        /// </summary>
+        public SignalCadence SelectedCadence
+        {
+            get
+            {
+                return this.selectedCadence;
+            }
+
+            set
+            {
+                this.selectedCadence = value;
                 this.OnPropertyChanged();
             }
         }
@@ -282,7 +361,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// Gets Azure resources.
         /// </summary>
         /// <returns>A task that returns the resources</returns>
-        private async Task<ObservableCollection<string>> GetResourcesAsync()
+        private async Task<ObservableCollection<ResourceIdentifier>> GetResourcesAsync()
         {
             ResourceType selectedResourceType = (ResourceType)Enum.Parse(typeof(ResourceType), this.SelectedResourceType);
             var resources = (await this.azureResourceManagerClient.GetAllResourcesInResourceGroupAsync(
@@ -290,18 +369,28 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
                     this.SelectedResourceGroup,
                     new List<ResourceType>() { selectedResourceType },
                     CancellationToken.None)).ToList()
-                .Where(resourceIndentifier => resourceIndentifier.ResourceType == selectedResourceType)
-                .Select(resourceIndentifier => resourceIndentifier.ResourceName).ToList();
+                .Where(resourceIndentifier => resourceIndentifier.ResourceType == selectedResourceType).ToList();
 
-            return new ObservableCollection<string>(resources);
+            return new ObservableCollection<ResourceIdentifier>(resources);
         }
 
         /// <summary>
         /// Runs the smart signal.
         /// </summary>
-        private void RunSignal()
+        private async void RunSignal()
         {
-            MessageBox.Show("Comming soon...");
+            List<ResourceIdentifier> resources = new List<ResourceIdentifier>() { this.selectedResource };
+            var analysisRequest = new AnalysisRequest(resources, DateTime.UtcNow, TimeSpan.FromHours(1), this.analysisServicesFactory);
+
+            try
+            {
+                await this.smartSignal.AnalyzeResourcesAsync(analysisRequest, this.tracer, CancellationToken.None);
+                MessageBox.Show($"Signal ran successfully");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Failed running signal: {e.Message}");
+            }
         }
     }
 }

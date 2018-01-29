@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation
+namespace Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation
 {
     using System.Collections.Generic;
     using Newtonsoft.Json;

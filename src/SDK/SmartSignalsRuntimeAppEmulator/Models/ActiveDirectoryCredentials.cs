@@ -10,6 +10,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Microsoft.Rest;
 
     /// <summary>
@@ -17,15 +18,19 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     /// </summary>
     public class ActiveDirectoryCredentials : ServiceClientCredentials
     {
-        private readonly string token;
+        private readonly AuthenticationServices authenticationServices;
+
+        private readonly string resource;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActiveDirectoryCredentials"/> class.
         /// </summary>
-        /// <param name="token">The authentication result token</param>
-        public ActiveDirectoryCredentials(string token)
+        /// <param name="authenticationServices">The authentication services</param>
+        /// <param name="resource">The resource for which to create the credentials</param>
+        public ActiveDirectoryCredentials(AuthenticationServices authenticationServices, string resource)
         {
-            this.token = token;
+            this.authenticationServices = authenticationServices;
+            this.resource = resource;
         }
 
         /// <summary>
@@ -37,7 +42,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         public override async Task ProcessHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {       
             // Add the authentication header
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
+            string resourceToken = await this.authenticationServices.GetResourceTokenAsync(this.resource);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", resourceToken);
             await base.ProcessHttpRequestAsync(request, cancellationToken);
         }
     }

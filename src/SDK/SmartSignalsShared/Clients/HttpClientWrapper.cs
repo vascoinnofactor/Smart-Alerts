@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient
+namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
     using System;
     using System.Net.Http;

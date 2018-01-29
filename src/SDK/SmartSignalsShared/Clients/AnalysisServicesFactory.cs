@@ -4,17 +4,15 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
+namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
 
     /// <summary>
     /// An implementation of the <see cref="IAnalysisServicesFactory"/> interface.
@@ -44,7 +42,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
             this.azureResourceManagerClient = azureResourceManagerClient;
             this.queryRunInfoProvider = queryRunInfoProvider;
 
-            string timeoutString = ConfigurationReader.ReadConfig("AnalyticsQueryTimeoutInMinutes", required: true);
+            // string timeoutString = ConfigurationReader.ReadConfig("AnalyticsQueryTimeoutInMinutes", required: true);
+            string timeoutString = "15";
             this.queryTimeout = TimeSpan.FromMinutes(int.Parse(timeoutString));
         }
 

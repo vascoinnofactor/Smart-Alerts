@@ -4,11 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
+namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
     using System;
     using System.Runtime.Serialization;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
 
     /// <summary>
     /// This exception is used to handle cases where query client information could not be created by the <see cref="IQueryRunInfoProvider"/>.

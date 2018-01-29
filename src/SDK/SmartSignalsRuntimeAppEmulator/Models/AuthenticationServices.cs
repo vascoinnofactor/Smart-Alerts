@@ -10,11 +10,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
-
+    
     /// <summary>
     /// A class providing methods used to authenticate the user with their organization's AAD.
     /// </summary>
-    public class AuthenticationServices 
+    public class AuthenticationServices
     {
         // The authorization authority used for multi-tenant applications authorizations.
         private const string CommonAuthority = "https://login.microsoftonline.com/common";
@@ -57,16 +57,33 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         /// </summary>
         public AuthenticationResult AuthenticationResult { get; set; }
 
-        #region Implementation of IAuthenticationServices
-
         /// <summary>
         /// Authenticates the user with their organization's AAD.
         /// </summary>
         public void AuthenticateUser()
         {
-            this.AuthenticationResult = this.authenticationContext.AcquireToken(ResourceId, ClientId, RedirectUri, PromptBehavior.Auto);
+            this.AuthenticationResult = this.authenticationContext.AcquireToken(
+                ResourceId,
+                ClientId,
+                RedirectUri,
+                PromptBehavior.Auto,
+                UserIdentifier.AnyUser, 
+                "prompt=consent");
         }
 
-        #endregion
+        /// <summary>
+        /// Get access token for a resource.
+        /// </summary>
+        /// <param name="resource">The resource</param>
+        /// <returns>A task that returns the resource's access token</returns>
+        public async Task<string> GetResourceTokenAsync(string resource)
+        {
+            var authResult = await this.authenticationContext.AcquireTokenAsync(
+                resource,
+                ClientId,
+                new UserAssertion(this.AuthenticationResult.AccessToken, this.AuthenticationResult.AccessTokenType));
+
+            return authResult.AccessToken;
+        }
     }
 }

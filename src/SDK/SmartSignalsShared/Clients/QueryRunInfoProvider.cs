@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
+namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
     using System;
     using System.Collections.Concurrent;
@@ -12,8 +12,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
 
     /// <summary>
     /// An implementation of the <see cref="IQueryRunInfoProvider"/> interface.

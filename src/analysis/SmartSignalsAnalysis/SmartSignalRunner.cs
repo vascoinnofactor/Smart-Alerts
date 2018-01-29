@@ -18,6 +18,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
+    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
 
     /// <summary>

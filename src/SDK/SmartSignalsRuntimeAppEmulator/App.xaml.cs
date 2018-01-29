@@ -46,21 +46,32 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             {
                 signalPackage = SmartSignalPackage.CreateFromStream(fileStream, tracer);
             }
-                
+
+            SmartSignalManifest signalManifest = signalPackage.Manifest;
             ISmartSignal signal = signalLoader.LoadSignal(signalPackage);
 
             // Authenticate the user to AAD
             var authenticationServices = new AuthenticationServices();
             authenticationServices.AuthenticateUser();
-            var credentialsFactory = new ActiveDirectoryCredentialsFactory(authenticationServices.AuthenticationResult.AccessToken);
+            var credentialsFactory = new ActiveDirectoryCredentialsFactory(authenticationServices);
+
+            var azureResourceManagerClient = new AzureResourceManagerClient(credentialsFactory, tracer);
+
+            // Create analysis service factory
+            var queryRunInroProvider = new QueryRunInfoProvider(azureResourceManagerClient);
+            var httpClientWrapper = new HttpClientWrapper();
+            var analysisServicesFactory = new AnalysisServicesFactory(tracer, httpClientWrapper, credentialsFactory, azureResourceManagerClient, queryRunInroProvider);
 
             // Create a Unity container with all the required models and view models registrations
             Container = new UnityContainer();
             Container
+                .RegisterInstance(tracer)
                 .RegisterInstance(new SignalsResultsRepository())
                 .RegisterInstance(authenticationServices)
-                .RegisterInstance(new AzureResourceManagerClient(credentialsFactory, tracer))
-                .RegisterInstance(signal);
+                .RegisterInstance(azureResourceManagerClient)
+                .RegisterInstance(signal)
+                .RegisterInstance(signalManifest)
+                .RegisterInstance(analysisServicesFactory);
         }
     }
 }

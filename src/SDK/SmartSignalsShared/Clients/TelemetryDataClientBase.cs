@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
+namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
     using System;
     using System.Collections.Generic;
@@ -15,10 +15,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Microsoft.Rest;
     using Newtonsoft.Json.Linq;

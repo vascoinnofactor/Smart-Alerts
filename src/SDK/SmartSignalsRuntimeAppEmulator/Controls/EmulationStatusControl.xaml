@@ -57,13 +57,13 @@
             <Separator Width="5" Visibility="Hidden"/>
             <Hyperlink NavigateUri="http://stackoverflow.com">View</Hyperlink>
         </TextBlock>
-
+        
         <TextBlock Style="{StaticResource ControlText}" Text="Traces" Margin="0,0,0,10"/>
         <TextBox x:Name="TracerBox" Margin="0,0,0,30" Height="200" AcceptsReturn="True" 
                  Background="Transparent" BorderBrush="#FF7F7F7F" BorderThickness="1"
                  IsReadOnly="True" IsTabStop="False" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto"/>
 
-        <Button Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Content="Cancel"/>
+        <Button Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Content="Cancel" Margin="0,15,0,0"/>
 
     </StackPanel>
 </UserControl>
