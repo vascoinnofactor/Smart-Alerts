@@ -94,4 +94,6 @@ function mapDispatchToProps(dispatch: Dispatch<StoreState>): LoginDispatchProps 
     };
 }
 
-export default withRouter(connect(null, mapDispatchToProps)(Login));
+// Casting to any in order to prevent the competability issue with Redux - Router
+// tslint:disable-next-line:no-any
+export default withRouter(connect(null, mapDispatchToProps)(Login) as any);
