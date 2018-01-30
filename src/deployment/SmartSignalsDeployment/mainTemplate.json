@@ -13,6 +13,8 @@
       ]
     },
     "siraPrefix": { "type": "string" },
+    "functionPackageLink": { "type": "string" },
+    "sitePackageLink": { "type": "string" },
     "sendgridApiKey": {
       "type": "string",
       "defaultValue": ""
@@ -28,7 +30,8 @@
   },
   "variables": {
     "functionsAppName": "[concat(parameters('siraPrefix'), '-fa')]",
-    "functionsHostingPlanName": "[concat(parameters('siraPrefix'), '-sp')]",
+    "siteName": "[concat(parameters('siraPrefix'), '-site')]",
+    "hostingPlanName": "[concat(parameters('siraPrefix'), '-sp')]",
     "functionsLogsStorageAccountName": "[concat(parameters('siraPrefix'), 'logs')]",
     "storageAccountName": "[concat(parameters('siraPrefix'), 'sa')]",
     "applicationInsightsName": "[concat(parameters('siraPrefix'), '-ai')]",
@@ -36,8 +39,7 @@
     "storageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
     "resourceGroupName": "[resourceGroup().name]",
     "functionBaseUrl": "[concat('https://', variables('functionsAppName'), '.azurewebsites.net')]",
-    "analyzeFunctionName": "Analyze",
-    "packageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignals.zip"
+    "analyzeFunctionName": "Analyze"
   },
   "resources": [
     {
@@ -70,14 +72,21 @@
       }
     },
     {
+      "apiVersion": "2015-08-01",
       "type": "Microsoft.Web/serverfarms",
-      "apiVersion": "2015-04-01",
-      "name": "[variables('functionsHostingPlanName')]",
+      "name": "[variables('hostingPlanName')]",
       "location": "[resourceGroup().location]",
       "properties": {
-        "name": "[variables('functionsHostingPlanName')]",
-        "computeMode": "Dynamic",
-        "sku": "Dynamic"
+        "name": "[variables('hostingPlanName')]",
+        "workerSize": "0",
+        "numberOfWorkers": 1
+      },
+      "sku": {
+        "name": "S1",
+        "tier": "Standard",
+        "size": "S1",
+        "family": "S",
+        "capacity": 1
       }
     },
     {
@@ -90,21 +99,34 @@
         "type": "SystemAssigned"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', variables('functionsHostingPlanName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('functionsLogsStorageAccountName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]"
       ],
       "properties": {
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('functionsHostingPlanName'))]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
         "siteConfig": {
           "use32BitWorkerProcess": false,
           "siteAuthEnabled": true,
+          "AlwaysOn": true,
           "appSettings": [
-            { "name": "FUNCTIONS_EXTENSION_VERSION", "value": "~1" },
-            { "name": "MSDEPLOY_RENAME_LOCKED_FILES", "value": "1" },
-            { "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING", "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]" },
-            { "name": "WEBSITE_CONTENTSHARE", "value": "[toLower(variables('functionsAppName'))]" }
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~1"
+            },
+            {
+              "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+              "value": "1"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('functionsAppName'))]"
+            }
           ]
         }
       },
@@ -121,7 +143,7 @@
             "displayName": "deploy"
           },
           "properties": {
-            "packageUri": "[variables('packageLink')]",
+            "packageUri": "[parameters('functionPackageLink')]",
             "dbType": "None",
             "connectionString": "",
             "setParameters": {
@@ -177,6 +199,80 @@
               "value": "[listSecrets(resourceId('Microsoft.Web/sites/functions', variables('functionsAppName'), variables('analyzeFunctionName')),'2015-08-01').key]",
               "type": "Custom"
             }
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('siteName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('functionsLogsStorageAccountName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "siteConfig": {
+          "use32BitWorkerProcess": false,
+          "siteAuthEnabled": true,
+          "AlwaysOn": true,
+          "appSettings": [
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~1"
+            },
+            {
+              "name": "MSDEPLOY_RENAME_LOCKED_FILES",
+              "value": "1"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('siteName'))]"
+            }
+          ]
+        }
+      },
+      "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('siteName'))]"
+          ],
+          "tags": {
+            "displayName": "deploy"
+          },
+          "properties": {
+            "packageUri": "[parameters('sitePackageLink')]",
+            "dbType": "None",
+            "connectionString": "",
+            "setParameters": {
+              "IIS Web Application Name": "[variables('siteName')]"
+            }
+          }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "type": "config",
+          "name": "appsettings",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('siteName'))]",
+            "[concat('Microsoft.Web/Sites/', variables('siteName'), '/extensions/MSDeploy')]"
+          ],
+          "tags": {
+            "displayName": "appsettings"
+          },
+          "properties": {
+            "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]",
+            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('functionsLogsStorageAccountName'), ';AccountKey=', listKeys(variables('functionsLogsStorageAccountId'),'2015-05-01-preview').key1)]"
           }
         }
       ]

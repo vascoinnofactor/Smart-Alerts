@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{114AB921-11E0-472F-B30D-73850169098D}"
 EndProject
@@ -79,13 +79,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalsSharedTests", "test\SmartSignalsSharedTests\SmartSignalsSharedTests.csproj", "{2EEC00B8-9B32-486A-B4EB-781492FFCD8D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EC23F04C-668E-42D5-A8DB-D7009A8E96F8} = {EC23F04C-668E-42D5-A8DB-D7009A8E96F8}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "managedAppManagement", "managedAppManagement", "{1FA8FEC5-461B-4ED4-B965-E7AE71A40E06}"
-	ProjectSection(SolutionItems) = preProject
-		src\tools\managedApp\createUiDefinition.json = src\tools\managedApp\createUiDefinition.json
-		src\tools\managedApp\DeployManagedApp.ps1 = src\tools\managedApp\DeployManagedApp.ps1
-		src\tools\managedApp\mainTemplate.json = src\tools\managedApp\mainTemplate.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "testSignal", "testSignal", "{58E1A8E2-7A0A-4CA2-A1BC-629B231257C6}"
@@ -224,7 +217,6 @@ Global
 		{04E5BEF7-CA4E-44C4-85C8-B9F7477FD205} = {114AB921-11E0-472F-B30D-73850169098D}
 		{AFECE1D3-21A5-4850-8536-7903901685A8} = {BFAA36B9-8426-4C44-AD67-BB905F6472E3}
 		{2EEC00B8-9B32-486A-B4EB-781492FFCD8D} = {9E37DBE4-994A-47EC-892E-92743D64769E}
-		{1FA8FEC5-461B-4ED4-B965-E7AE71A40E06} = {04E5BEF7-CA4E-44C4-85C8-B9F7477FD205}
 		{58E1A8E2-7A0A-4CA2-A1BC-629B231257C6} = {9E37DBE4-994A-47EC-892E-92743D64769E}
 		{B8598C41-CC00-4A98-B4A8-67A37FF3C682} = {58E1A8E2-7A0A-4CA2-A1BC-629B231257C6}
 		{EC23F04C-668E-42D5-A8DB-D7009A8E96F8} = {58E1A8E2-7A0A-4CA2-A1BC-629B231257C6}
