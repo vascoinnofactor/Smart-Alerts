@@ -53,7 +53,9 @@
       "siraPrefix": "[basics('siraPrefix')]",
       "sendgridApiKey": "[steps('emailSettings').sendgridApiKey]",
       "emailRecipient": "[steps('emailSettings').emailRecipient]",
-      "applicationResourceName": "[concat(basics('siraPrefix'), 'SiRA')]"
+      "applicationResourceName": "[concat(basics('siraPrefix'), 'SiRA')]",
+      "functionPackageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignals.zip",
+      "sitePackageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignalssite.zip"
     }
   }
 }
