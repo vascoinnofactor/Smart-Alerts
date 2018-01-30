@@ -7,49 +7,62 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Extensions
 {
     using System;
-    using System.Diagnostics;
     using System.Linq;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Extension methods for <see cref="ITracer"/> objects
     /// </summary>
     public static class TracerExtensions
     {
-        private const string PerformanceCounterMetricPrefix = "SmartSignalsPerformanceCounter";
+        private const string PerformanceCounterMetricPrefix = "SmartSignalsAppCounter";
 
         /// <summary>
         /// Trace relevant performance counters as metrics.
         /// </summary>
         /// <param name="tracer">The tracer to use</param>
-        public static void TracePerformanceCounters(this ITracer tracer)
+        public static void TraceAppCounters(this ITracer tracer)
         {
+            string countersJson = null;
             try
             {
-                PerformanceCounter[] counters =
+                countersJson = Environment.GetEnvironmentVariable("WEBSITE_COUNTERS_APP");
+                if (string.IsNullOrEmpty(countersJson))
                 {
-                    new PerformanceCounter("Objects", "Connections", true),
-                    new PerformanceCounter("Objects", "NamedPipes", true),
-                    new PerformanceCounter("Objects", "Mutexes", true),
-                    new PerformanceCounter("Objects", "Processes", true),
-                    new PerformanceCounter("Objects", "Sections", true),
-                    new PerformanceCounter("Objects", "Semaphores", true),
-                    new PerformanceCounter("Objects", "Threads", true),
-                    new PerformanceCounter("Processor", "% Processor Time", "_Total", true),
-                    new PerformanceCounter("Memory", "Available MBytes", true)
-                };
+                    tracer.TraceWarning("Failed to trace counters: environment variable value is empty");
+                    return;
+                }
 
-                foreach (PerformanceCounter counter in counters)
+                // TEMP: need to parse this specially to work around bug where
+                // sometimes an extra garbage character occurs after the terminal
+                // brace
+                int idx = countersJson.LastIndexOf('}');
+                if (idx > 0)
+                {
+                    countersJson = countersJson.Substring(0, idx + 1);
+                }
+
+                JObject countersObject = (JObject)JsonConvert.DeserializeObject(countersJson);
+                foreach (var counter in countersObject)
                 {
                     // The metric name is the counter's category and name, excluding non-letters
-                    string metricName = PerformanceCounterMetricPrefix + new string((counter.CategoryName + "_" + counter.CounterName).Where(c => char.IsLetter(c) || c == '_').ToArray());
+                    string metricName = $"{PerformanceCounterMetricPrefix}_{counter.Key}";
+
+                    // Try to parse the value
+                    if (!double.TryParse(counter.Value.ToString(), out double metricValue))
+                    {
+                        tracer.TraceWarning($"Failed to trace counter {counter.Key}, value {counter.Value}");
+                        continue;
+                    }
 
                     // Report the metric
-                    tracer.ReportMetric(metricName, counter.NextValue());
+                    tracer.ReportMetric(metricName, metricValue);
                 }
             }
             catch (Exception e)
             {
-                tracer.TraceWarning($"Failed to trace performance counters: {e.Message}");
+                tracer.TraceWarning($"Failed to trace counters: countersJson = {countersJson}, error message = {e.Message}");
             }
         }
     }

@@ -72,8 +72,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
                 try
                 {
-                    // Trace performance counters (before analysis)
-                    tracer.TracePerformanceCounters();
+                    // Trace app counters (before analysis)
+                    tracer.TraceAppCounters();
 
                     // Read the request
                     SmartSignalRequest smartSignalRequest = await request.Content.ReadAsAsync<SmartSignalRequest>(cancellationToken);
@@ -85,9 +85,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                     List<SmartSignalResultItemPresentation> resultPresentations = await runner.RunAsync(smartSignalRequest, cancellationToken);
                     tracer.TraceInformation($"Analyze completed, returning {resultPresentations.Count} results");
 
-                    // Trace performance counters (after analysis)
-                    tracer.TracePerformanceCounters();
-
                     // Return the generated presentations
                     return request.CreateResponse(HttpStatusCode.OK, resultPresentations);
                 }
@@ -98,6 +95,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
                     // Return error status
                     return request.CreateResponse(HttpStatusCode.InternalServerError, e.Message);
+                }
+                finally
+                {
+                    // Trace app counters (after analysis)
+                    tracer.TraceAppCounters();
                 }
             }
         }
