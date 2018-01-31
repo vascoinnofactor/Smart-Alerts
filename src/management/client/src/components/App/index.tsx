@@ -36,4 +36,6 @@ function mapStateToProps(state: StoreState): AppStateProps {
     };
 }
 
-export default withRouter(connect(mapStateToProps)(App));
+// Casting to any in order to prevent the competability issue with Redux - Router
+// tslint:disable-next-line:no-any
+export default withRouter(connect(mapStateToProps)(App) as any);

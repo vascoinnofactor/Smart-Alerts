@@ -16,7 +16,6 @@ namespace ManagementApiTests.AIClient
     using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Extensions;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.HttpClient;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using SmartSignalsSharedTests;

@@ -14,29 +14,29 @@
     </UserControl.Resources>
     <Grid Background="#FFECF0F1" >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" MinWidth="0.5"/>
+            <ColumnDefinition Width="370" MinWidth="0.5"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.Column="0" BorderBrush="#FFA5A5A5" BorderThickness="0,0,0.5,0" Padding="20,20,20,0">
             <StackPanel Orientation="Vertical">
-                <TextBlock Style="{StaticResource SectionHeader}" Text="EMULATION SETTINGS - My Signal 1"/>
-                <TextBlock Style="{StaticResource ControlText}" Text="Start date" Margin="0,0,0,10"/>
-                <DatePicker Margin="0,0,0,20" HorizontalAlignment="Left"/>
+                <TextBlock Style="{StaticResource SectionHeader}" Text="SETTINGS"/>
+                <TextBlock Style="{StaticResource ControlText}" Text="Signal name" Margin="0,0,0,10"/>
+                <TextBlock Style="{StaticResource SignalNameTitle}" Text="{Binding SignalName}" />
                 <TextBlock Style="{StaticResource ControlText}" Text="Analysis period" Margin="0,0,0,10"/>
-                <ComboBox Margin="0,0,0,20" HorizontalAlignment="Left">
-                    <ComboBoxItem IsSelected="True">1 hour</ComboBoxItem>
-                    <ComboBoxItem>1 day</ComboBoxItem>
-                </ComboBox>
+                <ComboBox Margin="0,0,0,20" HorizontalAlignment="Left" MinWidth="100"
+                          ItemsSource="{Binding Path=Cadences}" SelectedItem="{Binding Path=SelectedCadence}"
+                          DisplayMemberPath="DisplayName" 
+                          IsEnabled="{Binding Path=Cadences, Converter={StaticResource EmptyListToBooleanConverter}}" />
 
                 <TextBlock Style="{StaticResource ControlText}" Text="Subscription" Margin="0,0,0,10" />
-                <ComboBox Margin="0,0,0,20" HorizontalAlignment="Left" MinWidth="200"
+                <ComboBox Margin="0,0,0,20" HorizontalAlignment="Left" MinWidth="160"
                           ItemsSource="{Binding Path=ReadSubscriptionsTask.Result}"  SelectedItem="{Binding Path=SelectedSubscription}"
                           DisplayMemberPath="DisplayName" 
                           IsEnabled="{Binding Path=ReadSubscriptionsTask.Result, Converter={StaticResource EmptyListToBooleanConverter}}" />
 
                 <TextBlock Style="{StaticResource ControlText}" Text="Resource group" Margin="0,0,0,10"/>
-                <ComboBox Margin="0,0,558,20" HorizontalAlignment="Right" MinWidth="125"
+                <ComboBox Margin="0,0,0,20" HorizontalAlignment="Left" MinWidth="130"
                           ItemsSource="{Binding Path=ReadResourceGroupsTask.Result}" SelectedItem="{Binding Path=SelectedResourceGroup}" 
                           IsEnabled="{Binding Path=ReadResourceGroupsTask.Result, Converter={StaticResource EmptyListToBooleanConverter}}" />
 
@@ -48,7 +48,8 @@
                 <TextBlock Style="{StaticResource ControlText}" Text="Resource" Margin="0,0,0,10"/>
                 <ComboBox Margin="0,0,0,20" HorizontalAlignment="Left" MinWidth="130"
                           ItemsSource="{Binding Path=ReadResourcesTask.Result}" SelectedItem="{Binding Path=SelectedResource}"
-                          IsEnabled="{Binding Path=ReadResourcesTask.Result, Converter={StaticResource EmptyListToBooleanConverter}}" />
+                          IsEnabled="{Binding Path=ReadResourcesTask.Result, Converter={StaticResource EmptyListToBooleanConverter}}" 
+                          DisplayMemberPath="ResourceName" />
 
                 <Separator Margin="0,0,0,20"/>
 
@@ -58,7 +59,7 @@
 
         <Border Grid.Column="1" BorderThickness="0" Padding="20,20,20,0">
             <StackPanel Orientation="Vertical">
-                <TextBlock Style="{StaticResource SectionHeader}" Text="EMULATION STATUS"/>
+                <TextBlock Style="{StaticResource SectionHeader}" Text="STATUS"/>
                 <TextBlock x:Name="BeforeStartMessage" Text="Click 'Start analysis' to begin the emulation." Foreground="#FF767171" FontSize="16" Margin="0,80,0,0" HorizontalAlignment="Center"/>
                 <local:EmulationStatusControl x:Name="EmulationStatusControl" Visibility="Collapsed"/>
             </StackPanel>

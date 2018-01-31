@@ -14,15 +14,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     /// </summary>
     public class ActiveDirectoryCredentialsFactory : ICredentialsFactory
     {
-        private readonly string accessToken;
+        private readonly AuthenticationServices authenticationServices;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActiveDirectoryCredentialsFactory"/> class.
         /// </summary>
-        /// <param name="accessToken">The authentication result access token</param>
-        public ActiveDirectoryCredentialsFactory(string accessToken)
+        /// <param name="authenticationServices">The authentication services</param>
+        public ActiveDirectoryCredentialsFactory(AuthenticationServices authenticationServices)
         {
-            this.accessToken = accessToken;
+            this.authenticationServices = authenticationServices;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         /// <returns>The credentials</returns>
         public ServiceClientCredentials Create(string resource)
         {
-            return new ActiveDirectoryCredentials(this.accessToken);
+            return new ActiveDirectoryCredentials(this.authenticationServices, resource);
         }
     }
 }
