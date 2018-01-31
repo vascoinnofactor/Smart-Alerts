@@ -18,9 +18,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
         /// <summary>
         /// Sends the Smart Signal result Email.
         /// </summary>
+        /// <param name="emailRecipients">A list of email recipients to send the mail to.</param>
         /// <param name="signalId">The signal ID.</param>
         /// <param name="smartSignalResultItems">The Smart Signal result items.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        Task SendSignalResultEmailAsync(string signalId, IList<SmartSignalResultItemPresentation> smartSignalResultItems);
+        Task SendSignalResultEmailAsync(IList<string> emailRecipients, string signalId, IList<SmartSignalResultItemPresentation> smartSignalResultItems);
     }
 }

@@ -25,7 +25,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
     {
         private ITracer tracer;
         private ISendGridClient sendGridClient;
-        private string emailRecipient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailSender"/> class.
@@ -36,7 +35,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
         {
             this.tracer = Diagnostics.EnsureArgumentNotNull(() => tracer);
 
-            this.emailRecipient = ConfigurationReader.ReadConfig("EmailRecipient", false);
             var apiKey = ConfigurationReader.ReadConfig("SendgridApiKey", false);
             this.sendGridClient = string.IsNullOrWhiteSpace(apiKey) ? null : new SendGridClient(apiKey);
         }
@@ -46,22 +44,20 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
         /// </summary>
         /// <param name="tracer">The tracer to use.</param>
         /// <param name="sendGridClient">The send grid client.</param>
-        /// <param name="emailRecipient">The email recipient.</param>
-        public EmailSender(ITracer tracer, ISendGridClient sendGridClient, string emailRecipient)
+        public EmailSender(ITracer tracer, ISendGridClient sendGridClient)
         {
             this.tracer = Diagnostics.EnsureArgumentNotNull(() => tracer);
-
             this.sendGridClient = sendGridClient;
-            this.emailRecipient = emailRecipient;
         }
 
         /// <summary>
         /// Sends the Smart Signal result Email.
         /// </summary>
+        /// <param name="emailRecipients">A list of email recipients to send the mail to.</param>
         /// <param name="signalId">The signal ID.</param>
         /// <param name="smartSignalResultItems">The Smart Signal result items.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        public async Task SendSignalResultEmailAsync(string signalId, IList<SmartSignalResultItemPresentation> smartSignalResultItems)
+        public async Task SendSignalResultEmailAsync(IList<string> emailRecipients, string signalId, IList<SmartSignalResultItemPresentation> smartSignalResultItems)
         {
             if (this.sendGridClient == null)
             {
@@ -69,9 +65,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(this.emailRecipient))
+            if (emailRecipients == null || !emailRecipients.Any())
             {
-                this.tracer.TraceWarning("Email recipient was not provided, not sending email");
+                this.tracer.TraceWarning("Email recipients were not provided, not sending email");
                 return;
             }
 
@@ -81,7 +77,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
                 return;
             }
 
-            this.tracer.TraceInformation($"Sending signal result email to {this.emailRecipient} for signal {signalId}");
+            this.tracer.TraceInformation($"Sending signal result email for signal {signalId}");
 
             // TODO: Parse the smart signal result to an HTML and add a link to the SiRA UI
             var msg = new SendGridMessage
@@ -92,17 +88,18 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
                 HtmlContent = "<strong>Found new result items!</strong>"
             };
 
-            msg.AddTo(new EmailAddress(this.emailRecipient));
+            var emailAddresses = emailRecipients.Select(email => new EmailAddress(email)).ToList();
+            msg.AddTos(emailAddresses);
             var response = await this.sendGridClient.SendEmailAsync(msg);
 
             if (!IsSuccessStatusCode(response.StatusCode))
             {
                 string content = response.Body != null ? await response.Body.ReadAsStringAsync() : string.Empty;
-                var message = $"Failed to send signal results to {this.emailRecipient} for signal {signalId}. Fail StatusCode: {response.StatusCode}. Content: {content}.";
+                var message = $"Failed to send signal results Email for signal {signalId}. Fail StatusCode: {response.StatusCode}. Content: {content}.";
                 throw new EmailSendingException(message);
             }
 
-            this.tracer.TraceInformation($"Sent signal result email successfuly to {this.emailRecipient} for signal {signalId}");
+            this.tracer.TraceInformation($"Sent signal result email successfully for signal {signalId}");
         }
 
         /// <summary>
