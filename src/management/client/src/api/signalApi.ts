@@ -8,6 +8,7 @@ import baseUrl from './baseUrl';
 import ApiError from './apiError';
 import ListSmartSignalResponse from './models/ListSmartSignalResponse';
 import ActiveDirectoryAuthenticatorFactory from '../factories/ActiveDirectoryAuthenticatorFactory';
+import { azureResourceManagementUrl } from './urls';
 
 /**
  * Get a list of signals without any filtering
@@ -17,7 +18,7 @@ export async function getSignalsAsync(): Promise<ListSmartSignalResponse> {
 
     // Get the user AAD token
     let userAccessToken = await ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator()
-                                                        .getResourceTokenAsync('https://management.core.windows.net/');
+                                                        .getResourceTokenAsync(azureResourceManagementUrl);
 
     const headers = new Headers();
     headers.set('Authorization', 'Bearer ' + userAccessToken);

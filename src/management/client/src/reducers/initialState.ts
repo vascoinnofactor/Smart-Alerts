@@ -21,6 +21,11 @@ const defaultState: StoreState = {
         lastUpdated: null
     },
     queryResults: new Map<string, QueryResultStoreState>(),
+    alertRules: {
+        isFetching: false,
+        items: [],
+        lastUpdated: null
+    },
     isAuthenticated: false,
     userDetails: null
 };

@@ -1,23 +1,20 @@
 // -----------------------------------------------------------------------
-// <copyright file="signalResultApi.ts" company="Microsoft Corporation">
+// <copyright file="alertRuleApi.ts" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
-import * as moment from 'moment';
-
 import baseUrl from './baseUrl';
 import ApiError from './apiError';
-import ListSmartSignalResultResponse from './models/ListSmartSignalResultResponse';
 import ActiveDirectoryAuthenticatorFactory from '../factories/ActiveDirectoryAuthenticatorFactory';
 import { azureResourceManagementUrl } from './urls';
+import AlertRule from '../models/AlertRule';
 
 /**
- * Gets a list of signals results without any flitering
+ * Add new alert rule 
  */
-export async function getSignalsResultsAsync(): Promise<ListSmartSignalResultResponse> {
-    const utcNowMinusDay = moment.utc().add(-1, 'days');
-    const requestUrl = `${baseUrl}/api/signalResult?startTime=${utcNowMinusDay.format('MM/DD/YYYY HH:mm')}`;
+export async function addAlertRuleAsync(alertRule: AlertRule): Promise<void> {
+    const requestUrl = `${baseUrl}/api/alertRule`;
 
     // Get the user AAD token
     let userAccessToken = await ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator()
@@ -28,13 +25,14 @@ export async function getSignalsResultsAsync(): Promise<ListSmartSignalResultRes
     headers.set('Content-Type', 'application/json');
 
     const requestInit: RequestInit = {
-        headers: headers,
-        method: 'GET',
+        body: JSON.stringify(alertRule),
+        headers,
+        method: 'POST',
         mode: 'cors'
     };
 
     const response = await fetch(requestUrl, requestInit);
-  
+
     if (response.ok) {
       return await response.json();
     } else {
