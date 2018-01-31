@@ -25,19 +25,21 @@ namespace SmartSignalSchedulerTests
     {
         private EmailSender emailSender;
         private Mock<ISendGridClient> sendgridClientMock;
+        private IList<string> emailRecipients;
 
         [TestInitialize]
         public void Setup()
         {
             var tracerMock = new Mock<ITracer>();
             this.sendgridClientMock = new Mock<ISendGridClient>();
-            this.emailSender = new EmailSender(tracerMock.Object, this.sendgridClientMock.Object, "some@email.com");
+            this.emailSender = new EmailSender(tracerMock.Object, this.sendgridClientMock.Object);
+            this.emailRecipients = new List<string> { "some@email.com" };
         }
 
         [TestMethod]
         public async Task WhenNoResultItemsAreFoundThenEmailIsNotSent()
         {
-            await this.emailSender.SendSignalResultEmailAsync("someSignalId", new List<SmartSignalResultItemPresentation>());
+            await this.emailSender.SendSignalResultEmailAsync(this.emailRecipients, "someSignalId", new List<SmartSignalResultItemPresentation>());
             this.sendgridClientMock.Verify(m => m.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
@@ -48,8 +50,7 @@ namespace SmartSignalSchedulerTests
             {
                 new SmartSignalResultItemPresentation("id", "title", null, "resource", null, "someSignalId", string.Empty, DateTime.UtcNow, 0, null, null, null)
             };
-            this.emailSender = new EmailSender(new Mock<ITracer>().Object, this.sendgridClientMock.Object, null);
-            await this.emailSender.SendSignalResultEmailAsync("someSignalId", resultItems);
+            await this.emailSender.SendSignalResultEmailAsync(new List<string>(), "someSignalId", resultItems);
             this.sendgridClientMock.Verify(m => m.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
@@ -62,7 +63,7 @@ namespace SmartSignalSchedulerTests
                 .ReturnsAsync(new Response(HttpStatusCode.GatewayTimeout, null, null));
 
             var resultItems = this.CreateSignalResultList();
-            await this.emailSender.SendSignalResultEmailAsync("someSignalId", resultItems);
+            await this.emailSender.SendSignalResultEmailAsync(this.emailRecipients, "someSignalId", resultItems);
 
             this.sendgridClientMock.Verify(m => m.SendEmailAsync(It.Is<SendGridMessage>(message => message.From.Email.Equals("smartsignals@microsoft.com")), It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -75,7 +76,7 @@ namespace SmartSignalSchedulerTests
                 .ReturnsAsync(new Response(HttpStatusCode.Accepted, null, null));
 
             var resultItems = this.CreateSignalResultList();
-            await this.emailSender.SendSignalResultEmailAsync("someSignalId", resultItems);
+            await this.emailSender.SendSignalResultEmailAsync(this.emailRecipients, "someSignalId", resultItems);
 
             this.sendgridClientMock.Verify(m => m.SendEmailAsync(It.Is<SendGridMessage>(message => message.From.Email.Equals("smartsignals@microsoft.com")), It.IsAny<CancellationToken>()), Times.Once);
         }

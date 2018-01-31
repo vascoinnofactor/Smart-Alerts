@@ -119,25 +119,29 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Package
             }
 
             try
-            {
-                // Validates the manifest
-                SmartSignalManifest signalManifest = JsonConvert.DeserializeObject<SmartSignalManifest>(Encoding.UTF8.GetString(manifestBytes));
-                if (!packageContent.ContainsKey(signalManifest.AssemblyName))
+            {             
+                // Validates the manifest. We use stream reader to avoid unexpected characters such as BOM.
+                using (var stream = new StreamReader(new MemoryStream(manifestBytes)))
                 {
-                    throw new InvalidSmartSignalPackageException("Failed to create Smart Signal Package - the manifest file is invalid: Assembly name must be a file in the smart signal package.");
-                }
+                    string manifest = stream.ReadToEnd();
+                    SmartSignalManifest signalManifest = JsonConvert.DeserializeObject<SmartSignalManifest>(manifest);
+                    if (!packageContent.ContainsKey(signalManifest.AssemblyName))
+                    {
+                        throw new InvalidSmartSignalPackageException("Failed to create Smart Signal Package - the manifest file is invalid: Assembly name must be a file in the smart signal package.");
+                    }
 
-                if (!signalManifest.SupportedResourceTypes.Any())
-                {
-                    throw new InvalidSmartSignalPackageException("Failed to create Smart Signal Package - the manifest file is invalid: Must specify at least one supported resource type.");
-                }
+                    if (!signalManifest.SupportedResourceTypes.Any())
+                    {
+                        throw new InvalidSmartSignalPackageException("Failed to create Smart Signal Package - the manifest file is invalid: Must specify at least one supported resource type.");
+                    }
 
-                if (!signalManifest.SupportedCadencesInMinutes.Any())
-                {
-                    throw new InvalidSmartSignalPackageException("Failed to create Smart Signal Package - the manifest file is invalid: Must specify at least one supported cadence.");
-                }
+                    if (!signalManifest.SupportedCadencesInMinutes.Any())
+                    {
+                        throw new InvalidSmartSignalPackageException("Failed to create Smart Signal Package - the manifest file is invalid: Must specify at least one supported cadence.");
+                    }
 
-                return new SmartSignalPackage(signalManifest, packageContent);
+                    return new SmartSignalPackage(signalManifest, packageContent);
+                }
             }
             catch (ArgumentException argumentException)
             {

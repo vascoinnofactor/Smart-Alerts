@@ -36,15 +36,6 @@
             "toolTip": "The SendGrid API Key will be used to send Emails",
             "constraints": { "required": false },
             "visible": true
-          },
-          {
-            "name": "emailRecipient",
-            "type": "Microsoft.Common.TextBox",
-            "label": "The recipient to send alerts to",
-            "defaultValue": "",
-            "toolTip": "The alerts will be sent via Emails to this receipent",
-            "constraints": { "required": false },
-            "visible": true
           }
         ]
       }
@@ -52,7 +43,6 @@
     "outputs": {
       "siraPrefix": "[basics('siraPrefix')]",
       "sendgridApiKey": "[steps('emailSettings').sendgridApiKey]",
-      "emailRecipient": "[steps('emailSettings').emailRecipient]",
       "applicationResourceName": "[concat(basics('siraPrefix'), 'SiRA')]",
       "functionPackageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignals.zip",
       "sitePackageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignalssite.zip"
