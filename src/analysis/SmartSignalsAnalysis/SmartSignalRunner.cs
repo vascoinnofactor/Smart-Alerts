@@ -96,12 +96,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
                 throw new SmartSignalCustomException(e.GetType().ToString(), e.Message, e.StackTrace);
             }
 
-            // Verify that each result item belongs to one of the provided resources
+            // Verify that each result item belongs to one of the types declared in the signal manifest
             foreach (SmartSignalResultItem resultItem in signalResult.ResultItems)
             {
-                if (resources.All(resource => resource != resultItem.ResourceIdentifier))
+                if (!signalManifest.SupportedResourceTypes.Contains(resultItem.ResourceIdentifier.ResourceType))
                 {
-                    throw new UnidentifiedResultItemResourceException(resultItem.ResourceIdentifier);
+                    throw new UnidentifiedResultItemResourceTypeException(resultItem.ResourceIdentifier);
                 }
             }
 
