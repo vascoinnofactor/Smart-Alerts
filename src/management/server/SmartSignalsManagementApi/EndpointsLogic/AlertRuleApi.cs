@@ -7,6 +7,7 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
 {
     using System;
+    using System.Collections.Generic;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -59,7 +60,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
                         Id = Guid.NewGuid().ToString(),
                         SignalId = addAlertRule.SignalId,
                         ResourceType = addAlertRule.ResourceType,
-                        Schedule = CrontabSchedule.Parse(addAlertRule.Schedule)
+                        Schedule = CrontabSchedule.Parse(addAlertRule.Schedule),
+                        EmailRecipients = addAlertRule.EmailRecipients
                     },
                     cancellationToken);
             }

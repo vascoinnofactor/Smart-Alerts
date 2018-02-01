@@ -61,7 +61,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
                     Id = entity.RowKey,
                     SignalId = entity.SignalId,
                     ResourceType = entity.ResourceType,
-                    Schedule = CrontabSchedule.Parse(entity.CrontabSchedule)
+                    Schedule = CrontabSchedule.Parse(entity.CrontabSchedule),
+                    EmailRecipients = entity.EmailRecipients
                 }).ToList();
             }
             catch (StorageException e)
@@ -88,7 +89,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
                     RowKey = alertRule.Id,
                     SignalId = alertRule.SignalId,
                     ResourceType = alertRule.ResourceType,
-                    CrontabSchedule = alertRule.Schedule.ToString()
+                    CrontabSchedule = alertRule.Schedule.ToString(),
+                    EmailRecipients = alertRule.EmailRecipients
                 });
 
                 await this.alertRulesTable.ExecuteAsync(operation, cancellationToken);

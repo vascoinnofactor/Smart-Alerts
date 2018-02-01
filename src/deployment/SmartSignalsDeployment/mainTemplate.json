@@ -69,13 +69,17 @@
     },
     {
       "type": "Microsoft.Web/serverfarms",
-      "apiVersion": "2015-04-01",
+      "apiVersion": "2015-08-01",
       "name": "[variables('functionsHostingPlanName')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "name": "[variables('functionsHostingPlanName')]",
-        "computeMode": "Dynamic",
-        "sku": "Dynamic"
+        "numberOfWorkers": 1
+      },
+      "sku": {
+        "name": "S1",
+        "tier": "Standard",
+        "capacity": 1
       }
     },
     {
@@ -98,6 +102,7 @@
         "siteConfig": {
           "use32BitWorkerProcess": false,
           "siteAuthEnabled": true,
+          "AlwaysOn": true,
           "appSettings": [
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -193,14 +198,11 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "name": "[variables('siteHostingPlanName')]",
-        "workerSize": "0",
         "numberOfWorkers": 1
       },
       "sku": {
-        "name": "S1",
-        "tier": "Free",
-        "size": "S1",
-        "family": "S",
+        "name": "B1",
+        "tier": "Basic",
         "capacity": 1
       }
     },
@@ -246,7 +248,8 @@
           "location": "[resourceGroup().location]",
           "apiVersion": "2015-08-01",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/sites', variables('siteName'))]"
+            "[resourceId('Microsoft.Web/sites', variables('siteName'))]",
+            "[concat('Microsoft.Web/Sites/', variables('functionsAppName'), '/Extensions/MSDeploy')]"
           ],
           "tags": {
             "displayName": "deploy site"

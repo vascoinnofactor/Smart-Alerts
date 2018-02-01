@@ -83,7 +83,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
 
                     // We send the mail after we mark the run as successful so if it will fail then the signal will not run again
                     // TODO: Get the email recipients from alert rule
-                    await this.emailSender.SendSignalResultEmailAsync(null, signalExecution.SignalId, signalResultItems);
+                    await this.emailSender.SendSignalResultEmailAsync(signalExecution.EmailRecipients, signalExecution.SignalId, signalResultItems);
                 }
                 catch (Exception exception)
                 {

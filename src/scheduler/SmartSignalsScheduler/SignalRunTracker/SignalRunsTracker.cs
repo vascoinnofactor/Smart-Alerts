@@ -76,7 +76,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker
                         SignalId = alertRule.SignalId,
                         Cadence = alertRule.Schedule.GetNextOccurrence(signalNextRun) - signalNextRun,
                         LastExecutionTime = ruleLastRun?.LastSuccessfulExecutionTime,
-                        CurrentExecutionTime = DateTime.UtcNow
+                        CurrentExecutionTime = DateTime.UtcNow,
+                        EmailRecipients = alertRule.EmailRecipients
                     });
                 }
             }
