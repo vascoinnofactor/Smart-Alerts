@@ -33,6 +33,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models
         public List<int> SupportedCadences { get; set; }
 
         /// <summary>
+        /// Gets or sets the signal supported resource types.
+        /// </summary>
+        public List<ResourceType> SupportedResourceTypes { get; set; }
+
+        /// <summary>
         /// Gets or sets the signal configurations.
         /// </summary>
         [JsonProperty("configurations")]

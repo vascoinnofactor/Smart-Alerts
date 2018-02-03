@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import ResourceType from './ResourceType';
+import ResourceType from '../enums/ResourceType';
 
 /**
  * This model represents an alert rule 

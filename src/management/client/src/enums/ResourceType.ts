@@ -24,6 +24,11 @@ export enum ResourceType {
     VirtualMachine,
 
     /**
+     * The Virtual Machine Scale Set resource type.
+     */
+    VirtualMachineScaleSet,
+
+    /**
      * The Application Instance resource type.
      */
     ApplicationInsights,
