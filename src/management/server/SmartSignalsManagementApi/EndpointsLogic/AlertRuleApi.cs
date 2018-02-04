@@ -58,8 +58,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
                     new AlertRule
                     {
                         Id = Guid.NewGuid().ToString(),
+                        Name = addAlertRule.Name,
+                        Description = addAlertRule.Description,
                         SignalId = addAlertRule.SignalId,
-                        ResourceType = addAlertRule.ResourceType,
+                        ResourceId = addAlertRule.ResourceId,
                         Schedule = CrontabSchedule.Parse(addAlertRule.Schedule),
                         EmailRecipients = addAlertRule.EmailRecipients
                     },

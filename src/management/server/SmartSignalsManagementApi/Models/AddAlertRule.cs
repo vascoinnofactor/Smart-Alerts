@@ -14,14 +14,24 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models
     public class AddAlertRule
     {
         /// <summary>
+        /// Gets or sets the alert rule name
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the alert rule description
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
         /// Gets or sets the signal ID.
         /// </summary>
         public string SignalId { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource type supported by the signal.
+        /// Gets or sets the resource to be analyzed by the signal.
         /// </summary>
-        public ResourceType ResourceType { get; set; }
+        public string ResourceId { get; set; }
 
         /// <summary>
         /// Gets or sets the scheduling configuration (in CRON format).

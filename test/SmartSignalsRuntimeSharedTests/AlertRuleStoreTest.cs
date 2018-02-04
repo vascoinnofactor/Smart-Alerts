@@ -17,6 +17,7 @@ namespace SmartSignalsRuntimeSharedTests
     using Microsoft.WindowsAzure.Storage.Table;
     using Moq;
     using NCrontab;
+    using Newtonsoft.Json;
 
     [TestClass]
     public class AlertRuleStoreTest
@@ -47,7 +48,7 @@ namespace SmartSignalsRuntimeSharedTests
                 Id = "ruleId",
                 SignalId = "signalId",
                 Schedule = CrontabSchedule.Parse(CronSchedule),
-                ResourceType = ResourceType.VirtualMachine
+                ResourceId = "resourceId"
             };
 
             await this.alertRuleStore.AddOrReplaceAlertRuleAsync(ruleToUpdate, CancellationToken.None);
@@ -58,7 +59,7 @@ namespace SmartSignalsRuntimeSharedTests
                     operation.Entity.RowKey.Equals(ruleToUpdate.Id) &&
                     ((AlertRuleEntity)operation.Entity).SignalId.Equals(ruleToUpdate.SignalId) &&
                     ((AlertRuleEntity)operation.Entity).CrontabSchedule.Equals(CronSchedule) &&
-                    ((AlertRuleEntity)operation.Entity).ResourceType.Equals(ruleToUpdate.ResourceType)),
+                    ((AlertRuleEntity)operation.Entity).ResourceId.Equals(ruleToUpdate.ResourceId)),
                 It.IsAny<CancellationToken>()));
         }
 
@@ -73,14 +74,14 @@ namespace SmartSignalsRuntimeSharedTests
                     RowKey = "rule1",
                     SignalId = "signal1",
                     CrontabSchedule = "0 0 * * *",
-                    ResourceType = ResourceType.VirtualMachine
+                    ResourceId = "resourceId1"
                 },
                 new AlertRuleEntity
                 {
                     RowKey = "rule2",
                     SignalId = "signal2",
                     CrontabSchedule = "0 * * * *",
-                    ResourceType = ResourceType.Subscription
+                    ResourceId = "resourceId2"
                 }
             };
 
@@ -93,13 +94,13 @@ namespace SmartSignalsRuntimeSharedTests
             Assert.AreEqual("rule1", firstRule.Id);
             Assert.AreEqual("signal1", firstRule.SignalId);
             Assert.AreEqual("0 0 * * *", firstRule.Schedule.ToString());
-            Assert.AreEqual(ResourceType.VirtualMachine, firstRule.ResourceType);
+            Assert.AreEqual("resourceId1", firstRule.ResourceId);
 
             var lastRule = returnedRules.Last();
             Assert.AreEqual("rule2", lastRule.Id);
             Assert.AreEqual("signal2", lastRule.SignalId);
             Assert.AreEqual("0 * * * *", lastRule.Schedule.ToString());
-            Assert.AreEqual(ResourceType.Subscription, lastRule.ResourceType);
+            Assert.AreEqual("resourceId2", lastRule.ResourceId);
         }
     }
 }
