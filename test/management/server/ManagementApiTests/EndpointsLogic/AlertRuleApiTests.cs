@@ -10,7 +10,6 @@ namespace ManagementApiTests.EndpointsLogic
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
@@ -41,7 +40,7 @@ namespace ManagementApiTests.EndpointsLogic
             var addSignalModel = new AddAlertRule()
             {
                 SignalId = Guid.NewGuid().ToString(),
-                ResourceType = ResourceType.ResourceGroup,
+                ResourceId = "resourceId",
                 Schedule = "0 0 */1 * *"
             };
 
@@ -57,7 +56,7 @@ namespace ManagementApiTests.EndpointsLogic
             var addSignalModel = new AddAlertRule()
             {
                 SignalId = string.Empty,
-                ResourceType = ResourceType.ResourceGroup,
+                ResourceId = "resourceId",
                 Schedule = string.Empty
             };
 
@@ -80,7 +79,7 @@ namespace ManagementApiTests.EndpointsLogic
             var addSignalModel = new AddAlertRule()
             {
                 SignalId = Guid.NewGuid().ToString(),
-                ResourceType = ResourceType.ResourceGroup,
+                ResourceId = "resourceId",
                 Schedule = string.Empty
             };
 
@@ -103,7 +102,7 @@ namespace ManagementApiTests.EndpointsLogic
             var addSignalModel = new AddAlertRule()
             {
                 SignalId = Guid.NewGuid().ToString(),
-                ResourceType = ResourceType.ResourceGroup,
+                ResourceId = "resourceId",
                 Schedule = "corrupted value"
             };
 
@@ -126,7 +125,7 @@ namespace ManagementApiTests.EndpointsLogic
             var addSignalModel = new AddAlertRule()
             {
                 SignalId = Guid.NewGuid().ToString(),
-                ResourceType = ResourceType.ResourceGroup,
+                ResourceId = "resourceId",
                 Schedule = "0 0 */1 * *"
             };
 

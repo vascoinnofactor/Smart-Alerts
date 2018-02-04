@@ -15,6 +15,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Table;
     using NCrontab;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Implementation of the <see cref="IAlertRuleStore"/> using Azure table.
@@ -59,10 +60,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
                 return alertRulesEntities.Select(entity => new AlertRule
                 {
                     Id = entity.RowKey,
+                    Name = entity.Name,
+                    Description = entity.Description,
                     SignalId = entity.SignalId,
-                    ResourceType = entity.ResourceType,
+                    ResourceId = entity.ResourceId,
                     Schedule = CrontabSchedule.Parse(entity.CrontabSchedule),
-                    EmailRecipients = entity.EmailRecipients
+                    EmailRecipients = entity.EmailRecipients == null ? null : JsonConvert.DeserializeObject<List<string>>(entity.EmailRecipients)
                 }).ToList();
             }
             catch (StorageException e)
@@ -87,10 +90,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
                 {
                     PartitionKey = PartitionKey,
                     RowKey = alertRule.Id,
+                    Name = alertRule.Name,
+                    Description = alertRule.Description,
                     SignalId = alertRule.SignalId,
-                    ResourceType = alertRule.ResourceType,
+                    ResourceId = alertRule.ResourceId,
                     CrontabSchedule = alertRule.Schedule.ToString(),
-                    EmailRecipients = alertRule.EmailRecipients
+                    EmailRecipients = alertRule.EmailRecipients == null ? null : JsonConvert.SerializeObject(alertRule.EmailRecipients)
                 });
 
                 await this.alertRulesTable.ExecuteAsync(operation, cancellationToken);
