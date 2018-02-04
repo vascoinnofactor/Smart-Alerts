@@ -6,6 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
 {
+    using System.Collections.Generic;
     using Microsoft.WindowsAzure.Storage.Table;
 
     /// <summary>
@@ -28,5 +29,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
         /// Gets or sets the signal's schedule
         /// </summary>
         public string CrontabSchedule { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email recipients for the signal result
+        /// </summary>
+        public IList<string> EmailRecipients { get; set; }
     }
 }

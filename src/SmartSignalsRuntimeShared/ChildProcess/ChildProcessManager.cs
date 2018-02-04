@@ -139,76 +139,76 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess
                 {
                     using (AnonymousPipeServerStream pipeChildToParent = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable))
                     {
-                        // Write the output to the pipe
-                        await this.WriteToStream(input, pipeParentToChild, cancellationToken);
-
-                        // Get pipe handles
-                        string pipeParentToChildHandle = pipeParentToChild.GetClientHandleAsString();
-                        string pipeChildToParentHandle = pipeChildToParent.GetClientHandleAsString();
-
-                        // Setup the child process
-                        Process childProcess = new Process
+                        using (Process childProcess = new Process())
                         {
-                            StartInfo = new ProcessStartInfo(exePath)
+                            // Write the output to the pipe
+                            await this.WriteToStream(input, pipeParentToChild, cancellationToken);
+
+                            // Get pipe handles
+                            string pipeParentToChildHandle = pipeParentToChild.GetClientHandleAsString();
+                            string pipeChildToParentHandle = pipeChildToParent.GetClientHandleAsString();
+
+                            // Setup the child process
+                            childProcess.StartInfo = new ProcessStartInfo(exePath)
                             {
                                 Arguments = pipeParentToChildHandle + " " + pipeChildToParentHandle + " " + this.tracer.SessionId,
                                 CreateNoWindow = true,
                                 UseShellExecute = false,
                                 RedirectStandardError = true
+                            };
+
+                            // Start the child process
+                            Stopwatch sw = Stopwatch.StartNew();
+                            childProcess.Start();
+                            this.tracer.TraceInformation($"Started to run child process '{Path.GetFileName(exePath)}', process ID {childProcess.Id}");
+                            this.CurrentStatus = RunChildProcessStatus.WaitingForProcessToExit;
+                            this.ChildProcessIds.Add(childProcess.Id);
+
+                            // Dispose the local copy of the client handle
+                            pipeParentToChild.DisposeLocalCopyOfClientHandle();
+                            pipeChildToParent.DisposeLocalCopyOfClientHandle();
+
+                            // Wait for the child process to finish
+                            bool wasChildTerminatedByParent = false;
+                            MemoryStream outputStream = new MemoryStream();
+                            using (cancellationToken.Register(() => { this.CancelChildProcess(childProcess, pipeParentToChild, ref wasChildTerminatedByParent); }))
+                            {
+                                // Read the child's output
+                                // We do not use the cancellation token here - we want to wait for the child to gracefully cancel
+                                await pipeChildToParent.CopyToAsync(outputStream, 2048, default(CancellationToken));
+
+                                // Ensure the child existed
+                                childProcess.WaitForExit();
                             }
-                        };
 
-                        // Start the child process
-                        Stopwatch sw = Stopwatch.StartNew();
-                        childProcess.Start();
-                        this.tracer.TraceInformation($"Started to run child process '{Path.GetFileName(exePath)}', process ID {childProcess.Id}");
-                        this.CurrentStatus = RunChildProcessStatus.WaitingForProcessToExit;
-                        this.ChildProcessIds.Add(childProcess.Id);
+                            this.CurrentStatus = RunChildProcessStatus.Finalizing;
+                            sw.Stop();
+                            this.tracer.TraceInformation($"Process {exePath} completed, duration {sw.ElapsedMilliseconds / 1000}s, exit code {childProcess.ExitCode}");
 
-                        // Dispose the local copy of the client handle
-                        pipeParentToChild.DisposeLocalCopyOfClientHandle();
-                        pipeChildToParent.DisposeLocalCopyOfClientHandle();
+                            // If the child process was terminated by the parent, throw appropriate exception
+                            if (wasChildTerminatedByParent)
+                            {
+                                throw new ChildProcessTerminatedByParentException();
+                            }
 
-                        // Wait for the child process to finish
-                        bool wasChildTerminatedByParent = false;
-                        MemoryStream outputStream = new MemoryStream();
-                        using (cancellationToken.Register(() => { this.CancelChildProcess(childProcess, pipeParentToChild, ref wasChildTerminatedByParent); }))
-                        {
-                            // Read the child's output
-                            // We do not use the cancellation token here - we want to wait for the child to gracefully cancel
-                            await pipeChildToParent.CopyToAsync(outputStream, 2048, default(CancellationToken));
+                            // Read the process result from the stream
+                            // This read ignores the cancellation token - if there was a cancellation, the process output will contain the appropriate exception
+                            outputStream.Seek(0, SeekOrigin.Begin);
+                            ChildProcessResult<TOutput> processResult = await this.ReadFromStream<ChildProcessResult<TOutput>>(outputStream, default(CancellationToken));
 
-                            // Ensure the child existed
-                            childProcess.WaitForExit();
+                            // Return process result
+                            if (processResult == null)
+                            {
+                                throw new ChildProcessException("The child process returned empty results");
+                            }
+                            else if (processResult.Exception != null)
+                            {
+                                throw new ChildProcessException("The child process threw an exception: " + processResult.Exception.Message, processResult.Exception);
+                            }
+
+                            this.CurrentStatus = RunChildProcessStatus.Completed;
+                            return processResult.Output;
                         }
-
-                        this.CurrentStatus = RunChildProcessStatus.Finalizing;
-                        sw.Stop();
-                        this.tracer.TraceInformation($"Process {exePath} completed, duration {sw.ElapsedMilliseconds / 1000}s, exit code {childProcess.ExitCode}");
-
-                        // If the child process was terminated by the parent, throw appropriate exception
-                        if (wasChildTerminatedByParent)
-                        {
-                            throw new ChildProcessTerminatedByParentException();
-                        }
-
-                        // Read the process result from the stream
-                        // This read ignores the cancellation token - if there was a cancellation, the process output will contain the appropriate exception
-                        outputStream.Seek(0, SeekOrigin.Begin);
-                        ChildProcessResult<TOutput> processResult = await this.ReadFromStream<ChildProcessResult<TOutput>>(outputStream, default(CancellationToken));
-
-                        // Return process result
-                        if (processResult == null)
-                        {
-                            throw new ChildProcessException("The child process returned empty results");
-                        }
-                        else if (processResult.Exception != null)
-                        {
-                            throw new ChildProcessException("The child process threw an exception: " + processResult.Exception.Message, processResult.Exception);
-                        }
-
-                        this.CurrentStatus = RunChildProcessStatus.Completed;
-                        return processResult.Output;
                     }
                 }
             }
