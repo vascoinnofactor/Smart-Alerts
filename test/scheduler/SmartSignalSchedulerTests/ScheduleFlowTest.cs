@@ -9,10 +9,8 @@ namespace SmartSignalSchedulerTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler;
@@ -91,7 +89,7 @@ namespace SmartSignalSchedulerTests
             
             // Verify that these were called only once since the first signal execution throwed exception
             this.publisherMock.Verify(m => m.PublishSignalResultItemsAsync("s2", It.Is<IList<SmartSignalResultItemPresentation>>(items => items.Count == 1 && items.First().Title == ResultItemTitle)), Times.Once);
-            this.emailSenderMock.Verify(m => m.SendSignalResultEmailAsync(It.IsAny<IList<string>>(), "s2", It.Is<IList<SmartSignalResultItemPresentation>>(items => items.Count == 1 && items.First().Title == ResultItemTitle)), Times.Once);
+            this.emailSenderMock.Verify(m => m.SendSignalResultEmailAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<SmartSignalResultItemPresentation>>(items => items.Count == 1 && items.First().Title == ResultItemTitle)), Times.Once);
             this.signalRunTrackerMock.Verify(m => m.UpdateSignalRunAsync(It.IsAny<SignalExecutionInfo>()), Times.Once());
             this.signalRunTrackerMock.Verify(m => m.UpdateSignalRunAsync(signalExecution2));
         }
@@ -133,7 +131,7 @@ namespace SmartSignalSchedulerTests
             // Verify result items were published and signal tracker was updated for each signal execution
             this.alertRuleStoreMock.Verify(m => m.GetAllAlertRulesAsync(), Times.Once);
             this.publisherMock.Verify(m => m.PublishSignalResultItemsAsync(It.IsAny<string>(), It.IsAny<IList<SmartSignalResultItemPresentation>>()), Times.Exactly(2));
-            this.emailSenderMock.Verify(m => m.SendSignalResultEmailAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<IList<SmartSignalResultItemPresentation>>()), Times.Exactly(2));
+            this.emailSenderMock.Verify(m => m.SendSignalResultEmailAsync(It.IsAny<SignalExecutionInfo>(), It.IsAny<IList<SmartSignalResultItemPresentation>>()), Times.Exactly(2));
             this.signalRunTrackerMock.Verify(m => m.UpdateSignalRunAsync(It.IsAny<SignalExecutionInfo>()), Times.Exactly(2));
         }
 

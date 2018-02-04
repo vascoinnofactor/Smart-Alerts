@@ -10,13 +10,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Exceptions;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using SendGrid;
     using SendGrid.Helpers.Mail;
     using Unity.Attributes;
-
+    
     /// <summary>
     /// This class is responsible for sending Smart Signal results Email
     /// </summary>
@@ -62,19 +63,19 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
         /// <summary>
         /// Sends the Smart Signal result Email.
         /// </summary>
-        /// <param name="emailRecipients">A list of email recipients to send the mail to.</param>
-        /// <param name="signalId">The signal ID.</param>
+        /// <param name="signalExecution">The signals execution information.</param>
         /// <param name="smartSignalResultItems">The Smart Signal result items.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        public async Task SendSignalResultEmailAsync(IList<string> emailRecipients, string signalId, IList<SmartSignalResultItemPresentation> smartSignalResultItems)
+        public async Task SendSignalResultEmailAsync(SignalExecutionInfo signalExecution, IList<SmartSignalResultItemPresentation> smartSignalResultItems)
         {
+            AlertRule alertRule = signalExecution.AlertRule;
             if (this.sendGridClient == null)
             {
                 this.tracer.TraceWarning("SendGrid API key was not found, not sending email");
                 return;
             }
 
-            if (emailRecipients == null || !emailRecipients.Any())
+            if (alertRule.EmailRecipients == null || !alertRule.EmailRecipients.Any())
             {
                 this.tracer.TraceWarning("Email recipients were not provided, not sending email");
                 return;
@@ -82,23 +83,23 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
 
             if (smartSignalResultItems == null || !smartSignalResultItems.Any())
             {
-                this.tracer.TraceInformation($"no result items to publish for signal {signalId}");
+                this.tracer.TraceInformation($"no result items to publish for signal {alertRule.SignalId}");
                 return;
             }
 
-            this.tracer.TraceInformation($"Sending signal result email for signal {signalId}");
+            this.tracer.TraceInformation($"Sending signal result email for signal {alertRule.SignalId}");
 
             foreach (SmartSignalResultItemPresentation signal in smartSignalResultItems)
             {
-                // TODO: Parse the smart signal result to an HTML and add a link to the SiRA UI
+                // TODO: Fix links
                 string emailBody = Resources.SmartSignalEmailTemplate
                     .Replace(SignalNamePlaceHolder, signal.SignalName)
                     .Replace(ResourceNamePlaceHolder, signal.ResourceId)
                     .Replace(LinkToPortalPlaceHolder, string.Empty)
-                    .Replace(RuleNamePlaceHolder, "Get from the ScheduleFlow/AlertRule") 
-                    .Replace(RuleDescriptionPlaceHolder, "Get from the ScheduleFlow/AlertRule")
-                    .Replace(ServiceNamePlaceHolder, "Get from the ScheduleFlow/AlertRule")
-                    .Replace(AlertActivatedTimePlaceHolder, "Get from the ScheduleFlow/AlertRule")
+                    .Replace(RuleNamePlaceHolder, alertRule.Name) 
+                    .Replace(RuleDescriptionPlaceHolder, alertRule.Description)
+                    .Replace(ServiceNamePlaceHolder, alertRule.ResourceId)
+                    .Replace(AlertActivatedTimePlaceHolder, signalExecution.LastExecutionTime.ToString())
                     .Replace(SubscriptionNamePlaceHolder, signal.SubscriptionId)
                     .Replace(LinkToFeedbackPlaceHolder, "https://ms.portal.azure.com/");
             }
@@ -106,23 +107,23 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
             var msg = new SendGridMessage
             {
                 From = new EmailAddress("smartsignals@microsoft.com", "Smart Signals"),
-                Subject = $"Found new {smartSignalResultItems.Count} result items for signal {signalId}",
+                Subject = $"Found new {smartSignalResultItems.Count} result items for signal {alertRule.SignalId}",
                 PlainTextContent = "Found new result items!",
                 HtmlContent = "<strong>Found new result items!</strong>"
             };
 
-            var emailAddresses = emailRecipients.Select(email => new EmailAddress(email)).ToList();
+            var emailAddresses = alertRule.EmailRecipients.Select(email => new EmailAddress(email)).ToList();
             msg.AddTos(emailAddresses);
             var response = await this.sendGridClient.SendEmailAsync(msg);
 
             if (!IsSuccessStatusCode(response.StatusCode))
             {
                 string content = response.Body != null ? await response.Body.ReadAsStringAsync() : string.Empty;
-                var message = $"Failed to send signal results Email for signal {signalId}. Fail StatusCode: {response.StatusCode}. Content: {content}.";
+                var message = $"Failed to send signal results Email for signal {alertRule.SignalId}. Fail StatusCode: {response.StatusCode}. Content: {content}.";
                 throw new EmailSendingException(message);
             }
 
-            this.tracer.TraceInformation($"Sent signal result email successfully for signal {signalId}");
+            this.tracer.TraceInformation($"Sent signal result email successfully for signal {alertRule.SignalId}");
         }
 
         /// <summary>
