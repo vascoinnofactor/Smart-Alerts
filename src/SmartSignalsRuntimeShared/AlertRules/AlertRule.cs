@@ -6,6 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
 {
+    using System.Collections.Generic;
     using NCrontab;
 
     /// <summary>
@@ -19,18 +20,33 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
         public string Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the alert rule name
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the alert rule description
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
         /// Gets or sets the signal ID.
         /// </summary>
         public string SignalId { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource type supported by the signal.
+        /// Gets or sets the resource to be analyzed by the signal.
         /// </summary>
-        public ResourceType ResourceType { get; set; }
+        public string ResourceId { get; set; }
 
         /// <summary>
         /// Gets or sets the signal's schedule.
         /// </summary>
         public CrontabSchedule Schedule { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email recipients for the signal result
+        /// </summary>
+        public IList<string> EmailRecipients { get; set; }
     }
 }

@@ -45,8 +45,11 @@ namespace SmartSignalSchedulerTests
         {
             var signalExecution = new SignalExecutionInfo
             {
-                RuleId = "some_rule",
-                SignalId = "some_signal",
+                AlertRule = new AlertRule
+                {
+                    Id = "some_rule",
+                    SignalId = "some_signal",
+                },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1),
                 CurrentExecutionTime = DateTime.UtcNow.AddMinutes(-1)
             };
@@ -54,8 +57,8 @@ namespace SmartSignalSchedulerTests
             this.tableMock.Verify(m => m.ExecuteAsync(
                 It.Is<TableOperation>(operation =>
                     operation.OperationType == TableOperationType.InsertOrReplace &&
-                    operation.Entity.RowKey.Equals(signalExecution.RuleId) &&
-                    ((TrackSignalRunEntity)operation.Entity).SignalId.Equals(signalExecution.SignalId) &&
+                    operation.Entity.RowKey.Equals(signalExecution.AlertRule.Id) &&
+                    ((TrackSignalRunEntity)operation.Entity).SignalId.Equals(signalExecution.AlertRule.SignalId) &&
                     ((TrackSignalRunEntity)operation.Entity).LastSuccessfulExecutionTime.Equals(signalExecution.CurrentExecutionTime)),
                 It.IsAny<CancellationToken>()));
         }
@@ -107,8 +110,8 @@ namespace SmartSignalSchedulerTests
 
             var signalsToRun = await this.signalRunsTracker.GetSignalsToRunAsync(rules);
             Assert.AreEqual(2, signalsToRun.Count);
-            Assert.AreEqual("should_run_signal", signalsToRun.First().SignalId);
-            Assert.AreEqual("should_run_signal2", signalsToRun.Last().SignalId);
+            Assert.AreEqual("should_run_signal", signalsToRun.First().AlertRule.SignalId);
+            Assert.AreEqual("should_run_signal2", signalsToRun.Last().AlertRule.SignalId);
         }
     }
 }

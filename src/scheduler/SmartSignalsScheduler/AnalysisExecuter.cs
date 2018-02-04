@@ -59,7 +59,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
         /// <returns>A list of smart signal result items</returns>
         public async Task<IList<SmartSignalResultItemPresentation>> ExecuteSignalAsync(SignalExecutionInfo signalExecutionInfo, IList<string> resourceIds)
         {
-            var analysisRequest = new SmartSignalRequest(resourceIds, signalExecutionInfo.SignalId, signalExecutionInfo.LastExecutionTime, signalExecutionInfo.Cadence, null);
+            var analysisRequest = new SmartSignalRequest(resourceIds, signalExecutionInfo.AlertRule.SignalId, signalExecutionInfo.LastExecutionTime, signalExecutionInfo.Cadence, null);
             return await this.SendToAnalysisAsync(analysisRequest);
         }
 

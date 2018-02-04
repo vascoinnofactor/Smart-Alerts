@@ -29,7 +29,6 @@ namespace SmartSignalSchedulerTests
         private Mock<IAnalysisExecuter> analysisExecuterMock;
         private Mock<ISmartSignalResultPublisher> publisherMock;
         private Mock<IEmailSender> emailSenderMock;
-        private Mock<IAzureResourceManagerClient> azureResourceManagerClientMock;
 
         private ScheduleFlow scheduleFlow;
 
@@ -42,7 +41,6 @@ namespace SmartSignalSchedulerTests
             this.analysisExecuterMock = new Mock<IAnalysisExecuter>();
             this.publisherMock = new Mock<ISmartSignalResultPublisher>();
             this.emailSenderMock = new Mock<IEmailSender>();
-            this.azureResourceManagerClientMock = new Mock<IAzureResourceManagerClient>();
 
             this.scheduleFlow = new ScheduleFlow(
                 tracerMock.Object,
@@ -50,8 +48,7 @@ namespace SmartSignalSchedulerTests
                 this.signalRunTrackerMock.Object,
                 this.analysisExecuterMock.Object,
                 this.publisherMock.Object,
-                this.emailSenderMock.Object,
-                this.azureResourceManagerClientMock.Object);
+                this.emailSenderMock.Object);
         }
 
         [TestMethod]
@@ -60,25 +57,31 @@ namespace SmartSignalSchedulerTests
             // Create signal execution information to be returned from the job tracker
             var signalExecution1 = new SignalExecutionInfo
             {
-                SignalId = "s1",
-                RuleId = "r1",
+                AlertRule = new AlertRule
+                {
+                    SignalId = "s1",
+                    Id = "r1",
+                    ResourceId = "resourceId1",
+                },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
             var signalExecution2 = new SignalExecutionInfo
             {
-                SignalId = "s2",
-                RuleId = "r2",
+                AlertRule = new AlertRule
+                {
+                    SignalId = "s2",
+                    Id = "r2",
+                    ResourceId = "resourceId2",
+                },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
             var signalExecutions = new List<SignalExecutionInfo> { signalExecution1, signalExecution2 };
 
             this.signalRunTrackerMock.Setup(m => m.GetSignalsToRunAsync(It.IsAny<IList<AlertRule>>())).ReturnsAsync(signalExecutions);
 
-            this.azureResourceManagerClientMock.Setup(m => m.GetAllSubscriptionIdsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<string> { "someSubscriptionId" });
-
             // first signal execution throws exception and the second one returns a result
             const string ResultItemTitle = "someTitle";
-            this.analysisExecuterMock.SetupSequence(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "/subscriptions/someSubscriptionId")))
+            this.analysisExecuterMock.SetupSequence(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "resourceId1" || lst.First() == "resourceId2")))
                 .Throws(new Exception())
                 .ReturnsAsync(new List<SmartSignalResultItemPresentation> { new TestResultItem(ResultItemTitle) });
 
@@ -99,24 +102,30 @@ namespace SmartSignalSchedulerTests
             // Create signal execution information to be returned from the job tracker
             var signalExecution1 = new SignalExecutionInfo
             {
-                RuleId = "r1",
-                SignalId = "s1",
+                AlertRule = new AlertRule
+                {
+                    Id = "r1",
+                    SignalId = "s1",
+                    ResourceId = "resourceId1",
+                },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
             var signalExecution2 = new SignalExecutionInfo
             {
-                RuleId = "r2",
-                SignalId = "s2",
+                AlertRule = new AlertRule
+                {
+                    Id = "r2",
+                    SignalId = "s2",
+                    ResourceId = "resourceId2",
+                },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
             var signalExecutions = new List<SignalExecutionInfo> { signalExecution1, signalExecution2 };
 
             this.signalRunTrackerMock.Setup(m => m.GetSignalsToRunAsync(It.IsAny<IList<AlertRule>>())).ReturnsAsync(signalExecutions);
 
-            this.azureResourceManagerClientMock.Setup(m => m.GetAllSubscriptionIdsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<string> { "someSubscriptionId" });
-
             // each signal execution returns a result
-            this.analysisExecuterMock.Setup(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "/subscriptions/someSubscriptionId")))
+            this.analysisExecuterMock.Setup(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "resourceId1" || lst.First() == "resourceId2")))
                 .ReturnsAsync(new List<SmartSignalResultItemPresentation> { new TestResultItem("title") });
 
             await this.scheduleFlow.RunAsync();

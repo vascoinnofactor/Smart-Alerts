@@ -72,8 +72,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker
                     this.tracer.TraceInformation($"rule {alertRule.Id} for signal {alertRule.SignalId} is marked to run");
                     signalsToRun.Add(new SignalExecutionInfo
                     {
-                        RuleId = alertRule.Id,
-                        SignalId = alertRule.SignalId,
+                        AlertRule = alertRule,
                         Cadence = alertRule.Schedule.GetNextOccurrence(signalNextRun) - signalNextRun,
                         LastExecutionTime = ruleLastRun?.LastSuccessfulExecutionTime,
                         CurrentExecutionTime = DateTime.UtcNow
@@ -92,12 +91,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker
         public async Task UpdateSignalRunAsync(SignalExecutionInfo signalExecutionInfo)
         {
             // Execute the update operation
-            this.tracer.TraceVerbose($"updating run for: {signalExecutionInfo.RuleId}");
+            this.tracer.TraceVerbose($"updating run for: {signalExecutionInfo.AlertRule.Id}");
             var operation = TableOperation.InsertOrReplace(new TrackSignalRunEntity
             {
                 PartitionKey = PartitionKey,
-                RowKey = signalExecutionInfo.RuleId,
-                SignalId = signalExecutionInfo.SignalId,
+                RowKey = signalExecutionInfo.AlertRule.Id,
+                SignalId = signalExecutionInfo.AlertRule.SignalId,
                 LastSuccessfulExecutionTime = signalExecutionInfo.CurrentExecutionTime
             });
             await this.trackingTable.ExecuteAsync(operation, CancellationToken.None);

@@ -28,7 +28,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
         private readonly ISignalRunsTracker signalRunsTracker;
         private readonly IAnalysisExecuter analysisExecuter;
         private readonly ISmartSignalResultPublisher smartSignalResultPublisher;
-        private readonly IAzureResourceManagerClient azureResourceManagerClient;
         private readonly IEmailSender emailSender;
 
         /// <summary>
@@ -40,15 +39,13 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
         /// <param name="analysisExecuter">The analysis executer instance</param>
         /// <param name="smartSignalResultPublisher">The signal results publisher instance</param>
         /// <param name="emailSender">The email sender</param>
-        /// <param name="azureResourceManagerClient">The azure resource manager client</param>
         public ScheduleFlow(
             ITracer tracer,
             IAlertRuleStore alertRulesStore,
             ISignalRunsTracker signalRunsTracker,
             IAnalysisExecuter analysisExecuter,
             ISmartSignalResultPublisher smartSignalResultPublisher,
-            IEmailSender emailSender,
-            IAzureResourceManagerClient azureResourceManagerClient)
+            IEmailSender emailSender)
         {
             this.tracer = Diagnostics.EnsureArgumentNotNull(() => tracer);
             this.alertRulesStore = Diagnostics.EnsureArgumentNotNull(() => alertRulesStore);
@@ -56,7 +53,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
             this.analysisExecuter = Diagnostics.EnsureArgumentNotNull(() => analysisExecuter);
             this.smartSignalResultPublisher = Diagnostics.EnsureArgumentNotNull(() => smartSignalResultPublisher);
             this.emailSender = Diagnostics.EnsureArgumentNotNull(() => emailSender);
-            this.azureResourceManagerClient = Diagnostics.EnsureArgumentNotNull(() => azureResourceManagerClient);
         }
 
         /// <summary>
@@ -68,26 +64,21 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
             IList<AlertRule> alertRules = await this.alertRulesStore.GetAllAlertRulesAsync();
             IList<SignalExecutionInfo> signalsToRun = await this.signalRunsTracker.GetSignalsToRunAsync(alertRules);
 
-            // We get all subscriptions as the resource IDs
-            var subscriptionIds = await this.azureResourceManagerClient.GetAllSubscriptionIdsAsync();
-            var resourceIds = subscriptionIds.Select(subscriptionId => "/subscriptions/" + subscriptionId).ToList();
-
             foreach (SignalExecutionInfo signalExecution in signalsToRun)
             {
                 try
                 {
-                    IList<SmartSignalResultItemPresentation> signalResultItems = await this.analysisExecuter.ExecuteSignalAsync(signalExecution, resourceIds);
+                    IList<SmartSignalResultItemPresentation> signalResultItems = await this.analysisExecuter.ExecuteSignalAsync(signalExecution, new List<string> { signalExecution.AlertRule.ResourceId });
                     this.tracer.TraceInformation($"Found {signalResultItems.Count} signal result items");
-                    await this.smartSignalResultPublisher.PublishSignalResultItemsAsync(signalExecution.SignalId, signalResultItems);
+                    await this.smartSignalResultPublisher.PublishSignalResultItemsAsync(signalExecution.AlertRule.SignalId, signalResultItems);
                     await this.signalRunsTracker.UpdateSignalRunAsync(signalExecution);
 
                     // We send the mail after we mark the run as successful so if it will fail then the signal will not run again
-                    // TODO: Get the email recipients from alert rule
-                    await this.emailSender.SendSignalResultEmailAsync(null, signalExecution.SignalId, signalResultItems);
+                    await this.emailSender.SendSignalResultEmailAsync(signalExecution.AlertRule.EmailRecipients, signalExecution.AlertRule.SignalId, signalResultItems);
                 }
                 catch (Exception exception)
                 {
-                    this.tracer.TraceError($"Failed executing signal {signalExecution.SignalId} with exception: {exception}");
+                    this.tracer.TraceError($"Failed executing signal {signalExecution.AlertRule.SignalId} with exception: {exception}");
                     this.tracer.ReportException(exception);
                 }
             }

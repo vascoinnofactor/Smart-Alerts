@@ -7,6 +7,8 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
 {
     using System;
+    using System.Collections.Generic;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
 
     /// <summary>
     /// Signal execution information
@@ -14,15 +16,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
     public class SignalExecutionInfo
     {
         /// <summary>
-        /// Gets or sets the rule ID
+        /// Gets or sets the alert rule of the execution
         /// </summary>
-        public string RuleId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the signal ID
-        /// </summary>
-        public string SignalId { get; set; }
-
+        public AlertRule AlertRule { get; set; }
+        
         /// <summary>
         /// Gets or sets the current execution time
         /// </summary>
