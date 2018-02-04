@@ -48,7 +48,7 @@ namespace SmartSignalSchedulerTests
         {
             var resultItems = new List<SmartSignalResultItemPresentation>
             {
-                new SmartSignalResultItemPresentation("id", "title", null, "resource", null, "someSignalId", string.Empty, DateTime.UtcNow, 0, null, null, null)
+                new SmartSignalResultItemPresentation("id", "title", null, "resource", null, "someSignalId", string.Empty, DateTime.UtcNow, 0, null, null, null, null)
             };
             await this.emailSender.SendSignalResultEmailAsync(new List<string>(), "someSignalId", resultItems);
             this.sendgridClientMock.Verify(m => m.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -85,7 +85,7 @@ namespace SmartSignalSchedulerTests
         {
             return new List<SmartSignalResultItemPresentation>
             {
-                new SmartSignalResultItemPresentation("id", "title", null, "resource", null, "someSignalId", string.Empty, DateTime.UtcNow, 0, null, null, null)
+                new SmartSignalResultItemPresentation("id", "title", null, "resource", null, "someSignalId", string.Empty, DateTime.UtcNow, 0, null, null, null, null)
             };
         }
     }

@@ -10,7 +10,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Exceptions;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
@@ -23,9 +22,19 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
     /// </summary>
     public class EmailSender : IEmailSender
     {
+        internal const string SignalNamePlaceHolder = "[signalName]";
+        internal const string ResourceNamePlaceHolder = "[resourceName]";
+        internal const string LinkToPortalPlaceHolder = "[linkToPortal]";
+        internal const string RuleNamePlaceHolder = "[ruleName]";
+        internal const string RuleDescriptionPlaceHolder = "[ruleDescription]";
+        internal const string ServiceNamePlaceHolder = "[serviceName]";
+        internal const string AlertActivatedTimePlaceHolder = "[alertActivatedTime]";
+        internal const string SubscriptionNamePlaceHolder = "[subscriptionName]";
+        internal const string LinkToFeedbackPlaceHolder = "[linkToFeedback]";
+
         private ITracer tracer;
         private ISendGridClient sendGridClient;
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailSender"/> class.
         /// </summary>
@@ -79,7 +88,21 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
 
             this.tracer.TraceInformation($"Sending signal result email for signal {signalId}");
 
-            // TODO: Parse the smart signal result to an HTML and add a link to the SiRA UI
+            foreach (SmartSignalResultItemPresentation signal in smartSignalResultItems)
+            {
+                // TODO: Parse the smart signal result to an HTML and add a link to the SiRA UI
+                string emailBody = Resources.SmartSignalEmailTemplate
+                    .Replace(SignalNamePlaceHolder, signal.SignalName)
+                    .Replace(ResourceNamePlaceHolder, signal.ResourceId)
+                    .Replace(LinkToPortalPlaceHolder, string.Empty)
+                    .Replace(RuleNamePlaceHolder, "Get from the ScheduleFlow/AlertRule") 
+                    .Replace(RuleDescriptionPlaceHolder, "Get from the ScheduleFlow/AlertRule")
+                    .Replace(ServiceNamePlaceHolder, "Get from the ScheduleFlow/AlertRule")
+                    .Replace(AlertActivatedTimePlaceHolder, "Get from the ScheduleFlow/AlertRule")
+                    .Replace(SubscriptionNamePlaceHolder, signal.SubscriptionId)
+                    .Replace(LinkToFeedbackPlaceHolder, "https://ms.portal.azure.com/");
+            }
+
             var msg = new SendGridMessage
             {
                 From = new EmailAddress("smartsignals@microsoft.com", "Smart Signals"),

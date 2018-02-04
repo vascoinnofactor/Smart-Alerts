@@ -1,10 +1,10 @@
 ﻿<!-- Azure Application Insights Mail Banner - with MSFT logo -->
 <div>
-    <img src="https://deepinsightsresources.blob.core.windows.net/publicresources/SmartAlerts.PNG"  >
+    <img src="https://deepinsightsresources.blob.core.windows.net/publicresources/SmartAlerts.PNG">
 </div>
 
-<body >
-    <h3 valign="top"><span style="margin-left: 25px;color: #434343;font-family: 'Segoe UI SEMIBOLD';">Dear Customer,&nbsp;</h3>
+<body>
+    <h3 valign="top"><span style="margin-left: 10px;color: #434343;font-family: 'Segoe UI SEMIBOLD';">Dear Customer,&nbsp;</h3>
     <p>
         <div class="NewLine">&nbsp;</div>
         <table style="margin-left:15px">
@@ -16,7 +16,7 @@
             </tr>
         </table>
         <div style="height: 30px"></div>
-        <div style="margin-left:22px; font-family: 'Segoe UI'">You can view more details for this alert<a href="[linkToPortal]"> here.</a></div>
+        <div style="margin-left:22px; font-family: 'Segoe UI'">You can view more details for this alert<a href="[linkToPortal]" style="text-decoration: none"> here.</a></div>
 
         <!-- Further details -->
         <table style="margin-left:50px" cellpadding="0" cellspacing="10" border="0">
@@ -32,7 +32,7 @@
                 </tr>
                 <tr>
                     <td valign="top"><span style="color: #434343; font-family: 'Segoe UI SEMIBOLD';">RULE NAME:&nbsp;</span></td>
-                    <td valign="top" style="font-family: 'Segoe UI'">[ruleName]td>
+                    <td valign="top" style="font-family: 'Segoe UI'">[ruleName]</td>
                     <td></td>
                 </tr>
                 <tr style="height: 10px"></tr>
@@ -69,10 +69,14 @@
             </tbody>
         </table>
         <div class="NewLine">&nbsp;</div>
+        <div class="NewLine">&nbsp;</div>
+        <div valign="top"><span class="Bottom" ; style=" font-size: 20px;">Questions? Feedback?&nbsp;</div>
+        <div valign="top"><span class="Bottom">We'd love to know&nbsp;</div>
+        <div valign="top"><span class="Bottom">Drop us a line <a href="[linkToFeedback]" style="text-decoration: none"> here.</a>&nbsp;</div>
+        <div class="NewLine">&nbsp;</div>
+        <div valign="top"><span class="Bottom" ; style=" font-size: 20px;">Thank you,&nbsp;</div>
+        <div valign="top"><span class="Bottom" ; style="font-size: 20px;">Microsoft.&nbsp;</div>
     </p>
-
-
-
 </body>
 
 
@@ -140,3 +144,11 @@
         </tr>
     </tbody>
 </table>
+
+
+<style>
+    .Bottom {
+        margin-left: 15px;
+        color: #434343;
+    }
+</style>

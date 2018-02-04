@@ -156,7 +156,8 @@ namespace ManagementApiTests.EndpointsLogic
                         analysisWindowSizeInMinutes: 5,
                         properties: new List<SmartSignalResultItemPresentationProperty>(),
                         rawProperties: new Dictionary<string, string>(),
-                        queryRunInfo: null);
+                        queryRunInfo: null,
+                        subscriptionId: null);
 
             return JsonConvert.SerializeObject(signalResult);
         }

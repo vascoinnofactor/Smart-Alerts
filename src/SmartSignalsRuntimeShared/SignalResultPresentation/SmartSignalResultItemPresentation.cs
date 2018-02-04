@@ -38,7 +38,21 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
         /// <param name="properties">The result item properties</param>
         /// <param name="rawProperties">The raw result item properties</param>
         /// <param name="queryRunInfo">The query run information</param>
-        public SmartSignalResultItemPresentation(string id, string title, SmartSignalResultItemPresentationSummary summary, string resourceId, string correlationHash, string signalId, string signalName, DateTime analysisTimestamp, int analysisWindowSizeInMinutes, List<SmartSignalResultItemPresentationProperty> properties, IReadOnlyDictionary<string, string> rawProperties, SmartSignalResultItemQueryRunInfo queryRunInfo)
+        /// <param name="subscriptionId">The subscription ID</param>
+        public SmartSignalResultItemPresentation(
+            string id, 
+            string title, 
+            SmartSignalResultItemPresentationSummary summary, 
+            string resourceId, 
+            string correlationHash, 
+            string signalId, 
+            string signalName, 
+            DateTime analysisTimestamp, 
+            int analysisWindowSizeInMinutes, 
+            List<SmartSignalResultItemPresentationProperty> properties, 
+            IReadOnlyDictionary<string, string> rawProperties, 
+            SmartSignalResultItemQueryRunInfo queryRunInfo,
+            string subscriptionId)
         {
             this.Id = id;
             this.Title = title;
@@ -52,6 +66,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
             this.Properties = properties;
             this.RawProperties = rawProperties;
             this.QueryRunInfo = queryRunInfo;
+            this.SubscriptionId = subscriptionId;
         }
 
         /// <summary>
@@ -125,6 +140,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
         /// </summary>
         [JsonProperty("queryRunInfo")]
         public SmartSignalResultItemQueryRunInfo QueryRunInfo { get; }
+
+        /// <summary>
+        /// Gets the query subscription ID
+        /// </summary>
+        [JsonProperty("SubscriptionId")]
+        public string SubscriptionId { get; }
 
         /// <summary>
         /// Creates a presentation from a result item
@@ -225,6 +246,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
             string id = string.Join("##", smartSignalResultItem.GetType().FullName, JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(smartSignalResultItem)).Hash();
             string resourceId = azureResourceManagerClient.GetResourceId(smartSignalResultItem.ResourceIdentifier);
             string correlationHash = string.Join("##", predicates.OrderBy(x => x.Key).Select(x => x.Key + "|" + x.Value)).Hash();
+            string subscriptionId = smartSignalResultItem.ResourceIdentifier.SubscriptionId;
 
             // Return the presentation object
             return new SmartSignalResultItemPresentation(
@@ -239,7 +261,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
                 (int)request.Cadence.TotalMinutes,
                 presentationProperties,
                 rawProperties,
-                queryRunInfo);
+                queryRunInfo,
+                subscriptionId);
         }
 
         /// <summary>
