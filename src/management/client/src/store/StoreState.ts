@@ -11,6 +11,7 @@ import SignalResult from '../models/SignalResult';
 import DataTable from '../models/DataTable';
 import User from '../models/User';
 import AlertRule from '../models/AlertRule';
+import AzureSubscriptionResources from '../models/AzureSubscriptionResources';
 
 /**
  * Defines the store structure
@@ -45,6 +46,19 @@ export default interface StoreState {
      * The authenticated user details
      */
     readonly userDetails: User | null;
+
+    /**
+     * The list of available Azure resources
+     */
+    readonly resources: ResourcesStoreState;
+}
+
+/**
+ * Defines the resources store state
+ */
+export interface ResourcesStoreState {
+    isFetching: boolean;
+    resources: ReadonlyArray<AzureSubscriptionResources>;
 }
 
 /**

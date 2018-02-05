@@ -4,24 +4,38 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import ResourceType from '../enums/ResourceType';
-
 /**
  * This model represents an alert rule 
  */
 export default interface AlertRule {
+
     /**
-     * Gets the signal id.
+     * The alert rule name.
+     */
+    name: string;
+
+    /**
+     * The alert rule description.
+     */
+    description: string;
+
+    /**
+     * The signal id.
      */
     signalId: string;
 
     /**
-     * Gets the resource type supported by the signal.
+     * The resource to be analyzed by the signal.
      */
-    resourceType: ResourceType;
+    resourceId: string;
 
     /**
-     * Gets the scheduling configuration (in CRON format).
+     * The scheduling configuration (in CRON format).
      */
     schedule: string;
+
+    /**
+     * The email recipients for the signal result.
+     */
+    emailRecipients: string[];
 }

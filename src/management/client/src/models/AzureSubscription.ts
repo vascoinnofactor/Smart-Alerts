@@ -1,17 +1,17 @@
 // -----------------------------------------------------------------------
-// <copyright file="Column.ts" company="Microsoft Corporation">
+// <copyright file="AzureSubscription.ts" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
-export default interface Column {
+export default interface AzureSubscription {
     /**
-     * The column name.
-     */
-    name: string;
+     * The subscription id.
+     */ 
+    id: string;
 
     /**
-     * The column data type.
+     * The subscription name.
      */
-    dataType: string;
+    displayName: string;
 }

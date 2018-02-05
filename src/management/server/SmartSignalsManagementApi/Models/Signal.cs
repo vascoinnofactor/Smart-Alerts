@@ -35,6 +35,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models
         /// <summary>
         /// Gets or sets the signal supported resource types.
         /// </summary>
+        [JsonProperty("supportedResourceTypes")]
         public List<ResourceType> SupportedResourceTypes { get; set; }
 
         /// <summary>

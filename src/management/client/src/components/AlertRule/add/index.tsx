@@ -5,30 +5,58 @@
 // -----------------------------------------------------------------------
 
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { Grid, Row } from 'react-flexbox-grid';
 import Button from 'react-md/lib/Buttons';
 import FontIcon from 'react-md/lib/FontIcons';
 import Chip from 'react-md/lib/Chips';
+import { bindActionCreators, Dispatch } from 'redux';
 
 import Drawer from '../../Drawer';
 import AzureResourcesViewer from '../../AzureResourcesViewer';
-import AzureResource from '../../../models/AzureResource';
+import SelectedAzureResource from '../../AzureResourcesViewer/selectedAzureResource';
 import Signal from '../../../models/Signal';
-import { ResourceType } from '../../../enums/ResourceType';
 import SignalsListDrawerView from '../../Signals/SignalsManagement/signalsListDrawerView';
+import StoreState from '../../../store/StoreState';
+import { getAzureResources } from '../../../actions/resource/resourceActions';
+import { getSignals } from '../../../actions/signal/signalActions';
+import AzureSubscriptionResources from '../../../models/AzureSubscriptionResources';
 
 import './indexStyle.css';
 
+/**
+ * Represents the AddAlertRule component props for the dispatch functions
+ */
+interface AddAlertRuleDispatchProps {
+    getSignals: () => (dispatch: Dispatch<StoreState>) => Promise<void>;
+    getAzureResources: () => (dispatch: Dispatch<StoreState>) => Promise<void>;
+}
+
+/**
+ * Represents the AddAlertRule component props for the component inner state  
+ */
+interface AddAlertRuleStateProps {
+    signals: ReadonlyArray<Signal>;
+    azureResources: ReadonlyArray<AzureSubscriptionResources>;
+}
+
+/**
+ * Represents the AddAlertRule component state
+ */
 interface AddAlertRuleState {
     showResourcesDrawer: boolean;
     showSignalsDrawer: boolean;
-    selectedResource?: AzureResource;
+    selectedResource?: SelectedAzureResource;
     selectedSignal?: Signal;
 }
 
-export default class AddAlertRule extends React.Component<{}, AddAlertRuleState> {
-    constructor() {
-        super({});
+// Create a type combined from all the props
+type AddAlertRuleProps = AddAlertRuleDispatchProps &
+                         AddAlertRuleStateProps;
+
+class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState> {
+    constructor(props: AddAlertRuleProps) {
+        super(props);
 
         this.state = {
             showResourcesDrawer: false,
@@ -38,34 +66,12 @@ export default class AddAlertRule extends React.Component<{}, AddAlertRuleState>
         };
     }
 
-    public render() {
-        let signals: Signal[] = new Array();
-        signals.push({ id: 'firstSignal',
-                       name: 'Application Insights Signal',
-                       supportedResourceTypes: [ResourceType.ApplicationInsights], 
-                       supportedCadences: [30, 60], 
-                       configurations: []});
-        signals.push({ id: 'secondSignal',
-                       name: 'Log Analytics Signal',
-                       supportedResourceTypes: [ResourceType.LogAnalytics], 
-                       supportedCadences: [30, 60], 
-                       configurations: []});
-        signals.push({ id: 'thirdSignal',
-                       name: 'Virtual Machine Signal',
-                       supportedResourceTypes: [ResourceType.VirtualMachine], 
-                       supportedCadences: [30, 60], 
-                       configurations: []});
-        signals.push({ id: 'fourthSignal',
-                       name: 'Virtual Machine Scale Set Signal',
-                       supportedResourceTypes: [ResourceType.VirtualMachineScaleSet], 
-                       supportedCadences: [30, 60], 
-                       configurations: []});
-        signals.push({ id: 'fifthSignal',
-                       name: 'Log Analytics Signal #2',
-                       supportedResourceTypes: [ResourceType.LogAnalytics, ResourceType.ApplicationInsights], 
-                       supportedCadences: [30, 60], 
-                       configurations: []});
+    public async componentDidMount() {
+        await this.props.getAzureResources();
+        await this.props.getSignals();
+    }
 
+    public render() {
         return (
             <div>
                 <Grid fluid className="add-alert-rule-container">
@@ -165,21 +171,27 @@ export default class AddAlertRule extends React.Component<{}, AddAlertRuleState>
                     onVisibilityChange={this.changeAzureResourcesDrawerVisibility} 
                     visible={this.state.showResourcesDrawer}
                 >
-                    <AzureResourcesViewer onDoneButtonPressed={this.onSelectResourceCompleted}  />
+                    <AzureResourcesViewer
+                        onDoneButtonPressed={this.onSelectResourceCompleted} 
+                        azureSubscriptionsResources={this.props.azureResources} 
+                    />
                 </Drawer>
 
                 <Drawer 
                     onVisibilityChange={this.changeSignalListDrawerVisibility} 
                     visible={this.state.showSignalsDrawer}
                 >
-                    <SignalsListDrawerView signals={signals} onDoneButtonPressed={this.onSelectSignalCompleted} />
+                    <SignalsListDrawerView 
+                        signals={this.props.signals} 
+                        onDoneButtonPressed={this.onSelectSignalCompleted} 
+                    />
                 </Drawer>
             </div>
         );
     }
 
-    private onSelectResourceCompleted = (resource: AzureResource) => {
-        this.setState({ selectedResource: resource, showResourcesDrawer: false });
+    private onSelectResourceCompleted = (selectedResource: SelectedAzureResource) => {
+        this.setState({ selectedResource: selectedResource, showResourcesDrawer: false });
     }
 
     private onSelectSignalCompleted = (signal: Signal) => {
@@ -202,7 +214,7 @@ export default class AddAlertRule extends React.Component<{}, AddAlertRuleState>
         this.setState({ showSignalsDrawer: visible });
     }
 
-    private getResourceChipElement(resource: AzureResource): JSX.Element {
+    private getResourceChipElement(resource: SelectedAzureResource): JSX.Element {
         let label: string = resource.subscriptionName;
 
         if (resource.resourceGroup) {
@@ -224,3 +236,27 @@ export default class AddAlertRule extends React.Component<{}, AddAlertRuleState>
         );
     }
 }
+
+/**
+ * Map between the given state to this component props.
+ * @param state The current state
+ */
+function mapStateToProps(state: StoreState): AddAlertRuleStateProps {
+    return {
+        azureResources: state.resources.resources,
+        signals: state.signals.items
+    };
+}
+
+/**
+ * Map between the given dispatch to this component props actions.
+ * @param dispatch the dispatch
+ */
+function mapDispatchToProps(dispatch: Dispatch<StoreState>): AddAlertRuleDispatchProps {
+    return {
+        getAzureResources: bindActionCreators(getAzureResources, dispatch),
+        getSignals: bindActionCreators(getSignals, dispatch)
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddAlertRule);

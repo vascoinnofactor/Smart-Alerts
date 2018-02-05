@@ -8,18 +8,12 @@ import ResourceType from '../enums/ResourceType';
 
 /**
  * This model represent an Azure resource
- * The minimal required property is the subscription id 
  */
 export default interface AzureResource {
     /**
      * The Azure subscription id
      */
     subscriptionId: string;
-
-    /**
-     * The Azure subscription name
-     */
-    subscriptionName: string;
 
     /**
      * The Azure resource type
@@ -29,7 +23,7 @@ export default interface AzureResource {
     /**
      * The Azure resource group
      */
-    resourceGroup?: string;
+    resourceGroupName?: string;
 
     /**
      * The Azure resource name

@@ -26,7 +26,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
         /// <summary>
         /// The Application Insights resource id (used for getting credentials)
         /// </summary>
-        private const string ApplicationInsightsResource = "https://api.applicationinsights.io";
+        private const string ApplicationInsightsResource = "https://api.applicationinsights.io/v1";
 
         private readonly IHttpClientWrapper httpClient;
         private readonly ServiceClientCredentials credentials;
@@ -78,7 +78,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
 
             try
             {
-                var appInsightsRelativeUrl = $"/v1/apps/{this.applicationId}/events/customEvents";
+                var appInsightsRelativeUrl = $"/apps/{this.applicationId}/events/customEvents";
 
                 // Filter by event name
                 appInsightsRelativeUrl += $"?$filter=customEvent/name eq '{eventName}'";

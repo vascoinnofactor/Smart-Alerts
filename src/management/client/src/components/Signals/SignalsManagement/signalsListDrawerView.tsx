@@ -9,7 +9,6 @@ import { DataTable, TableHeader, TableBody, TableRow, TableColumn } from 'react-
 import Button from 'react-md/lib/Buttons';
 
 import Signal from '../../../models/Signal';
-import ResourceType from '../../../enums/ResourceType';
 
 import './signalsListDrawerViewStyle.css';
 
@@ -71,8 +70,7 @@ export default class SignalsListDrawerView extends
                                 >
                                         <TableColumn>{signal.name}</TableColumn>
                                         <TableColumn>
-                                            {signal.supportedResourceTypes.map(resource => ResourceType[resource])
-                                                                        .join(', ')}
+                                            {signal.supportedResourceTypes.join(', ')}
                                         </TableColumn>
                                 </TableRow>
                             ))

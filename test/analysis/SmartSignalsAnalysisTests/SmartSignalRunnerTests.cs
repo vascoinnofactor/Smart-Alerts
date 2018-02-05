@@ -196,13 +196,13 @@ namespace SmartSignalsAnalysisTests
                     }
                 });
             this.azureResourceManagerClientMock
-                .Setup(x => x.GetAllResourceGroupsInSubscriptionAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetAllResourceGroupsInSubscriptionAsync(It.IsAny<string>(), It.IsAny<CancellationToken>(), It.IsAny<int?>()))
                 .ReturnsAsync((string subscriptionId, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { ResourceIdentifier.Create(subscriptionId, "resourceGroupName") });
             this.azureResourceManagerClientMock
-                .Setup(x => x.GetAllResourcesInSubscriptionAsync(It.IsAny<string>(), It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetAllResourcesInSubscriptionAsync(It.IsAny<string>(), It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>(), It.IsAny<int?>()))
                 .ReturnsAsync((string subscriptionId, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { ResourceIdentifier.Create(ResourceType.VirtualMachine, subscriptionId, "resourceGroupName", "resourceName") });
             this.azureResourceManagerClientMock
-                .Setup(x => x.GetAllResourcesInResourceGroupAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetAllResourcesInResourceGroupAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>(), It.IsAny<int?>()))
                 .ReturnsAsync((string subscriptionId, string resourceGroupName, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { ResourceIdentifier.Create(ResourceType.VirtualMachine, subscriptionId, resourceGroupName, "resourceName") });
 
             this.queryRunInfoProviderMock = new Mock<IQueryRunInfoProvider>();

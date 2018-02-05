@@ -26,6 +26,10 @@ const defaultState: StoreState = {
         items: [],
         lastUpdated: null
     },
+    resources: {
+        isFetching: false,
+        resources: [],
+    },
     isAuthenticated: false,
     userDetails: null
 };

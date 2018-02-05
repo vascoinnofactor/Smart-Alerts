@@ -7,21 +7,28 @@
 import * as React from 'react';
 import Select, { Option } from 'react-select';
 import Button from 'react-md/lib/Buttons';
+import * as _ from 'lodash';
 
 import AzureResource from '../../models/AzureResource';
+import { ResourceType } from '../../enums/ResourceType';
+import SelectedAzureResource from './selectedAzureResource';
+import AzureSubscriptionResources from '../../models/AzureSubscriptionResources';
+import { GetAzureResourceId } from '../../utils/AzureResourceUtils';
 
 import './indexStyle.css';
-import { ResourceType } from '../../enums/ResourceType';
 
 interface AzureResourcesViewerProps {
-    onDoneButtonPressed: (resource: AzureResource) => void;
+    azureSubscriptionsResources: ReadonlyArray<AzureSubscriptionResources>;
+    onDoneButtonPressed: (selectedReosurce: SelectedAzureResource) => void;
 }
 
 interface AzureResourceViewerState {
     selectedSubscriptionId?: string;
+    selectedSubscriptionName?: string;
     selectedResourceType?: string;
     selectedResourceGroup?: string;
     selectedResourceName?: string;
+    selectedResourceId?: string;
 }
 
 export default class AzureResourcesViewer extends React.Component<AzureResourcesViewerProps, AzureResourceViewerState> {
@@ -53,6 +60,7 @@ export default class AzureResourcesViewer extends React.Component<AzureResources
 
         this.state = {
             selectedSubscriptionId: undefined,
+            selectedSubscriptionName: undefined,
             selectedResourceType: undefined,
             selectedResourceGroup: undefined,
             selectedResourceName: undefined
@@ -60,10 +68,6 @@ export default class AzureResourcesViewer extends React.Component<AzureResources
     }
 
     public render() {
-        let options: Array<Option<string>> = new Array();
-        options.push({ value: 'first option id', label: 'First Value'});
-        options.push({ value: 'second option id', label: 'Second Value'});
-
         return (
             <div className="azure-resources-viewer">
                 <div className="title">
@@ -79,10 +83,15 @@ export default class AzureResourcesViewer extends React.Component<AzureResources
                     * Filter by subscription
                 </div>
                 <Select
-                     options={options}
+                     id="yayayaya"
+                     name="yayaya"
+                     options={this.getAzureSubscriptionsOptions()}
                      searchable
                      className="select-box"
                      onChange={this.onSubscriptionSelectBoxValueChanged}
+                     value={this.state.selectedSubscriptionId ? 
+                                this.state.selectedSubscriptionId : 
+                                'N/A'}
                 />
 
                 <div className="text-before-select-box">
@@ -104,11 +113,13 @@ export default class AzureResourcesViewer extends React.Component<AzureResources
                             * Filter by resource group
                         </div>
                         <Select
-                                options={options}
+                                options={this.getAzureResourceGroupsNamesOptions()}
                                 searchable
                                 className="select-box"
                                 onChange={this.onReosurceGroupSelecteBoxValueChanged}
-                                value={this.chooseAllOption}
+                                value={this.state.selectedResourceGroup ? 
+                                            this.state.selectedResourceGroup : 
+                                            this.chooseAllOption}
                         />
                     </div>
                 }
@@ -122,11 +133,13 @@ export default class AzureResourcesViewer extends React.Component<AzureResources
                             * Resource
                         </div>
                         <Select
-                            options={options}
+                            options={this.getAzureResourcesOptions()}
                             searchable
                             className="select-box"
                             onChange={this.onReosurceNameSelecteBoxValueChanged}
-                            value={this.chooseAllOption}
+                            value={this.state.selectedResourceName ? 
+                                        this.state.selectedResourceName : 
+                                        this.chooseAllOption}
                         />
                     </div>
                 }
@@ -143,29 +156,107 @@ export default class AzureResourcesViewer extends React.Component<AzureResources
         );
     }
 
+    private getAzureSubscriptionsOptions(): Array<Option<string>> {
+        let subscriptionsOptions = new Array<Option<string>>();
+
+        this.props.azureSubscriptionsResources.forEach((subscriptionResources) => {
+            subscriptionsOptions.push({ 
+                label: subscriptionResources.subscription.displayName,
+                value: subscriptionResources.subscription.id
+            });
+        });
+
+        return subscriptionsOptions;
+    }
+
+    /**
+     * Get all the Azure resources options available by the choosed subscriotion 
+     * and reosurce group. 
+     */
+    private getAzureResourcesOptions(): Array<Option<string>> {
+        if (!this.state.selectedResourceGroup || !this.state.selectedSubscriptionId) {
+            return [this.chooseAllOption];
+        }
+
+        // Make sure selected resource type is not subscription/resource group
+        if (!this.state.selectedResourceType ||
+            this.state.selectedResourceType === 'Subscription' ||
+            this.state.selectedResourceType === 'ResourceGroup') {
+                throw new Error('Cant create resources options when select resource ' +
+                                'type is Subscription or Resource Group');
+        }
+        
+        // Find the resources by the choosen subscription id
+        let allResourcesOfSelectedSubscription: ReadonlyArray<AzureResource>;
+        allResourcesOfSelectedSubscription = this.props.azureSubscriptionsResources.filter(subscriptionResources => 
+                            subscriptionResources.subscription.id === this.state.selectedSubscriptionId)[0].resources;
+
+        // Filter all the resources by the choosen resource type
+        let filteredResources: AzureResource[] = allResourcesOfSelectedSubscription.filter(resource =>
+                                                resource.resourceGroupName === this.state.selectedResourceGroup &&
+                                                resource.resourceType.toString() == this.state.selectedResourceType);
+
+        let resourcesOptions: Array<Option<string>> = new Array();
+        filteredResources.forEach(resource => resourcesOptions.push({
+            label: resource.resourceName,
+            value: resource.resourceName
+        }));
+
+        return resourcesOptions;
+    }
+
+    /**
+     * Get all the Azure resource groups names by the choosen subscription.
+     */
+    private getAzureResourceGroupsNamesOptions(): Array<Option<string>> {
+        // Make sure selected resource type is not subscription
+        if (!this.state.selectedResourceType ||
+            this.state.selectedResourceType === 'Subscription') {
+                throw new Error('Cant create reosurce groups names options when select resource ' +
+                                'type is Subscription');
+        }
+        
+        // Find the resources by the choosen subscription id
+        let allResourcesOfSelectedSubscription: ReadonlyArray<AzureResource>;
+        allResourcesOfSelectedSubscription = this.props.azureSubscriptionsResources.filter(subscriptionResources => 
+                            subscriptionResources.subscription.id === this.state.selectedSubscriptionId)[0].resources;
+
+        // Get the distinct values of the resource groups names
+        let resourceGroupsNames = allResourcesOfSelectedSubscription
+                                    .filter(resource => resource.resourceGroupName !== undefined)
+                                    .map(resource => resource.resourceGroupName);
+
+        let uniqueResourceGroupsNames = _.uniq(resourceGroupsNames);
+
+        let resourcegroupsNamesOptions: Array<Option<string>> = new Array();
+        uniqueResourceGroupsNames.forEach(resourceGroup => resourcegroupsNamesOptions.push({
+            label: resourceGroup,
+            value: resourceGroup
+        }));
+
+        return resourcegroupsNamesOptions;
+    }
+
     private onSubscriptionSelectBoxValueChanged(option: Option<string>): void {
-        this.setState({ selectedSubscriptionId: option.value });
+        this.setState({ selectedSubscriptionId: option ? option.value : undefined, 
+                        selectedSubscriptionName: option ? option.label : undefined });
     }
 
     private onReosurceTypeSelecteBoxValueChanged(option: Option<string>): void {
-        this.setState({ selectedResourceType: option.value });
+        this.setState({ selectedResourceType: option ? option.value : undefined });
     }
 
     private onReosurceGroupSelecteBoxValueChanged(option: Option<string>): void {
-        this.setState({ selectedResourceGroup: option.value });
+        this.setState({ selectedResourceGroup: option ? option.value : undefined });
     }
 
     private onReosurceNameSelecteBoxValueChanged(option: Option<string>): void {
-        this.setState({ selectedResourceName: option.value });
+        this.setState({ selectedResourceName: option ? option.value : undefined });
     }
 
-    // private isInputValid(): boolean {
-    //     return true;
-    // }
-
     private onDoneButtonPressed(): void {
-        if (!this.state.selectedSubscriptionId) {
-            throw new Error('Subscription id cant be undefined');
+        if (!this.state.selectedSubscriptionId || !this.state.selectedSubscriptionName) {
+            throw new Error('Subscription id/name cant be undefined');
         }
 
         if (!this.state.selectedResourceType) {
@@ -173,9 +264,9 @@ export default class AzureResourcesViewer extends React.Component<AzureResources
         }
 
         let selectedResourceType = ResourceType[this.state.selectedResourceType];
-        let azureResource: AzureResource = {
+        let azureResource: SelectedAzureResource = {
             subscriptionId: this.state.selectedSubscriptionId,
-            subscriptionName: this.state.selectedSubscriptionId,
+            subscriptionName: this.state.selectedSubscriptionName,
             resourceType: ResourceType[this.state.selectedResourceType],
             resourceGroup: selectedResourceType === ResourceType.Subscription ? 
                                 undefined : 
@@ -183,7 +274,9 @@ export default class AzureResourcesViewer extends React.Component<AzureResources
             resourceName: selectedResourceType === ResourceType.Subscription ||
                           selectedResourceType === ResourceType.ResourceGroup ? 
                                 undefined : 
-                                this.state.selectedResourceName
+                                this.state.selectedResourceName,
+            resourceId: GetAzureResourceId(selectedResourceType, this.state.selectedSubscriptionId,
+                                           this.state.selectedResourceGroup, this.state.selectedResourceName)
         };
 
         this.props.onDoneButtonPressed(azureResource);

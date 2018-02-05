@@ -17,6 +17,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
     using Microsoft.Azure.Management.ResourceManager.Fluent;
     using Microsoft.Azure.Management.ResourceManager.Fluent.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Microsoft.Rest;
     using Microsoft.Rest.Azure;
     using Microsoft.Rest.Azure.OData;
@@ -170,13 +171,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// </summary>
         /// <param name="subscriptionId">The subscription ID.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="maxResourcesToReturn">(optional) The maximum resources to return - default is 100. Once value is null, all resources will return.</param>
         /// <returns>A <see cref="Task{TResult}"/>, returning the resource groups.</returns>
-        public async Task<IList<ResourceIdentifier>> GetAllResourceGroupsInSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken)
+        public async Task<IList<ResourceIdentifier>> GetAllResourceGroupsInSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken, int? maxResourcesToReturn = 100)
         {
+            Diagnostics.EnsureArgument(maxResourcesToReturn.HasValue ? maxResourcesToReturn.Value > 0 : true, () => maxResourcesToReturn, "maxResourcesToReturn value most be positive number or null");
+
             ResourceManagementClient resourceManagementClient = this.GetResourceManagementClient(subscriptionId);
             Task<IPage<ResourceGroupInner>> FirstPage() => resourceManagementClient.ResourceGroups.ListAsync(cancellationToken: cancellationToken);
             Task<IPage<ResourceGroupInner>> NextPage(string nextPageLink) => resourceManagementClient.ResourceGroups.ListNextAsync(nextPageLink, cancellationToken);
-            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resource groups in subscription")))
+            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resource groups in subscription", maxResourcesToReturn)))
                 .Select(resourceGroup => this.GetResourceIdentifier(resourceGroup.Id))
                 .ToList();
         }
@@ -187,14 +191,17 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <param name="subscriptionId">The subscription ID.</param>
         /// <param name="resourceTypes">The types of resource to enumerate.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="maxResourcesToReturn">(optional) The maximum resources to return - default is 100. Once value is null, all resources will return.</param>
         /// <returns>A <see cref="Task{TResult}"/>, returning the resource identifiers.</returns>
-        public async Task<IList<ResourceIdentifier>> GetAllResourcesInSubscriptionAsync(string subscriptionId, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken)
+        public async Task<IList<ResourceIdentifier>> GetAllResourcesInSubscriptionAsync(string subscriptionId, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken, int? maxResourcesToReturn = 100)
         {
+            Diagnostics.EnsureArgument(maxResourcesToReturn.HasValue ? maxResourcesToReturn.Value > 0 : true, () => maxResourcesToReturn, "maxResourcesToReturn value most be positive number or null");
+
             ResourceManagementClient resourceManagementClient = this.GetResourceManagementClient(subscriptionId);
             ODataQuery<GenericResourceFilterInner> query = this.GetResourcesByTypeQuery(resourceTypes);
             Task<IPage<GenericResourceInner>> FirstPage() => resourceManagementClient.Resources.ListAsync(query, cancellationToken);
             Task<IPage<GenericResourceInner>> NextPage(string nextPageLink) => resourceManagementClient.Resources.ListNextAsync(nextPageLink, cancellationToken);
-            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in subscription")))
+            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in subscription with filtering", maxResourcesToReturn)))
                 .Select(resource => this.GetResourceIdentifier(resource.Id))
                 .ToList();
         }
@@ -206,14 +213,17 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <param name="resourceGroupName">The resource group name.</param>
         /// <param name="resourceTypes">The types of resource to enumerate.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="maxResourcesToReturn">(optional) The maximum resources to return - default is 100. Once value is null, all resources will return.</param>
         /// <returns>A <see cref="Task{TResult}"/>, returning the resource identifiers.</returns>
-        public async Task<IList<ResourceIdentifier>> GetAllResourcesInResourceGroupAsync(string subscriptionId, string resourceGroupName, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken)
+        public async Task<IList<ResourceIdentifier>> GetAllResourcesInResourceGroupAsync(string subscriptionId, string resourceGroupName, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken, int? maxResourcesToReturn = 100)
         {
+            Diagnostics.EnsureArgument(maxResourcesToReturn.HasValue ? maxResourcesToReturn.Value > 0 : true, () => maxResourcesToReturn, "maxResourcesToReturn value most be positive number or null");
+
             ResourceManagementClient resourceManagementClient = this.GetResourceManagementClient(subscriptionId);
             ODataQuery<GenericResourceFilterInner> query = this.GetResourcesByTypeQuery(resourceTypes);
             Task<IPage<GenericResourceInner>> FirstPage() => resourceManagementClient.ResourceGroups.ListResourcesAsync(resourceGroupName, query, cancellationToken);
             Task<IPage<GenericResourceInner>> NextPage(string nextPageLink) => resourceManagementClient.ResourceGroups.ListResourcesNextAsync(nextPageLink, cancellationToken);
-            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in resource group")))
+            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in resource group", maxResourcesToReturn)))
                 .Select(resource => this.GetResourceIdentifier(resource.Id))
                 .ToList();
         }
@@ -405,8 +415,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <param name="firstPage">A function that returns the first results page</param>
         /// <param name="nextPage">A function that returns the next results page, given the next page link</param>
         /// <param name="enumerationDescription">The enumeration description, to include in the exception error message</param>
+        /// <param name="maxResourcesToEnumerate">The maximum number of elements to enumerate. Once value is null, all elements will be enumerated.</param>
         /// <returns>The list of items, read from the paged results</returns>
-        private async Task<List<T>> ReadAllPages<T>(Func<Task<IPage<T>>> firstPage, Func<string, Task<IPage<T>>> nextPage, string enumerationDescription)
+        private async Task<List<T>> ReadAllPages<T>(Func<Task<IPage<T>>> firstPage, Func<string, Task<IPage<T>>> nextPage, string enumerationDescription, int? maxResourcesToEnumerate)
         {
             List<T> items = new List<T>();
             IPage<T> currentPage = await firstPage();
@@ -418,9 +429,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
                 int currentPageCount = items.Count - prevCount;
 
                 // Check limit
-                if (items.Count >= MaxResourcesToEnumerate)
+                if (maxResourcesToEnumerate.HasValue && items.Count >= maxResourcesToEnumerate)
                 {
-                    throw new TooManyResourcesException($"Could not enumerate {enumerationDescription} - over {MaxResourcesToEnumerate} items found");
+                    throw new TooManyResourcesException($"Could not enumerate {enumerationDescription} - over {maxResourcesToEnumerate} items found");
                 }
 
                 // If this is the last page, we are done
