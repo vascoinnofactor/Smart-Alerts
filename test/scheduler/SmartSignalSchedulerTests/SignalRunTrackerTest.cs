@@ -19,7 +19,6 @@ namespace SmartSignalSchedulerTests
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.WindowsAzure.Storage.Table;
     using Moq;
-    using NCrontab;
 
     [TestClass]
     public class SignalRunTrackerTest
@@ -72,19 +71,19 @@ namespace SmartSignalSchedulerTests
                 {
                     Id = "should_not_run_rule",
                     SignalId = "should_not_run_signal",
-                    Schedule = CrontabSchedule.Parse("0 0 */1 * *") // once a day at midnight
+                    Cadence = TimeSpan.FromMinutes(1440) // once a day
                 },
                 new AlertRule
                 {
                     Id = "should_run_rule",
                     SignalId = "should_run_signal",
-                    Schedule = CrontabSchedule.Parse("0 */1 * * *") // every round hour
+                    Cadence = TimeSpan.FromMinutes(60) // once every hour
                 },
                 new AlertRule
                 {
                     Id = "should_run_rule2",
                     SignalId = "should_run_signal2",
-                    Schedule = CrontabSchedule.Parse("0 0 */1 * *") // once a day at midnight
+                    Cadence = TimeSpan.FromMinutes(1440) // once a day
                 }
             };
 
