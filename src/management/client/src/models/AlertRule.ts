@@ -17,7 +17,7 @@ export default interface AlertRule {
     /**
      * The alert rule description.
      */
-    description: string;
+    description?: string;
 
     /**
      * The signal id.
@@ -37,5 +37,5 @@ export default interface AlertRule {
     /**
      * The email recipients for the signal result.
      */
-    emailRecipients: string[];
+    emailRecipients?: string[];
 }

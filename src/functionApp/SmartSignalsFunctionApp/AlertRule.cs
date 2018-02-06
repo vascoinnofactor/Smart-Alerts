@@ -11,11 +11,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Azure.WebJobs.Host;
@@ -39,8 +42,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
             Container = DependenciesInjector.GetContainer()
                 .RegisterType<IAuthorizationManagementClient, AuthorizationManagementClient>()
-                .RegisterType<ISmartSignalRepository, SmartSignalRepository>()
-                .RegisterType<IAlertRuleApi, AlertRuleApi>();
+                .RegisterType<IAlertRuleApi, AlertRuleApi>()
+                .RegisterType<IAlertRuleStore, AlertRuleStore>()
+                .RegisterType<ICloudStorageProviderFactory, CloudStorageProviderFactory>()
+                .RegisterType<IHttpClientWrapper, HttpClientWrapper>();
         }
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// <param name="cancellationToken">A cancellation token to control the function's execution.</param>
         /// <returns>200 if request was successful, 500 if not.</returns>
         [FunctionName("alertRule")]
-        public static async Task<HttpResponseMessage> AddAlertRule([HttpTrigger(AuthorizationLevel.Anonymous, "put")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
+        public static async Task<HttpResponseMessage> AddAlertRule([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {
@@ -59,11 +64,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                 var alertRuleApi = childContainer.Resolve<IAlertRuleApi>();
                 var authorizationManagementClient = childContainer.Resolve<IAuthorizationManagementClient>();
 
-                // Read given parameters from body
-                var addAlertRule = await req.Content.ReadAsAsync<AddAlertRule>(cancellationToken);
-
                 try
                 {
+                    // Read given parameters from body
+                    var addAlertRule = await req.Content.ReadAsAsync<AddAlertRule>(cancellationToken);
+
                     // Check authorization
                     bool isAuthorized = await authorizationManagementClient.IsAuthorizedAsync(req, cancellationToken);
                     if (!isAuthorized)

@@ -20,7 +20,9 @@ import SignalsListDrawerView from '../../Signals/SignalsManagement/signalsListDr
 import StoreState from '../../../store/StoreState';
 import { getAzureResources } from '../../../actions/resource/resourceActions';
 import { getSignals } from '../../../actions/signal/signalActions';
+import { addAlertRule } from '../../../actions/alertRule/alertRuleActions';
 import AzureSubscriptionResources from '../../../models/AzureSubscriptionResources';
+import AlertRule from '../../../models/AlertRule';
 
 import './indexStyle.css';
 
@@ -30,6 +32,7 @@ import './indexStyle.css';
 interface AddAlertRuleDispatchProps {
     getSignals: () => (dispatch: Dispatch<StoreState>) => Promise<void>;
     getAzureResources: () => (dispatch: Dispatch<StoreState>) => Promise<void>;
+    addAlertRule: (alertRule: AlertRule) => (dispatch: Dispatch<StoreState>) => Promise<void>;
 }
 
 /**
@@ -48,6 +51,9 @@ interface AddAlertRuleState {
     showSignalsDrawer: boolean;
     selectedResource?: SelectedAzureResource;
     selectedSignal?: Signal;
+    selectedAlertRuleName?: string;
+    selectedAlertRuleDescription?: string;
+    selectedAlertRuleEmailRecipients?: string;
 }
 
 // Create a type combined from all the props
@@ -58,11 +64,16 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
     constructor(props: AddAlertRuleProps) {
         super(props);
 
+        this.onSubmitButtonPressed = this.onSubmitButtonPressed.bind(this);
+        
         this.state = {
             showResourcesDrawer: false,
             showSignalsDrawer: true,
             selectedResource: undefined,
-            selectedSignal: undefined
+            selectedSignal: undefined,
+            selectedAlertRuleName: undefined,
+            selectedAlertRuleDescription: undefined,
+            selectedAlertRuleEmailRecipients: undefined
         };
     }
 
@@ -138,12 +149,16 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
                         type="text"
                         placeholder="Specify alert name, Sample: 'Percentage CPU > 70'" 
                         className="alert-rule-name-input-box"
+                        onChange={this.onChangeAlertRuleName}
                     />
 
                     <div className="text-before-input-box">
                         Description
                     </div>
-                    <textarea placeholder="Specify alert description here..." />
+                    <textarea 
+                        placeholder="Specify alert description here..." 
+                        onChange={this.onChangeAlertRuleDescription}
+                    />
 
                     <div className="text-before-input-box">
                         Email recipients
@@ -152,6 +167,7 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
                         type="text"
                         placeholder="Seperate email addresses by ;" 
                         className="alert-rule-name-input-box"
+                        onChange={this.onChangeAlertRuleEmailRecipients}
                     />
 
                     <Row className="submit-button-row">
@@ -160,6 +176,7 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
                             flat 
                             className="submit-button" 
                             iconEl={<FontIcon>{'add_alert'}</FontIcon>}
+                            onClick={this.onSubmitButtonPressed}
                         >
                             Create alert rule
                         </Button>
@@ -214,6 +231,18 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
         this.setState({ showSignalsDrawer: visible });
     }
 
+    private onChangeAlertRuleName = (e: React.FormEvent<HTMLInputElement>) => {
+        this.setState({ selectedAlertRuleName: e.currentTarget.value });
+    }
+
+    private onChangeAlertRuleDescription = (e: React.FormEvent<HTMLTextAreaElement>) => {
+        this.setState({ selectedAlertRuleDescription: e.currentTarget.value });
+    }
+
+    private onChangeAlertRuleEmailRecipients = (e: React.FormEvent<HTMLInputElement>) => {
+        this.setState({ selectedAlertRuleEmailRecipients: e.currentTarget.value });
+    }
+
     private getResourceChipElement(resource: SelectedAzureResource): JSX.Element {
         let label: string = resource.subscriptionName;
 
@@ -235,6 +264,34 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
             <Chip label={signal.name} />
         );
     }
+
+    private async onSubmitButtonPressed() {
+        if (!this.state.selectedResource) {
+            throw new Error('Cant add alert rule when selected no resource was selected');
+        }
+
+        if (!this.state.selectedSignal) {
+            throw new Error('Cant add alert rule when selected no signal was selected');
+        }
+
+        if (!this.state.selectedAlertRuleName) {
+            throw new Error('Cant add alert rule when no alert rule name was mentioned');
+        }
+
+        // Create the alert rule based on the user input
+        let alertRule: AlertRule = {
+            resourceId: this.state.selectedResource.resourceId,
+            signalId: this.state.selectedSignal.id,
+            name: this.state.selectedAlertRuleName,
+            description: this.state.selectedAlertRuleDescription,
+            emailRecipients: this.state.selectedAlertRuleEmailRecipients ?
+                                this.state.selectedAlertRuleEmailRecipients.split(';') :
+                                undefined,
+            schedule: ''
+        };
+
+        await this.props.addAlertRule(alertRule);
+    }
 }
 
 /**
@@ -255,7 +312,8 @@ function mapStateToProps(state: StoreState): AddAlertRuleStateProps {
 function mapDispatchToProps(dispatch: Dispatch<StoreState>): AddAlertRuleDispatchProps {
     return {
         getAzureResources: bindActionCreators(getAzureResources, dispatch),
-        getSignals: bindActionCreators(getSignals, dispatch)
+        getSignals: bindActionCreators(getSignals, dispatch),
+        addAlertRule: bindActionCreators(addAlertRule, dispatch)
     };
 }
 
