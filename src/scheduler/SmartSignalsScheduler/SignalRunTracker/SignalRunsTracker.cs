@@ -16,7 +16,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler;
     using Microsoft.WindowsAzure.Storage.Table;
-    using NCrontab;
 
     /// <summary>
     /// Tracking the signal job runs - Responsible to determine whether the signal job should run.
@@ -60,20 +59,19 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker
             // create a dictionary from rule ID to signal execution for faster lookup
             var ruleIdToLastRun = signalsLastRuns.ToDictionary(x => x.RowKey, x => x);
 
-            // for each rule check if needs to run based on its schedule and its last execution time
+            // for each rule check if needs to run based on its cadence and its last execution time
             var signalsToRun = new List<SignalExecutionInfo>();
             foreach (var alertRule in alertRules)
             {
                 bool signalWasExecutedBefore = ruleIdToLastRun.TryGetValue(alertRule.Id, out TrackSignalRunEntity ruleLastRun);
-                var nextBaseTime = signalWasExecutedBefore ? ruleLastRun.LastSuccessfulExecutionTime : DateTime.MinValue;
-                DateTime signalNextRun = alertRule.Schedule.GetNextOccurrence(nextBaseTime);
+                DateTime lastExecutionTime = signalWasExecutedBefore ? ruleLastRun.LastSuccessfulExecutionTime : DateTime.MinValue;
+                DateTime signalNextRun = lastExecutionTime.Add(alertRule.Cadence);
                 if (signalNextRun <= DateTime.UtcNow)
                 {
                     this.tracer.TraceInformation($"rule {alertRule.Id} for signal {alertRule.SignalId} is marked to run");
                     signalsToRun.Add(new SignalExecutionInfo
                     {
                         AlertRule = alertRule,
-                        Cadence = alertRule.Schedule.GetNextOccurrence(signalNextRun) - signalNextRun,
                         LastExecutionTime = ruleLastRun?.LastSuccessfulExecutionTime,
                         CurrentExecutionTime = DateTime.UtcNow
                     });

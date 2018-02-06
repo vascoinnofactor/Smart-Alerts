@@ -6,6 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -14,7 +15,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Table;
-    using NCrontab;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -64,7 +64,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
                     Description = entity.Description,
                     SignalId = entity.SignalId,
                     ResourceId = entity.ResourceId,
-                    Schedule = CrontabSchedule.Parse(entity.CrontabSchedule),
+                    Cadence = TimeSpan.FromMinutes(entity.CadenceInMinutes),
                     EmailRecipients = entity.EmailRecipients == null ? null : JsonConvert.DeserializeObject<List<string>>(entity.EmailRecipients)
                 }).ToList();
             }
@@ -94,7 +94,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
                     Description = alertRule.Description,
                     SignalId = alertRule.SignalId,
                     ResourceId = alertRule.ResourceId,
-                    CrontabSchedule = alertRule.Schedule.ToString(),
+                    CadenceInMinutes = (int)alertRule.Cadence.TotalMinutes,
                     EmailRecipients = alertRule.EmailRecipients == null ? null : JsonConvert.SerializeObject(alertRule.EmailRecipients)
                 });
 

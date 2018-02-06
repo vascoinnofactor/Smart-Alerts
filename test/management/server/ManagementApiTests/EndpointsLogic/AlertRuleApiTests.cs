@@ -41,7 +41,7 @@ namespace ManagementApiTests.EndpointsLogic
             {
                 SignalId = Guid.NewGuid().ToString(),
                 ResourceId = "resourceId",
-                Schedule = "0 0 */1 * *"
+                CadenceInMinutes = 1440
             };
 
             this.alertRuleStoreMock.Setup(s => s.AddOrReplaceAlertRuleAsync(It.IsAny<AlertRule>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
@@ -57,7 +57,7 @@ namespace ManagementApiTests.EndpointsLogic
             {
                 SignalId = string.Empty,
                 ResourceId = "resourceId",
-                Schedule = string.Empty
+                CadenceInMinutes = 1440
             };
 
             try
@@ -74,36 +74,13 @@ namespace ManagementApiTests.EndpointsLogic
         }
 
         [TestMethod]
-        public async Task WhenAddingSignalButModelIsInvalidBecauseScheduleValueIsEmptyThenThrowException()
+        public async Task WhenAddingSignalButCadenceValueIsInvalidCronValueThenThrowException()
         {
             var addSignalModel = new AddAlertRule()
             {
                 SignalId = Guid.NewGuid().ToString(),
                 ResourceId = "resourceId",
-                Schedule = string.Empty
-            };
-
-            try
-            {
-                await this.alertRuleApi.AddAlertRuleAsync(addSignalModel, CancellationToken.None);
-            }
-            catch (SmartSignalsManagementApiException e)
-            {
-                Assert.AreEqual(HttpStatusCode.BadRequest, e.StatusCode);
-                return;
-            }
-
-            Assert.Fail("Invalid model should throw an exception");
-        }
-
-        [TestMethod]
-        public async Task WhenAddingSignalButScheduleValueIsInvalidCronValueThenThrowException()
-        {
-            var addSignalModel = new AddAlertRule()
-            {
-                SignalId = Guid.NewGuid().ToString(),
-                ResourceId = "resourceId",
-                Schedule = "corrupted value"
+                CadenceInMinutes = 0
             };
 
             try
@@ -126,7 +103,7 @@ namespace ManagementApiTests.EndpointsLogic
             {
                 SignalId = Guid.NewGuid().ToString(),
                 ResourceId = "resourceId",
-                Schedule = "0 0 */1 * *"
+                CadenceInMinutes = 1440
             };
 
             this.alertRuleStoreMock.Setup(s => s.AddOrReplaceAlertRuleAsync(It.IsAny<AlertRule>(), It.IsAny<CancellationToken>()))
