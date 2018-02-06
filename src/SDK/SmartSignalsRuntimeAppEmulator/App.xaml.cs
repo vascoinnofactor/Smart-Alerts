@@ -15,6 +15,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
     using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Microsoft.Azure.Monitoring.SmartSignals.Trace;
+    using Microsoft.Win32;
     using Unity;
 
     /// <summary>
@@ -33,18 +34,20 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
         /// <param name="e">A <see cref="T:System.Windows.StartupEventArgs" /> that contains the event data.</param>
         protected override void OnStartup(StartupEventArgs e)
         {
-            var tracer = new ConsoleTracer(string.Empty);
-            var signalLoader = new SmartSignalLoader(tracer);
-            if (e.Args.Length != 1)
-            {
-                throw new ArgumentException($"Invalid number of arguments - expected 1, actual {e.Args?.Length}");
-            }
+            ITracer stringTracer = new StringTracer(string.Empty);
+            ITracer consoleTracer = new ConsoleTracer(string.Empty);
+            var signalLoader = new SmartSignalLoader(consoleTracer);
 
-            string signalPackagePath = Diagnostics.EnsureStringNotNullOrWhiteSpace(() => e.Args[0]);
+            // *Temporary*: if package file path wasn't accepted, raise file selection window to allow package file selection.
+            // This option should be removed before launching version for customers (bug for tracking: 1177247)
+            string signalPackagePath = e.Args.Length != 1 ? 
+                this.GetSignalPackagePath() : 
+                Diagnostics.EnsureStringNotNullOrWhiteSpace(() => e.Args[0]);
+            
             SmartSignalPackage signalPackage;
             using (var fileStream = new FileStream(signalPackagePath, FileMode.Open))
             {
-                signalPackage = SmartSignalPackage.CreateFromStream(fileStream, tracer);
+                signalPackage = SmartSignalPackage.CreateFromStream(fileStream, consoleTracer);
             }
 
             SmartSignalManifest signalManifest = signalPackage.Manifest;
@@ -53,25 +56,44 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             // Authenticate the user to AAD
             var authenticationServices = new AuthenticationServices();
             authenticationServices.AuthenticateUser();
-            var credentialsFactory = new ActiveDirectoryCredentialsFactory(authenticationServices);
+            ICredentialsFactory credentialsFactory = new ActiveDirectoryCredentialsFactory(authenticationServices);
 
-            var azureResourceManagerClient = new AzureResourceManagerClient(credentialsFactory, tracer);
+            IAzureResourceManagerClient azureResourceManagerClient = new AzureResourceManagerClient(credentialsFactory, consoleTracer, maxResourcesToEnumerate: 300);
 
             // Create analysis service factory
             var queryRunInroProvider = new QueryRunInfoProvider(azureResourceManagerClient);
             var httpClientWrapper = new HttpClientWrapper();
-            var analysisServicesFactory = new AnalysisServicesFactory(tracer, httpClientWrapper, credentialsFactory, azureResourceManagerClient, queryRunInroProvider);
+            IAnalysisServicesFactory analysisServicesFactory = new AnalysisServicesFactory(consoleTracer, httpClientWrapper, credentialsFactory, azureResourceManagerClient, queryRunInroProvider);
+
+            var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, stringTracer);
 
             // Create a Unity container with all the required models and view models registrations
             Container = new UnityContainer();
             Container
-                .RegisterInstance(tracer)
+                .RegisterInstance(stringTracer)
                 .RegisterInstance(new SignalsResultsRepository())
                 .RegisterInstance(authenticationServices)
                 .RegisterInstance(azureResourceManagerClient)
                 .RegisterInstance(signal)
                 .RegisterInstance(signalManifest)
-                .RegisterInstance(analysisServicesFactory);
+                .RegisterInstance(analysisServicesFactory)
+                .RegisterInstance(signalRunner);
+        }
+
+        /// <summary>
+        /// Raises file selection dialog window to allow the user to select package file.
+        /// </summary>
+        /// <returns>The selected package file path or null if no file was selected</returns>
+        private string GetSignalPackagePath()
+        {
+            var dialog = new OpenFileDialog();
+
+            if (dialog.ShowDialog() == true)
+            {
+                return dialog.FileName;
+            }
+
+            return null;
         }
     }
 }

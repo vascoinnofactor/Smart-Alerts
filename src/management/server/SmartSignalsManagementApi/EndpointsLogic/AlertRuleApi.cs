@@ -7,7 +7,6 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
 {
     using System;
-    using System.Collections.Generic;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,7 +14,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
-    using NCrontab;
 
     /// <summary>
     /// This class is the logic for the /alertRule endpoint.
@@ -62,7 +60,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
                         Description = addAlertRule.Description,
                         SignalId = addAlertRule.SignalId,
                         ResourceId = addAlertRule.ResourceId,
-                        Schedule = CrontabSchedule.Parse(addAlertRule.Schedule),
+                        Cadence = TimeSpan.FromMinutes(addAlertRule.CadenceInMinutes),
                         EmailRecipients = addAlertRule.EmailRecipients
                     },
                     cancellationToken);
@@ -87,16 +85,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(model.Schedule))
+            if (model.CadenceInMinutes <= 0)
             {
-                errorInformation = "Schedule parameter must not be empty";
-                return false;
-            }
-
-            CrontabSchedule crontabSchedule = CrontabSchedule.TryParse(model.Schedule);
-            if (crontabSchedule == null)
-            {
-                errorInformation = "Schedule parameter is not in CRON format";
+                errorInformation = "CadenceInMinutes parameter must be a positive integer";
                 return false;
             }
 

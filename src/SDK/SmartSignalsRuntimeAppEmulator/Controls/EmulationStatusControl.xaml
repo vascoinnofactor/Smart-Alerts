@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls"
+             xmlns:converters="clr-namespace:Microsoft.Azure.Monitoring.SmartSignals.Emulator.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="500">
     <UserControl.Resources>
@@ -53,7 +54,7 @@
 
         <TextBlock Style="{StaticResource ControlText}" Text="Results found" Margin="0,0,0,10"/>
         <TextBlock Margin="0,0,0,20" HorizontalAlignment="Left">
-            <Run FontSize="30" Text="12"/>
+            <Run FontSize="30" Text="{Binding Path=SignalRunner.Result.ResultItems.Count, Mode=OneWay}"/>
             <Separator Width="5" Visibility="Hidden"/>
             <Hyperlink NavigateUri="http://stackoverflow.com">View</Hyperlink>
         </TextBlock>
@@ -61,9 +62,11 @@
         <TextBlock Style="{StaticResource ControlText}" Text="Traces" Margin="0,0,0,10"/>
         <TextBox x:Name="TracerBox" Margin="0,0,0,30" Height="200" AcceptsReturn="True" 
                  Background="Transparent" BorderBrush="#FF7F7F7F" BorderThickness="1"
+                 Text="{Binding Tracer.Traces, Mode=OneWay}"
                  IsReadOnly="True" IsTabStop="False" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto"/>
 
-        <Button Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Content="Cancel" Margin="0,15,0,0"/>
+        <Button Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Content="Cancel" Margin="0,35,0,0"
+                IsEnabled="{Binding Path=SignalRunner.IsSignalRunning, Mode=OneWay}" Command="{Binding CancelSignalRunCommand}" />
 
     </StackPanel>
 </UserControl>

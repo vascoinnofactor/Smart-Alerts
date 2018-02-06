@@ -29,9 +29,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
     public class AzureResourceManagerClient : IAzureResourceManagerClient
     {
         /// <summary>
-        /// The maximal number of allowed resources to enumerate
+        /// The default maximal number of allowed resources to enumerate
         /// </summary>
-        private const int MaxResourcesToEnumerate = 100;
+        private const int DefaultMaxResourcesToEnumerate = 100;
 
         /// <summary>
         /// The dependency name, for telemetry
@@ -42,6 +42,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 
         private readonly ServiceClientCredentials credentials;
         private readonly ITracer tracer;
+        private readonly int maxResourcesToEnumerate;
         private readonly Policy retryPolicy;
 
         /// <summary>
@@ -49,10 +50,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// </summary>
         /// <param name="credentialsFactory">The credentials factory</param>
         /// <param name="tracer">The tracer</param>
-        public AzureResourceManagerClient(ICredentialsFactory credentialsFactory, ITracer tracer)
+        /// <param name="maxResourcesToEnumerate">The maximal number of allowed resources to enumerate</param>
+        public AzureResourceManagerClient(ICredentialsFactory credentialsFactory, ITracer tracer, int maxResourcesToEnumerate = DefaultMaxResourcesToEnumerate)
         {
             this.credentials = credentialsFactory.Create("https://management.azure.com/");
             this.tracer = tracer;
+            this.maxResourcesToEnumerate = maxResourcesToEnumerate;
             this.retryPolicy = PolicyExtensions.CreateDefaultPolicy(this.tracer, DependencyName);
         }
 
@@ -309,9 +312,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
                 int currentPageCount = items.Count - prevCount;
 
                 // Check limit
-                if (items.Count >= MaxResourcesToEnumerate)
+                if (items.Count >= this.maxResourcesToEnumerate)
                 {
-                    throw new TooManyResourcesException($"Could not enumerate {enumerationDescription} - over {MaxResourcesToEnumerate} items found");
+                    throw new TooManyResourcesException($"Could not enumerate {enumerationDescription} - over {this.maxResourcesToEnumerate} items found");
                 }
 
                 // If this is the last page, we are done

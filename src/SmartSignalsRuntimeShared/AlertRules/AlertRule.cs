@@ -6,8 +6,8 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
 {
+    using System;
     using System.Collections.Generic;
-    using NCrontab;
 
     /// <summary>
     /// Holds an alert rule
@@ -40,9 +40,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
         public string ResourceId { get; set; }
 
         /// <summary>
-        /// Gets or sets the signal's schedule.
+        /// Gets or sets the signal's execution cadence.
         /// </summary>
-        public CrontabSchedule Schedule { get; set; }
+        public TimeSpan Cadence { get; set; }
 
         /// <summary>
         /// Gets or sets the email recipients for the signal result

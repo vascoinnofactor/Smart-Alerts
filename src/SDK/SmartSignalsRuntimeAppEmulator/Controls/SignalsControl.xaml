@@ -11,6 +11,12 @@
              d:DesignHeight="600" d:DesignWidth="1500">
     <UserControl.Resources>
         <converters:EmptyListToBooleanConverter x:Key="EmptyListToBooleanConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:ConverterChain x:Key="InverseBooleanToVisibilityConverter">
+            <converters:InverseBooleanConverter/>
+            <BooleanToVisibilityConverter/>
+        </converters:ConverterChain>
     </UserControl.Resources>
     <Grid Background="#FFECF0F1" >
         <Grid.ColumnDefinitions>
@@ -53,15 +59,20 @@
 
                 <Separator Margin="0,0,0,20"/>
 
-                <Button Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Content="Start analysis" Command="{Binding RunSignalCommand}" />
+                <Button Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Content="Start analysis" Command="{Binding RunSignalCommand}" 
+                        IsEnabled="{Binding Path=SignalRunner.IsSignalRunning, Converter={StaticResource InverseBooleanConverter}}" />
             </StackPanel>
         </Border>
 
         <Border Grid.Column="1" BorderThickness="0" Padding="20,20,20,0">
             <StackPanel Orientation="Vertical">
                 <TextBlock Style="{StaticResource SectionHeader}" Text="STATUS"/>
-                <TextBlock x:Name="BeforeStartMessage" Text="Click 'Start analysis' to begin the emulation." Foreground="#FF767171" FontSize="16" Margin="0,80,0,0" HorizontalAlignment="Center"/>
-                <local:EmulationStatusControl x:Name="EmulationStatusControl" Visibility="Collapsed"/>
+                <TextBlock Text="Click 'Start analysis' to begin the emulation." Foreground="#FF767171" FontSize="16" 
+                           Margin="0,80,0,0" HorizontalAlignment="Center"
+                           Visibility="{Binding Path=ShouldShowStatusControl, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                <StackPanel Orientation="Vertical" Visibility="{Binding Path=ShouldShowStatusControl, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <local:EmulationStatusControl/>
+                </StackPanel>
             </StackPanel>
         </Border>
     </Grid>

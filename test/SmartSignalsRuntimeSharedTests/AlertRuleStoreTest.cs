@@ -6,6 +6,7 @@
 
 namespace SmartSignalsRuntimeSharedTests
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -16,8 +17,6 @@ namespace SmartSignalsRuntimeSharedTests
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.WindowsAzure.Storage.Table;
     using Moq;
-    using NCrontab;
-    using Newtonsoft.Json;
 
     [TestClass]
     public class AlertRuleStoreTest
@@ -41,13 +40,11 @@ namespace SmartSignalsRuntimeSharedTests
         [TestMethod]
         public async Task WhenUpdatingAlertRuleThenUpdateIsCalledCorrectly()
         {
-            const string CronSchedule = "0 1 * * *";
-
             var ruleToUpdate = new AlertRule
             {
                 Id = "ruleId",
                 SignalId = "signalId",
-                Schedule = CrontabSchedule.Parse(CronSchedule),
+                Cadence = TimeSpan.FromMinutes(1440),
                 ResourceId = "resourceId"
             };
 
@@ -58,7 +55,7 @@ namespace SmartSignalsRuntimeSharedTests
                     operation.OperationType == TableOperationType.InsertOrReplace &&
                     operation.Entity.RowKey.Equals(ruleToUpdate.Id) &&
                     ((AlertRuleEntity)operation.Entity).SignalId.Equals(ruleToUpdate.SignalId) &&
-                    ((AlertRuleEntity)operation.Entity).CrontabSchedule.Equals(CronSchedule) &&
+                    ((AlertRuleEntity)operation.Entity).CadenceInMinutes.Equals(1440) &&
                     ((AlertRuleEntity)operation.Entity).ResourceId.Equals(ruleToUpdate.ResourceId)),
                 It.IsAny<CancellationToken>()));
         }
@@ -73,15 +70,15 @@ namespace SmartSignalsRuntimeSharedTests
                 {
                     RowKey = "rule1",
                     SignalId = "signal1",
-                    CrontabSchedule = "0 0 * * *",
-                    ResourceId = "/subscriptions/"
+                    CadenceInMinutes = 1440,
+                    ResourceId = "resourceId1"
                 },
                 new AlertRuleEntity
                 {
                     RowKey = "rule2",
                     SignalId = "signal2",
-                    CrontabSchedule = "0 * * * *",
-                    ResourceId = "/subscriptions/2"
+                    CadenceInMinutes = 60,
+                    ResourceId = "resourceId2"
                 }
             };
 
@@ -93,14 +90,14 @@ namespace SmartSignalsRuntimeSharedTests
             var firstRule = returnedRules.First();
             Assert.AreEqual("rule1", firstRule.Id);
             Assert.AreEqual("signal1", firstRule.SignalId);
-            Assert.AreEqual("0 0 * * *", firstRule.Schedule.ToString());
-            Assert.AreEqual("/subscriptions/", firstRule.ResourceId);
+            Assert.AreEqual(1440, firstRule.Cadence.TotalMinutes);
+            Assert.AreEqual("resourceId1", firstRule.ResourceId);
 
             var lastRule = returnedRules.Last();
             Assert.AreEqual("rule2", lastRule.Id);
             Assert.AreEqual("signal2", lastRule.SignalId);
-            Assert.AreEqual("0 * * * *", lastRule.Schedule.ToString());
-            Assert.AreEqual("/subscriptions/2", lastRule.ResourceId);
+            Assert.AreEqual(60, lastRule.Cadence.TotalMinutes);
+            Assert.AreEqual("resourceId2", lastRule.ResourceId);
         }
     }
 }
