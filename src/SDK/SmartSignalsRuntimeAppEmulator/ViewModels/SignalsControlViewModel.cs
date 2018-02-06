@@ -14,10 +14,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     using System.Threading.Tasks;
     using System.Windows;
     using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.Trace;
     using Unity.Attributes;
 
     /// <summary>
@@ -27,13 +25,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     {
         private readonly IAzureResourceManagerClient azureResourceManagerClient;
 
-        private readonly ISmartSignal smartSignal;
-
-        private readonly IAnalysisServicesFactory analysisServicesFactory;
-
         private readonly SmartSignalManifest smartSignalManifes;
 
         private readonly ITracer tracer;
+
+        private SmartSignalRunner signalRunner;
 
         private string signalName;
 
@@ -57,32 +53,40 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
         private ResourceIdentifier selectedResource;
 
+        private bool shouldShowStatusControl;
+
         #region Ctros
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SignalsControlViewModel"/> class for design time only.
+        /// </summary>
+        public SignalsControlViewModel()
+        {
+            this.ShouldShowStatusControl = true;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignalsControlViewModel"/> class.
         /// </summary>
         /// <param name="azureResourceManagerClient">The Azure resources manager client.</param>
-        /// <param name="smartSignal">The smart signal.</param>
+        /// <param name="tracer">The tracer.</param>
         /// <param name="smartSignalManifest">The smart signal manifest.</param>
-        /// <param name="analysisServicesFactory">The analysis services factory.</param>
-        /// /// <param name="tracer">A tracer</param>
+        /// <param name="signalRunner">The smart signal runner.</param>
         [InjectionConstructor]
         public SignalsControlViewModel(
-            IAzureResourceManagerClient azureResourceManagerClient, 
-            ISmartSignal smartSignal,
+            IAzureResourceManagerClient azureResourceManagerClient,
+            ITracer tracer,
             SmartSignalManifest smartSignalManifest,
-            IAnalysisServicesFactory analysisServicesFactory,
-            ITracer tracer)
+            SmartSignalRunner signalRunner)
         {
             this.azureResourceManagerClient = azureResourceManagerClient;
-            this.smartSignal = smartSignal;
             this.smartSignalManifes = smartSignalManifest;
-            this.analysisServicesFactory = analysisServicesFactory;
             this.tracer = tracer;
 
+            this.SignalRunner = signalRunner;
             this.SignalName = this.smartSignalManifes.Name;
-            
+            this.ShouldShowStatusControl = false;
+
             // Initialize cadences combo box
             IEnumerable<SignalCadence> cadences = this.smartSignalManifes.SupportedCadencesInMinutes
                     .Select(cadence => new SignalCadence(TimeSpan.FromMinutes(cadence)));
@@ -101,9 +105,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
             this.ReadResourcesTask = new ObservableTask<ObservableCollection<ResourceIdentifier>>(
                 Task.FromResult(new ObservableCollection<ResourceIdentifier>()));
-
-            // Initialize commands
-            this.RunSignalCommand = new CommandHandler(() => this.RunSignal());
         }
 
         #endregion
@@ -123,6 +124,40 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
             private set
             {
                 this.signalName = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the signal is running or not.
+        /// </summary>
+        public bool ShouldShowStatusControl
+        {
+            get
+            {
+                return this.shouldShowStatusControl;
+            }
+
+            private set
+            {
+                this.shouldShowStatusControl = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets a task that returns the user's resource groups.
+        /// </summary>
+        public SmartSignalRunner SignalRunner
+        {
+            get
+            {
+                return this.signalRunner;
+            }
+
+            private set
+            {
+                this.signalRunner = value;
                 this.OnPropertyChanged();
             }
         }
@@ -316,7 +351,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <summary>
         /// Gets the command that runs the signal.
         /// </summary>
-        public CommandHandler RunSignalCommand { get; }
+        public CommandHandler RunSignalCommand => new CommandHandler(this.RunSignalAsync);
 
         #endregion
 
@@ -326,7 +361,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <returns>A task that returns the subscriptions</returns>
         private async Task<ObservableCollection<AzureSubscription>> GetSubscriptionsAsync()
         {
-            var subscriptionsList = (await this.azureResourceManagerClient.GetAllSubscriptionsAsync()).ToList();
+            var subscriptionsList = (await this.azureResourceManagerClient.GetAllSubscriptionsAsync())
+                .OrderBy(subscription => subscription.DisplayName)
+                .ToList();
 
             return new ObservableCollection<AzureSubscription>(subscriptionsList);
         }
@@ -338,7 +375,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         private async Task<ObservableCollection<string>> GetResourceGroupsAsync()
         {
             var resourceGroups = (await this.azureResourceManagerClient.GetAllResourceGroupsInSubscriptionAsync(this.SelectedSubscription.Id, CancellationToken.None)).ToList()
-                .Select(ri => ri.ResourceGroupName).ToList();
+                .Select(ri => ri.ResourceGroupName)
+                .OrderBy(resourceGroup => resourceGroup)
+                .ToList();
 
             return new ObservableCollection<string>(resourceGroups);
         }
@@ -352,7 +391,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
             var supportedResourceTypes = new List<ResourceType>() { ResourceType.ApplicationInsights, ResourceType.LogAnalytics, ResourceType.VirtualMachine, ResourceType.VirtualMachineScaleSet };
             var groups = (await this.azureResourceManagerClient.GetAllResourcesInResourceGroupAsync(this.SelectedSubscription.Id, this.SelectedResourceGroup, supportedResourceTypes, CancellationToken.None)).ToList()
                 .GroupBy(resourceIndentifier => resourceIndentifier.ResourceType)
-                .Select(group => group.Key.ToString()).ToList();
+                .Select(group => group.Key.ToString())
+                .OrderBy(resourceType => resourceType)
+                .ToList();
 
             return new ObservableCollection<string>(groups);
         }
@@ -369,7 +410,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
                     this.SelectedResourceGroup,
                     new List<ResourceType>() { selectedResourceType },
                     CancellationToken.None)).ToList()
-                .Where(resourceIndentifier => resourceIndentifier.ResourceType == selectedResourceType).ToList();
+                .Where(resourceIndentifier => resourceIndentifier.ResourceType == selectedResourceType)
+                .OrderBy(resource => resource.ResourceName)
+                .ToList();
 
             return new ObservableCollection<ResourceIdentifier>(resources);
         }
@@ -377,19 +420,18 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <summary>
         /// Runs the smart signal.
         /// </summary>
-        private async void RunSignal()
+        private async void RunSignalAsync()
         {
-            List<ResourceIdentifier> resources = new List<ResourceIdentifier>() { this.selectedResource };
-            var analysisRequest = new AnalysisRequest(resources, DateTime.UtcNow, TimeSpan.FromHours(1), this.analysisServicesFactory);
+            this.ShouldShowStatusControl = true;
 
+            List<ResourceIdentifier> resources = new List<ResourceIdentifier>() { this.selectedResource };
             try
             {
-                await this.smartSignal.AnalyzeResourcesAsync(analysisRequest, this.tracer, CancellationToken.None);
-                MessageBox.Show($"Signal ran successfully");
+                await this.signalRunner.RunAsync(resources, this.selectedCadence.TimeSpan);
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Failed running signal: {e.Message}");
+                this.tracer.TraceError($"Failed running signal: {e.Message}");
             }
         }
     }
