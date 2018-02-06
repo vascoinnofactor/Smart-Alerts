@@ -61,8 +61,8 @@ namespace SmartSignalSchedulerTests
 
             var resultItems = new List<SmartSignalResultItemPresentation>
             {
-                new SmartSignalResultItemPresentation("id1", "title1", null, "/subscriptions/1", null, signalId, signalId, DateTime.UtcNow, 10, null, null, null),
-                new SmartSignalResultItemPresentation("id2", "title2", null, "/subscriptions/2", null, signalId, signalId, DateTime.UtcNow, 10, null, null, null)
+                new SmartSignalResultItemPresentation("id1", "title1", null, "1", null, signalId, signalId, DateTime.UtcNow, 10, null, null, null),
+                new SmartSignalResultItemPresentation("id2", "title2", null, "2", null, signalId, signalId, DateTime.UtcNow, 10, null, null, null)
             };
             await this.publisher.PublishSignalResultItemsAsync("signalId", resultItems);
         }
@@ -89,8 +89,8 @@ namespace SmartSignalSchedulerTests
 
             var resultItems = new List<SmartSignalResultItemPresentation>
             {
-                new SmartSignalResultItemPresentation("id1", "title1", null, "/subscriptions/1", null, signalId, signalId, DateTime.UtcNow, 10, null, null, null),
-                new SmartSignalResultItemPresentation("id2", "title2", null, "/subscriptions/2", null, signalId, signalId, DateTime.UtcNow, 10, null, null, null)
+                new SmartSignalResultItemPresentation("id1", "title1", null, "1", null, signalId, signalId, DateTime.UtcNow, 10, null, null, null),
+                new SmartSignalResultItemPresentation("id2", "title2", null, "2", null, signalId, signalId, DateTime.UtcNow, 10, null, null, null)
             };
             await this.publisher.PublishSignalResultItemsAsync(signalId, resultItems);
 

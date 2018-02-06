@@ -52,7 +52,7 @@ namespace SmartSignalsAnalysisTests
             this.VerifyProperty(presentation.Properties, "Analysis 3", ResultItemPresentationSection.Analysis, (new DateTime(2012, 11, 12, 17, 22, 37)).ToString("u"), "Info balloon for analysis 3");
             Assert.AreEqual("no show", presentation.RawProperties["NoPresentation"]);
             Assert.AreEqual(TelemetryDbType.LogAnalytics, presentation.QueryRunInfo.Type, "Unexpected telemetry DB type");
-            CollectionAssert.AreEqual(new[] { "/subscriptions/1234", "resourceId2" }, presentation.QueryRunInfo.ResourceIds.ToArray(), "Unexpected resource IDs");
+            CollectionAssert.AreEqual(new[] { "resourceId1", "resourceId2" }, presentation.QueryRunInfo.ResourceIds.ToArray(), "Unexpected resource IDs");
         }
 
         [TestMethod]
@@ -130,7 +130,7 @@ namespace SmartSignalsAnalysisTests
             {
                 queryRunInfo = new SmartSignalResultItemQueryRunInfo(
                     resultItem.ResourceIdentifier.ResourceType == ResourceType.ApplicationInsights ? TelemetryDbType.ApplicationInsights : TelemetryDbType.LogAnalytics,
-                    new List<string>() { "/subscriptions/1234", "resourceId2" });
+                    new List<string>() { "resourceId1", "resourceId2" });
             }
 
             DateTime lastExecutionTime = DateTime.Now.Date.AddDays(-1);

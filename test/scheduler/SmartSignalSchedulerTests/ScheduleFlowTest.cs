@@ -59,7 +59,7 @@ namespace SmartSignalSchedulerTests
                 {
                     SignalId = "s1",
                     Id = "r1",
-                    ResourceId = "/subscriptions/1",
+                    ResourceId = "1",
                 },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
@@ -69,7 +69,7 @@ namespace SmartSignalSchedulerTests
                 {
                     SignalId = "s2",
                     Id = "r2",
-                    ResourceId = "/subscriptions/2",
+                    ResourceId = "2",
                 },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
@@ -79,7 +79,7 @@ namespace SmartSignalSchedulerTests
 
             // first signal execution throws exception and the second one returns a result
             const string ResultItemTitle = "someTitle";
-            this.analysisExecuterMock.SetupSequence(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "/subscriptions/1" || lst.First() == "/subscriptions/2")))
+            this.analysisExecuterMock.SetupSequence(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "1" || lst.First() == "2")))
                 .Throws(new Exception())
                 .ReturnsAsync(new List<SmartSignalResultItemPresentation> { new TestResultItem(ResultItemTitle) });
 
@@ -104,7 +104,7 @@ namespace SmartSignalSchedulerTests
                 {
                     Id = "r1",
                     SignalId = "s1",
-                    ResourceId = "/subscriptions/1",
+                    ResourceId = "1",
                 },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
@@ -114,7 +114,7 @@ namespace SmartSignalSchedulerTests
                 {
                     Id = "r2",
                     SignalId = "s2",
-                    ResourceId = "/subscriptions/2",
+                    ResourceId = "2",
                 },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
@@ -123,7 +123,7 @@ namespace SmartSignalSchedulerTests
             this.signalRunTrackerMock.Setup(m => m.GetSignalsToRunAsync(It.IsAny<IList<AlertRule>>())).ReturnsAsync(signalExecutions);
 
             // each signal execution returns a result
-            this.analysisExecuterMock.Setup(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "/subscriptions/1" || lst.First() == "/subscriptions/2")))
+            this.analysisExecuterMock.Setup(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "1" || lst.First() == "2")))
                 .ReturnsAsync(new List<SmartSignalResultItemPresentation> { new TestResultItem("title") });
 
             await this.scheduleFlow.RunAsync();
