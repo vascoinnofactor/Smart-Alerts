@@ -29,10 +29,5 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
         /// Gets or sets the last execution time
         /// </summary>
         public DateTime? LastExecutionTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the signal configured cadence
-        /// </summary>
-        public TimeSpan Cadence { get; set; }
     }
 }
