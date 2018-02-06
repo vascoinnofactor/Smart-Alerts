@@ -23,6 +23,7 @@ import { getSignals } from '../../../actions/signal/signalActions';
 import { addAlertRule } from '../../../actions/alertRule/alertRuleActions';
 import AzureSubscriptionResources from '../../../models/AzureSubscriptionResources';
 import AlertRule from '../../../models/AlertRule';
+import FormatUtils from '../../../utils/FormatUtils';
 
 import './indexStyle.css';
 
@@ -136,6 +137,20 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
                     <div className="select-resource-text-button">
                         <a href="#" onClick={this.showSignalsListDrawer}>Select signal</a>
                     </div>
+
+                    <div className="text-before-input-box run-every-header">
+                        Run interval
+                    </div>
+                    <select disabled={this.state.selectedSignal === undefined}>
+                        {
+                            this.state.selectedSignal &&
+                            this.getSignalRunEveryIntervalsOptions(this.state.selectedSignal.supportedCadences)
+                        }
+                        {
+                            !this.state.selectedSignal &&
+                            <option value="noSignalSelectd">Please select signal first</option>
+                        }
+                    </select>
 
                     {/* The second section - define alert rule details */}
                     <Row className="alert-rule-section-header new-section">
@@ -263,6 +278,11 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
         return (
             <Chip label={signal.name} />
         );
+    }
+
+    private getSignalRunEveryIntervalsOptions(cadencesIntervalInMinutes: number[]): JSX.Element[] {
+        return cadencesIntervalInMinutes.map(interval => 
+            (<option value="interval">{FormatUtils.minutesToStringPresentation(interval)}</option>));
     }
 
     private async onSubmitButtonPressed() {
