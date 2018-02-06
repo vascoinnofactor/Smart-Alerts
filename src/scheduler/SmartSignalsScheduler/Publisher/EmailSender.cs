@@ -92,14 +92,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
 
             var exceptions = new List<Exception>();
 
-            foreach (SmartSignalResultItemPresentation signal in smartSignalResultItems)
+            foreach (SmartSignalResultItemPresentation resultItem in smartSignalResultItems)
             {
                 ResourceIdentifier resource = ResourceIdentifier.CreateWithResourceId(alertRule.ResourceId);
 
                 // TODO: Fix links
                 string emailBody = Resources.SmartSignalEmailTemplate
-                    .Replace(SignalNamePlaceHolder, signal.SignalName)
-                    .Replace(ResourceNamePlaceHolder, signal.ResourceId)
+                    .Replace(SignalNamePlaceHolder, resultItem.SignalName)
+                    .Replace(ResourceNamePlaceHolder, resultItem.ResourceId)
                     .Replace(LinkToPortalPlaceHolder, "LinkToPortal")
                     .Replace(RuleNamePlaceHolder, alertRule.Name) 
                     .Replace(RuleDescriptionPlaceHolder, alertRule.Description)
@@ -108,33 +108,40 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
                     .Replace(SubscriptionNamePlaceHolder, resource.SubscriptionId)
                     .Replace(LinkToFeedbackPlaceHolder, "https://ms.portal.azure.com/");
 
-                    var msg = new SendGridMessage
-                    {
-                        From = new EmailAddress("smartsignals@microsoft.com", "Smart Signals"),
-                        Subject = $"Azure Smart Alerts (preview) - {signal.SignalName} detected",
-                        PlainTextContent = $@"{signal.SignalName} was detected for {signal.ResourceId}. 
-                                            You can view more details for this alert here: {"LinkToPortal"}",
-                        HtmlContent = emailBody
-                    };
+                var msg = new SendGridMessage
+                {
+                    From = new EmailAddress("smartsignals@microsoft.com", "Smart Signals"),
+                    Subject = $"Azure Smart Alerts (preview) - {resultItem.SignalName} detected",
+                    PlainTextContent = $@"{resultItem.SignalName} was detected for {resultItem.ResourceId}. 
+                                        You can view more details for this alert here: {"LinkToPortal"}",
+                    HtmlContent = emailBody
+                };
 
-                    var emailAddresses = alertRule.EmailRecipients.Select(email => new EmailAddress(email)).ToList();
-                    msg.AddTos(emailAddresses);
+                var emailAddresses = alertRule.EmailRecipients.Select(email => new EmailAddress(email)).ToList();
+                msg.AddTos(emailAddresses);
+
+                try
+                {
                     var response = await this.sendGridClient.SendEmailAsync(msg);
-
                     if (!IsSuccessStatusCode(response.StatusCode))
                     {
                         string content = response.Body != null ? await response.Body.ReadAsStringAsync() : string.Empty;
                         var message = $"Failed to send signal results Email for signal {alertRule.SignalId}. Fail StatusCode: {response.StatusCode}. Content: {content}.";
                         exceptions.Add(new EmailSendingException(message));
                     }
-
-                    this.tracer.TraceInformation($"Sent signal result email successfully for signal {alertRule.SignalId}");
+                }
+                catch (Exception e)
+                {
+                    exceptions.Add(new EmailSendingException("SendEmailAsync failed", e));
+                }
             }
 
             if (exceptions.Count > 0)
             {
-                throw new AggregateException(exceptions);
+                throw new AggregateException("Failed to send one or more signal result emails", exceptions);
             }
+
+            this.tracer.TraceInformation($"Sent signal result emails successfully for signal {alertRule.SignalId}");
         }
 
         /// <summary>

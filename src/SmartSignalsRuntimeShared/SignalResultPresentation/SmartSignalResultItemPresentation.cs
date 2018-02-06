@@ -144,10 +144,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
         /// <param name="request">The smart signal request</param>
         /// <param name="signalName">The signal name</param>
         /// <param name="smartSignalResultItem">The result item</param>
-        /// <param name="azureResourceManagerClient">The azure resource manager client</param>
         /// <param name="queryRunInfo">The query run information</param>
         /// <returns>The presentation</returns>
-        public static SmartSignalResultItemPresentation CreateFromResultItem(SmartSignalRequest request, string signalName, SmartSignalResultItem smartSignalResultItem, IAzureResourceManagerClient azureResourceManagerClient, SmartSignalResultItemQueryRunInfo queryRunInfo)
+        public static SmartSignalResultItemPresentation CreateFromResultItem(SmartSignalRequest request, string signalName, SmartSignalResultItem smartSignalResultItem, SmartSignalResultItemQueryRunInfo queryRunInfo)
         {
             // A null result item has null presentation
             if (smartSignalResultItem == null)
@@ -237,7 +236,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
             string id = string.Join("##", smartSignalResultItem.GetType().FullName, JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(smartSignalResultItem)).Hash();
             string resourceId = smartSignalResultItem.ResourceIdentifier.GetResourceId();
             string correlationHash = string.Join("##", predicates.OrderBy(x => x.Key).Select(x => x.Key + "|" + x.Value)).Hash();
-            string subscriptionId = smartSignalResultItem.ResourceIdentifier.SubscriptionId;
 
             // Return the presentation object
             return new SmartSignalResultItemPresentation(

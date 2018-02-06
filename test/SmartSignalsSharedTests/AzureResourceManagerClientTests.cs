@@ -24,8 +24,6 @@ namespace SmartSignalsSharedTests
 
         private void VerifyConversion(string testResourceId, ResourceIdentifier testResourceIdentifier)
         {
-            IAzureResourceManagerClient client = new AzureResourceManagerClient(new Mock<ICredentialsFactory>().Object, new Mock<ITracer>().Object);
-
             var resourceIdentifier = ResourceIdentifier.CreateWithResourceId(testResourceId);
             var resourceId = resourceIdentifier.GetResourceId();
             Assert.AreEqual(testResourceId, resourceId, "Resource IDs are different");

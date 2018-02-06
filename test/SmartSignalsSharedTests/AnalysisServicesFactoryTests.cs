@@ -22,7 +22,7 @@ namespace SmartSignalsSharedTests
     {
         private const string SubscriptionId = "subscriptionId";
         private const string ResourceGroupName = "resourceGroupName";
-        private const string ResourceName = "resourcename";
+        private const string ResourceName = "resourceName";
         private const string ApplicationId = "applicationId";
         private const string WorkspaceId = "workspaceId";
 

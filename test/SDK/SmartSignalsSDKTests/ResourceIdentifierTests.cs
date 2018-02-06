@@ -155,10 +155,18 @@ namespace SmartSignalsSDKTests
             Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode(), "Expected both identifiers have not equal hash codes");
         }
 
+        [TestMethod]
+        public void WhenConvertingVmResourceTheConversionIsSuccessful()
+        {
+            string testResourceId = "/subscriptions/7904b7bd-5e6b-4415-99a8-355657b7da19/resourceGroups/MyResourceGroupName/providers/Microsoft.Compute/virtualMachines/MyVirtualMachineName";
+            ResourceIdentifier testResourceIdentifier = new ResourceIdentifier(ResourceType.VirtualMachine, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
+            this.VerifyConversion(testResourceId, testResourceIdentifier);
+        }
+
         #endregion
 
         #region Private methods
-        
+
         private static void InvalidEmptyParameterTest(Func<string, ResourceIdentifier> function)
         {
             // Try to create a ResourceIdentifier with the specified parameters, testing null strings will all 3 options (null, empty, or whitespace).
@@ -177,6 +185,18 @@ namespace SmartSignalsSDKTests
             }
         }
 
+        private void VerifyConversion(string testResourceId, ResourceIdentifier testResourceIdentifier)
+        {
+            var resourceIdentifier = ResourceIdentifier.CreateWithResourceId(testResourceId);
+            var resourceId = resourceIdentifier.GetResourceId();
+            Assert.AreEqual(testResourceId, resourceId, "Resource IDs are different");
+            Assert.AreEqual(testResourceIdentifier, resourceIdentifier, "Resource identifiers are are different");
+
+            resourceId = testResourceIdentifier.GetResourceId();
+            resourceIdentifier = ResourceIdentifier.CreateWithResourceId(resourceId);
+            Assert.AreEqual(testResourceId, resourceId, "Resource IDs are different");
+            Assert.AreEqual(testResourceIdentifier, resourceIdentifier, "Resource identifiers are are different");
+        }
         #endregion
     }
 }
