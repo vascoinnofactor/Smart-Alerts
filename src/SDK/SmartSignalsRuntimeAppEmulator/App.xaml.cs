@@ -58,7 +58,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             authenticationServices.AuthenticateUser();
             ICredentialsFactory credentialsFactory = new ActiveDirectoryCredentialsFactory(authenticationServices);
 
-            IAzureResourceManagerClient azureResourceManagerClient = new AzureResourceManagerClient(credentialsFactory, consoleTracer, maxResourcesToEnumerate: 300);
+            IAzureResourceManagerClient azureResourceManagerClient = new AzureResourceManagerClient(credentialsFactory, consoleTracer);
 
             // Create analysis service factory
             var queryRunInroProvider = new QueryRunInfoProvider(azureResourceManagerClient);

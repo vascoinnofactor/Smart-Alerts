@@ -194,7 +194,7 @@ export default class AzureResourcesViewer extends React.Component<AzureResources
         // Filter all the resources by the choosen resource type
         let filteredResources: AzureResource[] = allResourcesOfSelectedSubscription.filter(resource =>
                                                 resource.resourceGroupName === this.state.selectedResourceGroup &&
-                                                resource.resourceType.toString() == this.state.selectedResourceType);
+                                                resource.resourceType.toString() === this.state.selectedResourceType);
 
         let resourcesOptions: Array<Option<string>> = new Array();
         filteredResources.forEach(resource => resourcesOptions.push({

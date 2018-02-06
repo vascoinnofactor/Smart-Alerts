@@ -66,7 +66,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
                         IList<ResourceIdentifier> subscriptionWorkspaces;
                         if (!this.subscriptionIdToWorkspaces.TryGetValue(subscriptionId, out subscriptionWorkspaces))
                         {
-                            subscriptionWorkspaces = await this.azureResourceManagerClient.GetAllResourcesInSubscriptionAsync(subscriptionId, new[] { ResourceType.LogAnalytics }, cancellationToken);
+                            subscriptionWorkspaces = await this.azureResourceManagerClient.GetAllResourcesInSubscriptionAsync(subscriptionId, new[] { ResourceType.LogAnalytics }, cancellationToken, maxResourcesToReturn: 300);
                             this.subscriptionIdToWorkspaces[subscriptionId] = subscriptionWorkspaces;
                         }
 
