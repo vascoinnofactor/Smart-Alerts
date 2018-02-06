@@ -70,7 +70,7 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
         
         this.state = {
             showResourcesDrawer: false,
-            showSignalsDrawer: true,
+            showSignalsDrawer: false,
             selectedResource: undefined,
             selectedSignal: undefined,
             selectedRunInterval: undefined,
