@@ -74,14 +74,14 @@ namespace SmartSignalsRuntimeSharedTests
                     RowKey = "rule1",
                     SignalId = "signal1",
                     CrontabSchedule = "0 0 * * *",
-                    ResourceId = "resourceId1"
+                    ResourceId = "/subscriptions/"
                 },
                 new AlertRuleEntity
                 {
                     RowKey = "rule2",
                     SignalId = "signal2",
                     CrontabSchedule = "0 * * * *",
-                    ResourceId = "resourceId2"
+                    ResourceId = "/subscriptions/2"
                 }
             };
 
@@ -94,13 +94,13 @@ namespace SmartSignalsRuntimeSharedTests
             Assert.AreEqual("rule1", firstRule.Id);
             Assert.AreEqual("signal1", firstRule.SignalId);
             Assert.AreEqual("0 0 * * *", firstRule.Schedule.ToString());
-            Assert.AreEqual("resourceId1", firstRule.ResourceId);
+            Assert.AreEqual("/subscriptions/", firstRule.ResourceId);
 
             var lastRule = returnedRules.Last();
             Assert.AreEqual("rule2", lastRule.Id);
             Assert.AreEqual("signal2", lastRule.SignalId);
             Assert.AreEqual("0 * * * *", lastRule.Schedule.ToString());
-            Assert.AreEqual("resourceId2", lastRule.ResourceId);
+            Assert.AreEqual("/subscriptions/2", lastRule.ResourceId);
         }
     }
 }

@@ -27,7 +27,6 @@ namespace SmartSignalSchedulerTests
     {
         private EmailSender emailSender;
         private Mock<ISendGridClient> sendgridClientMock;
-        private IList<string> emailRecipients;
         private SignalExecutionInfo signalExecutionInfo;
 
         [TestInitialize]
@@ -36,14 +35,13 @@ namespace SmartSignalSchedulerTests
             var tracerMock = new Mock<ITracer>();
             this.sendgridClientMock = new Mock<ISendGridClient>();
             this.emailSender = new EmailSender(tracerMock.Object, this.sendgridClientMock.Object);
-            this.emailRecipients = new List<string> { "some@email.com" };
             this.signalExecutionInfo = new SignalExecutionInfo()
             {
                 AlertRule = new AlertRule
                 {
                     SignalId = "s1",
                     Id = "r1",
-                    ResourceId = "resourceId1",
+                    ResourceId = "/subscriptions/1",
                     EmailRecipients = new List<string>() { "someEmail@microsoft.com" }
                 },
                 CurrentExecutionTime = DateTime.UtcNow,
@@ -64,7 +62,7 @@ namespace SmartSignalSchedulerTests
         {
             var resultItems = new List<SmartSignalResultItemPresentation>
             {
-                new SmartSignalResultItemPresentation("id", "title", null, "resource", null, "someSignalId", string.Empty, DateTime.UtcNow, 0, null, null, null, null)
+                new SmartSignalResultItemPresentation("id", "title", null, "resource", null, "someSignalId", string.Empty, DateTime.UtcNow, 0, null, null, null)
             };
 
             this.signalExecutionInfo.AlertRule.EmailRecipients = new List<string>();
@@ -73,7 +71,7 @@ namespace SmartSignalSchedulerTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(EmailSendingException))]
+        [ExpectedException(typeof(AggregateException))]
         public async Task WhenSendGridClientRerturnsFailStatusCodeThenExceptionIsThrown()
         {
             this.sendgridClientMock
@@ -99,11 +97,27 @@ namespace SmartSignalSchedulerTests
             this.sendgridClientMock.Verify(m => m.SendEmailAsync(It.Is<SendGridMessage>(message => message.From.Email.Equals("smartsignals@microsoft.com")), It.IsAny<CancellationToken>()), Times.Once);
         }
 
+        [TestMethod]
+        public async Task WhenMultipleResultItemsAreFoundThenMultipleEmailIsSent()
+        {
+            this.sendgridClientMock
+                .Setup(m => m.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Response(HttpStatusCode.Accepted, null, null));
+
+            var resultItems = this.CreateSignalResultList();
+            resultItems.Add(new SmartSignalResultItemPresentation("id2", "title2", null, "/subscriptions/2", null, "someSignalId2", string.Empty, DateTime.UtcNow, 0, null, null, null));
+            resultItems.Add(new SmartSignalResultItemPresentation("id3", "title3", null, "/subscriptions/3", null, "someSignalId3", string.Empty, DateTime.UtcNow, 0, null, null, null));
+
+            await this.emailSender.SendSignalResultEmailAsync(this.signalExecutionInfo, resultItems);
+
+            this.sendgridClientMock.Verify(m => m.SendEmailAsync(It.Is<SendGridMessage>(message => message.From.Email.Equals("smartsignals@microsoft.com")), It.IsAny<CancellationToken>()), Times.Exactly(3));
+        }
+
         private List<SmartSignalResultItemPresentation> CreateSignalResultList()
         {
             return new List<SmartSignalResultItemPresentation>
             {
-                new SmartSignalResultItemPresentation("id", "title", null, "resource", null, "someSignalId", string.Empty, DateTime.UtcNow, 0, null, null, null, null)
+                new SmartSignalResultItemPresentation("id", "title", null, "/subscriptions/1", null, "someSignalId", string.Empty, DateTime.UtcNow, 0, null, null, null)
             };
         }
     }

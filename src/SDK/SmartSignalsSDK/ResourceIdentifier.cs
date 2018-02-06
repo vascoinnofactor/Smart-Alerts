@@ -7,6 +7,9 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -14,6 +17,26 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
     /// </summary>
     public struct ResourceIdentifier
     {
+        /// <summary>
+        /// A dictionary, mapping <see cref="ResourceType"/> enumeration values to matching ARM string
+        /// </summary>
+        public static readonly Dictionary<ResourceType, string> MapResourceTypeToString = new Dictionary<ResourceType, string>()
+        {
+            [ResourceType.VirtualMachine] = "Microsoft.Compute/virtualMachines",
+            [ResourceType.VirtualMachineScaleSet] = "Microsoft.Compute/virtualMachineScaleSets",
+            [ResourceType.ApplicationInsights] = "Microsoft.Insights/components",
+            [ResourceType.LogAnalytics] = "Microsoft.OperationalInsights/workspaces"
+        };
+
+        private const string SubscriptionRegexPattern = "/subscriptions/(?<subscriptionId>[^/]*)";
+        private const string ResourceGroupRegexPattern = SubscriptionRegexPattern + "/resourceGroups/(?<resourceGroupName>[^/]*)";
+        private const string ResourceRegexPattern = ResourceGroupRegexPattern + "/providers/(?<resourceProviderAndType>.*)/(?<resourceName>[^/]*)";
+
+        /// <summary>
+        /// A dictionary, mapping ARM strings to their matching <see cref="ResourceType"/> enumeration values
+        /// </summary>
+        private static readonly Dictionary<string, ResourceType> MapStringToResourceType = MapResourceTypeToString.ToDictionary(x => x.Value, x => x.Key, StringComparer.CurrentCultureIgnoreCase);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceIdentifier"/> structure.
         /// This constructor performs all necessary parameter validations, and is called
@@ -27,7 +50,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// <exception cref="ArgumentNullException">One of the string parameters that should not be empty, is empty</exception>
         /// <exception cref="ArgumentOutOfRangeException">One of the string parameters that should be empty, is not empty</exception>
         [JsonConstructor]
-        private ResourceIdentifier(ResourceType resourceType, string subscriptionId, string resourceGroupName, string resourceName)
+        public ResourceIdentifier(ResourceType resourceType, string subscriptionId, string resourceGroupName, string resourceName)
         {
             // Parameter validations
             if (resourceType == ResourceType.Subscription)
@@ -119,59 +142,45 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         public string ResourceName { get; }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ResourceIdentifier"/> structure,
-        /// representing a resource of type <see cref="SmartSignals.ResourceType.Subscription"/>.
+        /// Gets the <see cref="ResourceIdentifier"/> structure that represents the resource identified by the specified resource ID.
+        /// The resource ID is a string in the ARM resource ID format, for example:
+        /// <example>
+        /// /subscriptions/7904b7bd-5e6b-4415-99a8-355657b7da19/resourceGroups/MyResourceGroupName/providers/Microsoft.Compute/virtualMachines/MyVirtualMachineName
+        /// </example>
         /// </summary>
-        /// <param name="subscriptionId">The subscription Id</param>
-        /// <exception cref="ArgumentNullException">The subscription ID is empty.</exception>
-        /// <returns>A new instance of the <see cref="ResourceIdentifier"/> structure</returns>
-        public static ResourceIdentifier Create(string subscriptionId)
+        /// <param name="resourceId">The resource ID</param>
+        /// <returns>The <see cref="ResourceIdentifier"/> structure.</returns>
+        public static ResourceIdentifier CreateWithResourceId(string resourceId)
         {
-            return new ResourceIdentifier(ResourceType.Subscription, subscriptionId, string.Empty, string.Empty);
-        }
-
-        /// <summary>
-        /// Creates a new instance of the <see cref="ResourceIdentifier"/> structure,
-        /// representing a resource of type <see cref="SmartSignals.ResourceType.ResourceGroup"/>.
-        /// </summary>
-        /// <param name="subscriptionId">The subscription Id</param>
-        /// <param name="resourceGroupName">The resource group name</param>
-        /// <exception cref="ArgumentNullException">The subscription ID or resource group name is empty.</exception>
-        /// <returns>A new instance of the <see cref="ResourceIdentifier"/> structure</returns>
-        public static ResourceIdentifier Create(string subscriptionId, string resourceGroupName)
-        {
-            return new ResourceIdentifier(ResourceType.ResourceGroup, subscriptionId, resourceGroupName, string.Empty);
-        }
-
-        /// <summary>
-        /// Creates a new instance of the <see cref="ResourceIdentifier"/> structure,
-        /// representing a specific Azure resource.
-        /// This method should not be used to created a <see cref="ResourceIdentifier"/>
-        /// structure of type <see cref="SmartSignals.ResourceType.Subscription"/> or of type
-        /// <see cref="SmartSignals.ResourceType.ResourceGroup"/> - use the other specialized
-        /// ResourceIdentifier.Create methods to create strictures of these resource types.
-        /// </summary>
-        /// <param name="resourceType">The resource's type.</param>
-        /// <param name="subscriptionId">The ID of the subscription the resource belongs to.</param>
-        /// <param name="resourceGroupName">The name of the resource group the resource belongs to.</param>
-        /// <param name="resourceName">The name of the resource.</param>
-        /// <exception cref="ArgumentNullException">
-        /// Either <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>,
-        /// or <paramref name="resourceName"/> are empty.
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="resourceType"/> is either <see cref="SmartSignals.ResourceType.Subscription"/>
-        /// or <see cref="SmartSignals.ResourceType.ResourceGroup"/>.
-        /// </exception> 
-        /// <returns>A new instance of the <see cref="ResourceIdentifier"/> structure</returns>
-        public static ResourceIdentifier Create(ResourceType resourceType, string subscriptionId, string resourceGroupName, string resourceName)
-        {
-            if (resourceType == ResourceType.Subscription || resourceType == ResourceType.ResourceGroup)
+            // Match resource pattern
+            Match m = Regex.Match(resourceId, ResourceRegexPattern);
+            if (m.Success)
             {
-                throw new ArgumentOutOfRangeException(nameof(resourceType), "The resource type cannot be Subscription or ResourceGroup");
+                // Verify that the resource is of a supported type
+                string resourceProviderAndType = m.Groups["resourceProviderAndType"].Value;
+                if (!MapStringToResourceType.TryGetValue(resourceProviderAndType, out ResourceType resourceType))
+                {
+                    throw new ArgumentException($"Resource type {resourceType} is not supported");
+                }
+
+                return new ResourceIdentifier(resourceType, m.Groups["subscriptionId"].Value, m.Groups["resourceGroupName"].Value, m.Groups["resourceName"].Value);
             }
 
-            return new ResourceIdentifier(resourceType, subscriptionId, resourceGroupName, resourceName);
+            // Match resource group pattern
+            m = Regex.Match(resourceId, ResourceGroupRegexPattern);
+            if (m.Success)
+            {
+                return new ResourceIdentifier(ResourceType.ResourceGroup, m.Groups["subscriptionId"].Value, m.Groups["resourceGroupName"].Value, string.Empty);
+            }
+
+            // Match subscription pattern
+            m = Regex.Match(resourceId, SubscriptionRegexPattern);
+            if (m.Success)
+            {
+                return new ResourceIdentifier(ResourceType.Subscription, m.Groups["subscriptionId"].Value, string.Empty, string.Empty);
+            }
+
+            throw new ArgumentException($"Invalid resource ID provided: {resourceId}");
         }
 
         #region Overrides of ValueType
@@ -230,6 +239,52 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
                 hash = (31 * hash) + (this.ResourceName?.GetHashCode() ?? 0);
                 return hash;
             }
+        }
+
+        /// <summary>
+        /// Gets the resource ID that represents the resource identified by the specified <see cref="ResourceIdentifier"/> structure.
+        /// The resource ID is a string in the ARM resource ID format, for example:
+        /// <example>
+        /// /subscriptions/7904b7bd-5e6b-4415-99a8-355657b7da19/resourceGroups/MyResourceGroupName/providers/Microsoft.Compute/virtualMachines/MyVirtualMachineName
+        /// </example>
+        /// </summary>
+        /// <returns>The resource ID.</returns>
+        public string GetResourceId()
+        {
+            // Find the regex pattern based on the type
+            string pattern;
+            string resourceProviderAndType = string.Empty;
+            switch (this.ResourceType)
+            {
+                case ResourceType.Subscription:
+                    pattern = SubscriptionRegexPattern;
+                    break;
+                case ResourceType.ResourceGroup:
+                    pattern = ResourceGroupRegexPattern;
+                    break;
+                default:
+                    pattern = ResourceRegexPattern;
+                    if (!MapResourceTypeToString.TryGetValue(this.ResourceType, out resourceProviderAndType))
+                    {
+                        throw new ArgumentException($"Resource type {this.ResourceType} is not supported");
+                    }
+
+                    break;
+            }
+
+            // Replace the pattern components based on the resource identifier properties
+            pattern = pattern.Replace("(?<subscriptionId>[^/]*)", this.SubscriptionId);
+            if (this.ResourceType != ResourceType.Subscription)
+            {
+                pattern = pattern.Replace("(?<resourceGroupName>[^/]*)", this.ResourceGroupName);
+                if (this.ResourceType != ResourceType.ResourceGroup)
+                {
+                    pattern = pattern.Replace("(?<resourceProviderAndType>.*)", resourceProviderAndType);
+                    pattern = pattern.Replace("(?<resourceName>[^/]*)", this.ResourceName);
+                }
+            }
+
+            return pattern;
         }
 
         #endregion

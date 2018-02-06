@@ -61,7 +61,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             this.VerifyRunInfo(runInfo, TelemetryDbType.LogAnalytics);
 
             // Get workspace Id (for the 1st workspace)
-            ResourceIdentifier firstWorkspace = this.azureResourceManagerClient.GetResourceIdentifier(runInfo.ResourceIds[0]);
+            ResourceIdentifier firstWorkspace = ResourceIdentifier.CreateWithResourceId(runInfo.ResourceIds[0]);
             string firstWorkspaceId = await this.azureResourceManagerClient.GetLogAnalyticsWorkspaceIdAsync(firstWorkspace, cancellationToken);
 
             // Create the client
@@ -82,11 +82,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             this.VerifyRunInfo(runInfo, TelemetryDbType.ApplicationInsights);
 
             // Get application Id (for the 1st application)
-            ResourceIdentifier firstApplication = this.azureResourceManagerClient.GetResourceIdentifier(runInfo.ResourceIds[0]);
+            ResourceIdentifier firstApplication = ResourceIdentifier.CreateWithResourceId(runInfo.ResourceIds[0]);
             string firstApplicationId = await this.azureResourceManagerClient.GetApplicationInsightsAppIdAsync(firstApplication, cancellationToken);
 
             // Create the client
-            return new ApplicationInsightsTelemetryDataClient(this.tracer, this.httpClientWrapper, this.credentialsFactory, firstApplicationId, resources.Select(resource => this.azureResourceManagerClient.GetResourceId(resource)), this.queryTimeout);
+            return new ApplicationInsightsTelemetryDataClient(this.tracer, this.httpClientWrapper, this.credentialsFactory, firstApplicationId, resources.Select(resource => resource.GetResourceId()), this.queryTimeout);
         }
 
         /// <summary>

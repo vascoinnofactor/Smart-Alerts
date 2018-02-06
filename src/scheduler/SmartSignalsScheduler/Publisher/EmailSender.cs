@@ -6,6 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -17,7 +18,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
     using SendGrid;
     using SendGrid.Helpers.Mail;
     using Unity.Attributes;
-    
+
     /// <summary>
     /// This class is responsible for sending Smart Signal results Email
     /// </summary>
@@ -89,41 +90,51 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
 
             this.tracer.TraceInformation($"Sending signal result email for signal {alertRule.SignalId}");
 
+            var exceptions = new List<Exception>();
+
             foreach (SmartSignalResultItemPresentation signal in smartSignalResultItems)
             {
+                ResourceIdentifier resource = ResourceIdentifier.CreateWithResourceId(alertRule.ResourceId);
+
                 // TODO: Fix links
                 string emailBody = Resources.SmartSignalEmailTemplate
                     .Replace(SignalNamePlaceHolder, signal.SignalName)
                     .Replace(ResourceNamePlaceHolder, signal.ResourceId)
-                    .Replace(LinkToPortalPlaceHolder, string.Empty)
+                    .Replace(LinkToPortalPlaceHolder, "LinkToPortal")
                     .Replace(RuleNamePlaceHolder, alertRule.Name) 
                     .Replace(RuleDescriptionPlaceHolder, alertRule.Description)
-                    .Replace(ServiceNamePlaceHolder, alertRule.ResourceId)
+                    .Replace(ServiceNamePlaceHolder, $@"{resource.ResourceType}: {resource.ResourceName} ({resource.ResourceGroupName})")
                     .Replace(AlertActivatedTimePlaceHolder, signalExecution.LastExecutionTime.ToString())
-                    .Replace(SubscriptionNamePlaceHolder, signal.SubscriptionId)
+                    .Replace(SubscriptionNamePlaceHolder, resource.SubscriptionId)
                     .Replace(LinkToFeedbackPlaceHolder, "https://ms.portal.azure.com/");
+
+                    var msg = new SendGridMessage
+                    {
+                        From = new EmailAddress("smartsignals@microsoft.com", "Smart Signals"),
+                        Subject = $"Azure Smart Alerts (preview) - {signal.SignalName} detected",
+                        PlainTextContent = $@"{signal.SignalName} was detected for {signal.ResourceId}. 
+                                            You can view more details for this alert here: {"LinkToPortal"}",
+                        HtmlContent = emailBody
+                    };
+
+                    var emailAddresses = alertRule.EmailRecipients.Select(email => new EmailAddress(email)).ToList();
+                    msg.AddTos(emailAddresses);
+                    var response = await this.sendGridClient.SendEmailAsync(msg);
+
+                    if (!IsSuccessStatusCode(response.StatusCode))
+                    {
+                        string content = response.Body != null ? await response.Body.ReadAsStringAsync() : string.Empty;
+                        var message = $"Failed to send signal results Email for signal {alertRule.SignalId}. Fail StatusCode: {response.StatusCode}. Content: {content}.";
+                        exceptions.Add(new EmailSendingException(message));
+                    }
+
+                    this.tracer.TraceInformation($"Sent signal result email successfully for signal {alertRule.SignalId}");
             }
 
-            var msg = new SendGridMessage
+            if (exceptions.Count > 0)
             {
-                From = new EmailAddress("smartsignals@microsoft.com", "Smart Signals"),
-                Subject = $"Found new {smartSignalResultItems.Count} result items for signal {alertRule.SignalId}",
-                PlainTextContent = "Found new result items!",
-                HtmlContent = "<strong>Found new result items!</strong>"
-            };
-
-            var emailAddresses = alertRule.EmailRecipients.Select(email => new EmailAddress(email)).ToList();
-            msg.AddTos(emailAddresses);
-            var response = await this.sendGridClient.SendEmailAsync(msg);
-
-            if (!IsSuccessStatusCode(response.StatusCode))
-            {
-                string content = response.Body != null ? await response.Body.ReadAsStringAsync() : string.Empty;
-                var message = $"Failed to send signal results Email for signal {alertRule.SignalId}. Fail StatusCode: {response.StatusCode}. Content: {content}.";
-                throw new EmailSendingException(message);
+                throw new AggregateException(exceptions);
             }
-
-            this.tracer.TraceInformation($"Sent signal result email successfully for signal {alertRule.SignalId}");
         }
 
         /// <summary>

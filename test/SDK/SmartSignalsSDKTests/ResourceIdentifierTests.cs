@@ -21,53 +21,21 @@ namespace SmartSignalsSDKTests
         #region Error cases
 
         [TestMethod]
-        public void WhenCreatingSubscriptionResourceIdentifierWithEmptySubscriptionIdThenExceptionIsThrown()
-        {
-            InvalidEmptyParameterTest(ResourceIdentifier.Create);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void WhenCreatingSubscriptionResourceWithWrongConstructorThenExceptionIsThrown()
-        {
-            var unused = ResourceIdentifier.Create(ResourceType.Subscription, TestSubscriptionId, TestResourceGroup, TestResourceName);
-        }
-
-        [TestMethod]
-        public void WhenCreatingResourceGroupResourceIdentifierWithEmptySubscriptionIdThenExceptionIsThrown()
-        {
-            InvalidEmptyParameterTest((subscriptionId) => ResourceIdentifier.Create(subscriptionId, TestResourceGroup));
-        }
-
-        [TestMethod]
-        public void WhenCreatingResourceGroupResourceIdentifierWithEmptyResourceGroupNameThenExceptionIsThrown()
-        {
-            InvalidEmptyParameterTest((resourceGroupName) => ResourceIdentifier.Create(TestSubscriptionId, resourceGroupName));
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void WhenCreatingResourceGroupResourceIdentifierWithWrongConstructorThenExceptionIsThrown()
-        {
-            var unused = ResourceIdentifier.Create(ResourceType.ResourceGroup, TestSubscriptionId, TestResourceGroup, TestResourceName);
-        }
-
-        [TestMethod]
         public void WhenCreatingVmResourceIdentifierWithEmptySubscriptionIdThenExceptionIsThrown()
         {
-            InvalidEmptyParameterTest((subscriptionId) => ResourceIdentifier.Create(ResourceType.VirtualMachine, subscriptionId, TestResourceGroup, TestResourceName));
+            InvalidEmptyParameterTest((subscriptionId) => new ResourceIdentifier(ResourceType.VirtualMachine, subscriptionId, TestResourceGroup, TestResourceName));
         }
 
         [TestMethod]
         public void WhenCreatingVmResourceIdentifierWithEmptyResourceGroupNameThenExceptionIsThrown()
         {
-            InvalidEmptyParameterTest((resourceGroupName) => ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, resourceGroupName, TestResourceName));
+            InvalidEmptyParameterTest((resourceGroupName) => new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, resourceGroupName, TestResourceName));
         }
 
         [TestMethod]
         public void WhenCreatingVmResourceIdentifierWithEmptyResourceNameThenExceptionIsThrown()
         {
-            InvalidEmptyParameterTest((resourceName) => ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, resourceName));
+            InvalidEmptyParameterTest((resourceName) => new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, resourceName));
         }
 
         #endregion
@@ -77,7 +45,7 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenCreatingVmResourceIdentifierThenPropertiesAreSet()
         {
-            var resourceIdentifier = ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
+            var resourceIdentifier = new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
             Assert.AreEqual(ResourceType.VirtualMachine, resourceIdentifier.ResourceType, "Mismatch on resource type");
             Assert.AreEqual(TestSubscriptionId, resourceIdentifier.SubscriptionId, "Mismatch on subscription id");
             Assert.AreEqual(TestResourceGroup, resourceIdentifier.ResourceGroupName, "Mismatch on resource group name");
@@ -87,7 +55,7 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenCreatingSubscriptionResourceIdentifierThenPropertiesAreSet()
         {
-            var resourceIdentifier = ResourceIdentifier.Create(TestSubscriptionId);
+            var resourceIdentifier = new ResourceIdentifier(ResourceType.Subscription, TestSubscriptionId, string.Empty, string.Empty);
             Assert.AreEqual(ResourceType.Subscription, resourceIdentifier.ResourceType, "Mismatch on resource type");
             Assert.AreEqual(TestSubscriptionId, resourceIdentifier.SubscriptionId, "Mismatch on subscription id");
             Assert.AreEqual(string.Empty, resourceIdentifier.ResourceGroupName, "Mismatch on resource group name");
@@ -97,7 +65,7 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenCreatingResourceGroupResourceIdentifierThenPropertiesAreSet()
         {
-            var resourceIdentifier = ResourceIdentifier.Create(TestSubscriptionId, TestResourceGroup);
+            var resourceIdentifier = new ResourceIdentifier(ResourceType.ResourceGroup, TestSubscriptionId, TestResourceGroup, string.Empty);
             Assert.AreEqual(ResourceType.ResourceGroup, resourceIdentifier.ResourceType, "Mismatch on resource type");
             Assert.AreEqual(TestSubscriptionId, resourceIdentifier.SubscriptionId, "Mismatch on subscription id");
             Assert.AreEqual(TestResourceGroup, resourceIdentifier.ResourceGroupName, "Mismatch on resource group name");
@@ -107,17 +75,17 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenDeserializingResourceIdentifierObjectThenTheSerializationConstructorIsCalledAndThePropertiesAreSet()
         {
-            ResourceIdentifier resourceIdentifier = ResourceIdentifier.Create(TestSubscriptionId);
+            ResourceIdentifier resourceIdentifier = new ResourceIdentifier(ResourceType.Subscription, TestSubscriptionId, string.Empty, string.Empty);
             string json = JsonConvert.SerializeObject(resourceIdentifier);
             ResourceIdentifier resourceIdentifier2 = JsonConvert.DeserializeObject<ResourceIdentifier>(json);
             Assert.AreEqual(resourceIdentifier, resourceIdentifier2);
 
-            resourceIdentifier = ResourceIdentifier.Create(TestSubscriptionId, TestResourceGroup);
+            resourceIdentifier = new ResourceIdentifier(ResourceType.ResourceGroup, TestSubscriptionId, TestResourceGroup, string.Empty);
             json = JsonConvert.SerializeObject(resourceIdentifier);
             resourceIdentifier2 = JsonConvert.DeserializeObject<ResourceIdentifier>(json);
             Assert.AreEqual(resourceIdentifier, resourceIdentifier2);
 
-            resourceIdentifier = ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
+            resourceIdentifier = new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
             json = JsonConvert.SerializeObject(resourceIdentifier);
             resourceIdentifier2 = JsonConvert.DeserializeObject<ResourceIdentifier>(json);
             Assert.AreEqual(resourceIdentifier, resourceIdentifier2);
@@ -130,8 +98,8 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenComparingTwoResourceIdentifiersCreatedWithTheSameDataThenTheyAreEqual()
         {
-            var first = ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
-            var second = ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
+            var first = new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
+            var second = new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
 
             Assert.IsTrue(first.Equals(second), "Expected both identifiers to be equal");
             Assert.IsTrue(first == second, "Expected both identifiers to be equal using equality comparison");
@@ -142,8 +110,8 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenComparingTwoResourceIdentifiersCreatedWithDifferentTypesThenTheyAreNotEqual()
         {
-            var first = ResourceIdentifier.Create(TestSubscriptionId);
-            var second = ResourceIdentifier.Create(TestSubscriptionId, TestResourceGroup);
+            var first = new ResourceIdentifier(ResourceType.Subscription, TestSubscriptionId, string.Empty, string.Empty);
+            var second = new ResourceIdentifier(ResourceType.ResourceGroup, TestSubscriptionId, TestResourceGroup, string.Empty);
 
             Assert.IsFalse(first.Equals(second), "Expected both identifiers to be not equal");
             Assert.IsFalse(first == second, "Expected both identifiers to be not equal using equality comparison");
@@ -154,8 +122,8 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenComparingTwoResourceIdentifiersCreatedWithDifferentSubscriptionIdsThenTheyAreNotEqual()
         {
-            var first = ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
-            var second = ResourceIdentifier.Create(ResourceType.VirtualMachine, "otherSubscription", TestResourceGroup, TestResourceName);
+            var first = new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
+            var second = new ResourceIdentifier(ResourceType.VirtualMachine, "otherSubscription", TestResourceGroup, TestResourceName);
 
             Assert.IsFalse(first.Equals(second), "Expected both identifiers to be not equal");
             Assert.IsFalse(first == second, "Expected both identifiers to be not equal using equality comparison");
@@ -166,8 +134,8 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenComparingTwoResourceIdentifiersCreatedWithDifferentResourceGroupsThenTheyAreNotEqual()
         {
-            var first = ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
-            var second = ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, "otherResourceGroup", TestResourceName);
+            var first = new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
+            var second = new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, "otherResourceGroup", TestResourceName);
 
             Assert.IsFalse(first.Equals(second), "Expected both identifiers to be not equal");
             Assert.IsFalse(first == second, "Expected both identifiers to be not equal using equality comparison");
@@ -178,8 +146,8 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenComparingTwoResourceIdentifiersCreatedWithDifferentResourceNamesThenTheyAreNotEqual()
         {
-            var first = ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
-            var second = ResourceIdentifier.Create(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, "otherResource");
+            var first = new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, TestResourceName);
+            var second = new ResourceIdentifier(ResourceType.VirtualMachine, TestSubscriptionId, TestResourceGroup, "otherResource");
 
             Assert.IsFalse(first.Equals(second), "Expected both identifiers to be not equal");
             Assert.IsFalse(first == second, "Expected both identifiers to be not equal using equality comparison");
