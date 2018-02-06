@@ -14,7 +14,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import Drawer from '../../Drawer';
 import AzureResourcesViewer from '../../AzureResourcesViewer';
-import SelectedAzureResource from '../../AzureResourcesViewer/selectedAzureResource';
+import SelectedAzureResource from '../../AzureResourcesViewer/SelectedAzureResource';
 import Signal from '../../../models/Signal';
 import SignalsListDrawerView from '../../Signals/SignalsManagement/signalsListDrawerView';
 import StoreState from '../../../store/StoreState';

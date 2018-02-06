@@ -11,7 +11,7 @@ import * as _ from 'lodash';
 
 import AzureResource from '../../models/AzureResource';
 import { ResourceType } from '../../enums/ResourceType';
-import SelectedAzureResource from './selectedAzureResource';
+import SelectedAzureResource from './SelectedAzureResource';
 import AzureSubscriptionResources from '../../models/AzureSubscriptionResources';
 import { GetAzureResourceId } from '../../utils/AzureResourceUtils';
 
