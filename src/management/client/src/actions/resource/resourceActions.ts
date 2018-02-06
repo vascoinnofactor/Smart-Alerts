@@ -26,7 +26,7 @@ export function getAzureResources(): (dispatch: Dispatch<StoreState>) => Promise
         try {
             const response = await getResourcesAsync();
             
-            dispatch(getResourceSuccessAction(response.resources));
+            dispatch(getResourceSuccessAction(response.subscriptionResources));
           } catch (error) {
             dispatch(getResourceFailAction(error));
           }

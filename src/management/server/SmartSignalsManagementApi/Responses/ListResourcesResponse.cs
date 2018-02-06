@@ -18,7 +18,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses
         /// <summary>
         /// Gets or sets the resources
         /// </summary>
-        [JsonProperty("resources")]
-        public List<AzureSubscriptionResources> Resources { get; set; }
+        [JsonProperty("subscriptionResources")]
+        public List<AzureSubscriptionResources> SubscriptionResources { get; set; }
     }
 }

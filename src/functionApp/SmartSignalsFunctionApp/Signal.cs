@@ -40,11 +40,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
             Container = DependenciesInjector.GetContainer()
                 .RegisterType<IAuthorizationManagementClient, AuthorizationManagementClient>()
-                .RegisterType<ISmartSignalRepository, SmartSignalRepository>()
                 .RegisterType<ISignalApi, SignalApi>()
                 .RegisterType<IAlertRuleApi, AlertRuleApi>()
-                .RegisterType<ISignalResultApi, SignalResultApi>()
-                .RegisterType<ICredentialsFactory, MsiCredentialsFactory>();
+                .RegisterType<ISignalResultApi, SignalResultApi>();
         }
 
         /// <summary>

@@ -13,5 +13,5 @@ export default class ListResourcesResponse {
     /**
      * Gets or list of Azure resources
      */
-    public resources: ReadonlyArray<AzureSubscriptionResources>;
+    public subscriptionResources: ReadonlyArray<AzureSubscriptionResources>;
 }

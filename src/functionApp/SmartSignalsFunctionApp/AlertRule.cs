@@ -44,8 +44,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                 .RegisterType<IAuthorizationManagementClient, AuthorizationManagementClient>()
                 .RegisterType<IAlertRuleApi, AlertRuleApi>()
                 .RegisterType<IAlertRuleStore, AlertRuleStore>()
-                .RegisterType<ICloudStorageProviderFactory, CloudStorageProviderFactory>()
-                .RegisterType<IHttpClientWrapper, HttpClientWrapper>();
+                .RegisterType<ICloudStorageProviderFactory, CloudStorageProviderFactory>();
         }
 
         /// <summary>

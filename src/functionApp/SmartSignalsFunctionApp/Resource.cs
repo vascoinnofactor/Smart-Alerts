@@ -98,7 +98,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
                     return req.CreateResponse(new ListResourcesResponse()
                     {
-                        Resources = azureSubscriptionResources
+                        SubscriptionResources = azureSubscriptionResources
                     });
                 }
                 catch (Exception e)
