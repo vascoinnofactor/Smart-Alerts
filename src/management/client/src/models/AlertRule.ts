@@ -30,9 +30,9 @@ export default interface AlertRule {
     resourceId: string;
 
     /**
-     * The scheduling configuration (in CRON format).
+     * The cadence in minutes interval.
      */
-    schedule: string;
+    cadenceInMinutes: number;
 
     /**
      * The email recipients for the signal result.

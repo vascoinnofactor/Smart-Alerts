@@ -52,6 +52,7 @@ interface AddAlertRuleState {
     showSignalsDrawer: boolean;
     selectedResource?: SelectedAzureResource;
     selectedSignal?: Signal;
+    selectedRunInterval?: number;
     selectedAlertRuleName?: string;
     selectedAlertRuleDescription?: string;
     selectedAlertRuleEmailRecipients?: string;
@@ -72,6 +73,7 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
             showSignalsDrawer: true,
             selectedResource: undefined,
             selectedSignal: undefined,
+            selectedRunInterval: undefined,
             selectedAlertRuleName: undefined,
             selectedAlertRuleDescription: undefined,
             selectedAlertRuleEmailRecipients: undefined
@@ -141,7 +143,10 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
                     <div className="text-before-input-box run-every-header">
                         Run interval
                     </div>
-                    <select disabled={this.state.selectedSignal === undefined}>
+                    <select 
+                        disabled={this.state.selectedSignal === undefined}
+                        onChange={this.onChangeRunIntervalDescription}
+                    >
                         {
                             this.state.selectedSignal &&
                             this.getSignalRunEveryIntervalsOptions(this.state.selectedSignal.supportedCadences)
@@ -258,6 +263,10 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
         this.setState({ selectedAlertRuleEmailRecipients: e.currentTarget.value });
     }
 
+    private onChangeRunIntervalDescription = (e: React.FormEvent<HTMLSelectElement>) => {
+        this.setState({ selectedRunInterval: Number(e.currentTarget.value) });
+    }
+
     private getResourceChipElement(resource: SelectedAzureResource): JSX.Element {
         let label: string = resource.subscriptionName;
 
@@ -281,8 +290,12 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
     }
 
     private getSignalRunEveryIntervalsOptions(cadencesIntervalInMinutes: number[]): JSX.Element[] {
-        return cadencesIntervalInMinutes.map(interval => 
-            (<option value="interval">{FormatUtils.minutesToStringPresentation(interval)}</option>));
+        // Set first default value
+        let options: JSX.Element[] = [ (<option value="" disabled selected>Select your option</option>) ];
+        cadencesIntervalInMinutes.map(interval => 
+            (options.push((<option value={interval}>{FormatUtils.minutesToStringPresentation(interval)}</option>))));
+
+        return options;
     }
 
     private async onSubmitButtonPressed() {
@@ -298,6 +311,10 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
             throw new Error('Cant add alert rule when no alert rule name was mentioned');
         }
 
+        if (!this.state.selectedRunInterval) {
+            throw new Error('Cant add alert rule when no run interval was selected');
+        }
+
         // Create the alert rule based on the user input
         let alertRule: AlertRule = {
             resourceId: this.state.selectedResource.resourceId,
@@ -307,7 +324,7 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
             emailRecipients: this.state.selectedAlertRuleEmailRecipients ?
                                 this.state.selectedAlertRuleEmailRecipients.split(';') :
                                 undefined,
-            schedule: ''
+            cadenceInMinutes: this.state.selectedRunInterval
         };
 
         await this.props.addAlertRule(alertRule);
