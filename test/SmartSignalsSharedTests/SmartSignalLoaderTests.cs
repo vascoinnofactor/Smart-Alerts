@@ -134,7 +134,7 @@ namespace SmartSignalsSharedTests
             ISmartSignal signal = loader.LoadSignal(package);
             Assert.IsNotNull(signal, "Signal is NULL");
 
-            var resource = ResourceIdentifier.Create(ResourceType.VirtualMachine, "someSubscription", "someGroup", "someVM");
+            var resource = new ResourceIdentifier(ResourceType.VirtualMachine, "someSubscription", "someGroup", "someVM");
             var analysisRequest = new AnalysisRequest(
                 new List<ResourceIdentifier> { resource },
                 DateTime.UtcNow.AddDays(-1),
@@ -153,7 +153,7 @@ namespace SmartSignalsSharedTests
             ISmartSignal signal = loader.LoadSignal(package);
             Assert.IsNotNull(signal, "Signal is NULL");
 
-            var resource = ResourceIdentifier.Create(ResourceType.VirtualMachine, "someSubscription", "someGroup", "someVM");
+            var resource = new ResourceIdentifier(ResourceType.VirtualMachine, "someSubscription", "someGroup", "someVM");
             var analysisRequest = new AnalysisRequest(
                 new List<ResourceIdentifier> { resource }, 
                 DateTime.UtcNow.AddDays(-1), 
