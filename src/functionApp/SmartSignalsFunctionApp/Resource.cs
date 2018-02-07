@@ -76,12 +76,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
                     // Get all the resources for all the retrieved subscriptions
                     // The return value will be list of lists of resources (one per subscription)
-                    IEnumerable<AzureSubscriptionResources> azureSubscriptionResources = await Task.WhenAll(subscriptions.Select(async subscription => {
+                    IEnumerable<AzureSubscriptionResources> azureSubscriptionResources = await Task.WhenAll(subscriptions.Select(async subscription => 
+                    {
                             IList<ResourceIdentifier> resources = await azureResourceManagerClient.GetAllResourcesInSubscriptionAsync(
                                                                                             subscription.Id,
                                                                                             resourceTypes: supportedResourceTypes,
-                                                                                            cancellationToken: cancellationToken,
-                                                                                            maxResourcesToReturn: null);
+                                                                                            cancellationToken: cancellationToken);
                             return new AzureSubscriptionResources
                             {
                                 Subscription = subscription,
