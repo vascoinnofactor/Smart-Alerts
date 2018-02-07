@@ -267,7 +267,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
                     break;
                 default:
                     pattern = ResourceRegexPattern;
-                    MapResourceTypeToString.TryGetValue(this.ResourceType, out resourceProviderAndType);
+                    resourceProviderAndType = MapResourceTypeToString[this.ResourceType];
                     break;
             }
 

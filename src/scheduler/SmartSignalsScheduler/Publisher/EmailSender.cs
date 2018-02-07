@@ -142,8 +142,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
             {
                 this.tracer.TraceError(
                     $"Failed to send one or more signal result emails." +
-                    $"Number of exceptions thrown: {exceptions.Count()}. " +
-                    $"Exceptions: {String.Join(", ", exceptions.Select(e => e.Message))}");
+                    $"Number of exceptions thrown: {exceptions.Count()}.");
                 throw new AggregateException("Failed to send one or more signal result emails", exceptions);
             }
 

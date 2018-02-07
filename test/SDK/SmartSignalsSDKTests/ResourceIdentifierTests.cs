@@ -7,6 +7,8 @@
 namespace SmartSignalsSDKTests
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
@@ -166,17 +168,14 @@ namespace SmartSignalsSDKTests
         [TestMethod]
         public void WhenCallingToResourceIdTheDictionaryConversionIsSuccessful()
         {
-            ResourceIdentifier testResourceIdentifier = new ResourceIdentifier(ResourceType.VirtualMachine, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
-            var resourceIdentifier = testResourceIdentifier.ToResourceId();
+            List<ResourceType> resources = ((ResourceType[])Enum.GetValues(typeof(ResourceType)))
+                .Except(new List<ResourceType>() { ResourceType.Subscription, ResourceType.ResourceGroup }).ToList();
 
-            testResourceIdentifier = new ResourceIdentifier(ResourceType.VirtualMachineScaleSet, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
-            resourceIdentifier = testResourceIdentifier.ToResourceId();
-
-            testResourceIdentifier = new ResourceIdentifier(ResourceType.ApplicationInsights, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
-            resourceIdentifier = testResourceIdentifier.ToResourceId();
-
-            testResourceIdentifier = new ResourceIdentifier(ResourceType.LogAnalytics, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
-            resourceIdentifier = testResourceIdentifier.ToResourceId();
+            foreach (ResourceType resourceType in resources) 
+            {
+                ResourceIdentifier testResourceIdentifier = new ResourceIdentifier(resourceType, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
+                var resourceIdentifier = testResourceIdentifier.ToResourceId();
+            }
         }
 
         #endregion
