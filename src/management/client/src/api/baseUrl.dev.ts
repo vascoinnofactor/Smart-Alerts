@@ -4,4 +4,4 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-export default 'https://yair-fa.azurewebsites.net';
+export default 'https://smartsignals-fa.azurewebsites.net';
