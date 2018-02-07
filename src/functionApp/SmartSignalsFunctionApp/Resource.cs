@@ -42,19 +42,18 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
             Container = DependenciesInjector.GetContainer()
                 .RegisterType<IAuthorizationManagementClient, AuthorizationManagementClient>()
-                .RegisterType<IAzureResourceManagerClient, AzureResourceManagerClient>()
-                .RegisterType<ICredentialsFactory, MsiCredentialsFactory>();
+                .RegisterType<IAzureResourceManagerClient, AzureResourceManagerClient>();
         }
 
         /// <summary>
-        /// Gets all the available subscription ids.
+        /// Gets all the available subscriptions and their resources.
         /// </summary>
         /// <param name="req">The incoming request.</param>
         /// <param name="log">The logger.</param>
         /// <param name="cancellationToken">A cancellation token to control the function's execution.</param>
-        /// <returns>The available subscription ids.</returns>
-        [FunctionName("resource")]
-        public static async Task<HttpResponseMessage> GetAllAvailableSubscriptionIds([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
+        /// <returns>The available subscriptions and their resources.</returns>
+        [FunctionName("GetSubscriptionResources")]
+        public static async Task<HttpResponseMessage> GetAllAvailableSubscriptionResources([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "resource")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {
@@ -77,28 +76,22 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 
                     // Get all the resources for all the retrieved subscriptions
                     // The return value will be list of lists of resources (one per subscription)
-                    var subscriptionsResources = await Task.WhenAll(subscriptions.Select(subscription => azureResourceManagerClient.GetAllResourcesInSubscriptionAsync(
-                                                                                                                                            subscription.Id,
-                                                                                                                                            resourceTypes: supportedResourceTypes,
-                                                                                                                                            cancellationToken: cancellationToken,
-                                                                                                                                            maxResourcesToReturn: null)));
+                    IEnumerable<AzureSubscriptionResources> azureSubscriptionResources = await Task.WhenAll(subscriptions.Select(async subscription => {
+                            IList<ResourceIdentifier> resources = await azureResourceManagerClient.GetAllResourcesInSubscriptionAsync(
+                                                                                            subscription.Id,
+                                                                                            resourceTypes: supportedResourceTypes,
+                                                                                            cancellationToken: cancellationToken,
+                                                                                            maxResourcesToReturn: null);
+                            return new AzureSubscriptionResources
+                            {
+                                Subscription = subscription,
+                                Resources = resources.ToList()
+                            };
+                    }));
                     
-                    var azureSubscriptionResources = new List<AzureSubscriptionResources>();
-
-                    // Go over each group of resources (which correspond to a subscription) and create the mapping which will be returned
-                    foreach (var subscriptionResources in subscriptionsResources)
-                    {
-                        AzureSubscription subscriptionInformation = subscriptions.First(subscription => subscription.Id == subscriptionResources.First().SubscriptionId);
-                        azureSubscriptionResources.Add(new AzureSubscriptionResources()
-                        {
-                            Subscription = subscriptionInformation,
-                            Resources = subscriptionResources.ToList()
-                        });
-                    }
-
                     return req.CreateResponse(new ListResourcesResponse()
                     {
-                        SubscriptionResources = azureSubscriptionResources
+                        SubscriptionResources = azureSubscriptionResources.ToList()
                     });
                 }
                 catch (Exception e)

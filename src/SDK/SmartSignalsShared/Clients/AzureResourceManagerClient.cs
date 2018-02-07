@@ -175,7 +175,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             ResourceManagementClient resourceManagementClient = this.GetResourceManagementClient(subscriptionId);
             Task<IPage<ResourceGroupInner>> FirstPage() => resourceManagementClient.ResourceGroups.ListAsync(cancellationToken: cancellationToken);
             Task<IPage<ResourceGroupInner>> NextPage(string nextPageLink) => resourceManagementClient.ResourceGroups.ListNextAsync(nextPageLink, cancellationToken);
-            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resource groups in subscription", maxResourcesToReturn)))
+            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resource groups in subscription", maxResourcesToReturn, cancellationToken)))
                 .Select(resourceGroup => this.GetResourceIdentifier(resourceGroup.Id))
                 .ToList();
         }
@@ -196,7 +196,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             ODataQuery<GenericResourceFilterInner> query = this.GetResourcesByTypeQuery(resourceTypes);
             Task<IPage<GenericResourceInner>> FirstPage() => resourceManagementClient.Resources.ListAsync(query, cancellationToken);
             Task<IPage<GenericResourceInner>> NextPage(string nextPageLink) => resourceManagementClient.Resources.ListNextAsync(nextPageLink, cancellationToken);
-            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in subscription with filtering", maxResourcesToReturn)))
+            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in subscription with filtering", maxResourcesToReturn, cancellationToken)))
                 .Select(resource => this.GetResourceIdentifier(resource.Id))
                 .ToList();
         }
@@ -218,7 +218,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             ODataQuery<GenericResourceFilterInner> query = this.GetResourcesByTypeQuery(resourceTypes);
             Task<IPage<GenericResourceInner>> FirstPage() => resourceManagementClient.ResourceGroups.ListResourcesAsync(resourceGroupName, query, cancellationToken);
             Task<IPage<GenericResourceInner>> NextPage(string nextPageLink) => resourceManagementClient.ResourceGroups.ListResourcesNextAsync(nextPageLink, cancellationToken);
-            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in resource group", maxResourcesToReturn)))
+            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in resource group", maxResourcesToReturn, cancellationToken)))
                 .Select(resource => this.GetResourceIdentifier(resource.Id))
                 .ToList();
         }
@@ -411,13 +411,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <param name="nextPage">A function that returns the next results page, given the next page link</param>
         /// <param name="enumerationDescription">The enumeration description, to include in the exception error message</param>
         /// <param name="maxResourcesToEnumerate">The maximum number of elements to enumerate. Once value is null, all elements will be enumerated.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The list of items, read from the paged results</returns>
-        private async Task<List<T>> ReadAllPages<T>(Func<Task<IPage<T>>> firstPage, Func<string, Task<IPage<T>>> nextPage, string enumerationDescription, int? maxResourcesToEnumerate)
+        private async Task<List<T>> ReadAllPages<T>(Func<Task<IPage<T>>> firstPage, Func<string, Task<IPage<T>>> nextPage, string enumerationDescription, int? maxResourcesToEnumerate, CancellationToken cancellationToken)
         {
             List<T> items = new List<T>();
             IPage<T> currentPage = await firstPage();
             while (currentPage != null)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 // Read all items from the current page
                 int prevCount = items.Count;
                 items.AddRange(currentPage);
