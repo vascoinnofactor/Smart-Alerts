@@ -62,7 +62,7 @@ namespace SmartSignalsAnalysisTests
 
             Assert.IsNotNull(queryRunInfo, "Query run information is null");
             Assert.AreEqual(TelemetryDbType.ApplicationInsights, queryRunInfo.Type, "Wrong telemetry DB type");
-            CollectionAssert.AreEqual(new[] { resources.First().GetResourceId() }, queryRunInfo.ResourceIds.ToArray(), "Wrong resource IDs");
+            CollectionAssert.AreEqual(new[] { resources.First().ToResourceId() }, queryRunInfo.ResourceIds.ToArray(), "Wrong resource IDs");
         }
 
         [TestMethod]
@@ -110,7 +110,7 @@ namespace SmartSignalsAnalysisTests
                 new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[1])
             };
 
-            string[] resourceIds = resources.Select(r => r.GetResourceId()).ToArray();
+            string[] resourceIds = resources.Select(r => r.ToResourceId()).ToArray();
             IQueryRunInfoProvider provider = new QueryRunInfoProvider(this.azureResourceManagerClientMock.Object);
             SmartSignalResultItemQueryRunInfo queryRunInfo = await provider.GetQueryRunInfoAsync(resources, default(CancellationToken));
 
@@ -129,7 +129,7 @@ namespace SmartSignalsAnalysisTests
                 new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[2])
             };
 
-            string[] array = resources.Select(r => r.GetResourceId()).ToArray();
+            string[] array = resources.Select(r => r.ToResourceId()).ToArray();
             IQueryRunInfoProvider provider = new QueryRunInfoProvider(this.azureResourceManagerClientMock.Object);
             SmartSignalResultItemQueryRunInfo queryRunInfo = await provider.GetQueryRunInfoAsync(resources, default(CancellationToken));
 
@@ -178,7 +178,7 @@ namespace SmartSignalsAnalysisTests
             Assert.IsNotNull(queryRunInfo, "Query run information is null");
             this.azureResourceManagerClientMock.Verify(x => x.GetAllResourcesInSubscriptionAsync(SubscriptionId + "1", It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()), Times.Once);
             this.azureResourceManagerClientMock.Verify(x => x.GetAllResourcesInSubscriptionAsync(SubscriptionId + "2", It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()), Times.Once);
-            CollectionAssert.AreEqual(workspaces.Select(w => w.GetResourceId()).ToArray(), queryRunInfo.ResourceIds.ToArray());
+            CollectionAssert.AreEqual(workspaces.Select(w => w.ToResourceId()).ToArray(), queryRunInfo.ResourceIds.ToArray());
         }
 
         [TestMethod]

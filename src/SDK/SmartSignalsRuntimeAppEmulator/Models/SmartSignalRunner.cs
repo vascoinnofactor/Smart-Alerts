@@ -10,7 +10,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Windows;
 
     /// <summary>
     /// An observable class that runs a smart signal.

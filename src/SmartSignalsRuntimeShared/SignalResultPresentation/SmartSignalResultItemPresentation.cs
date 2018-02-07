@@ -234,7 +234,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPres
             }
 
             string id = string.Join("##", smartSignalResultItem.GetType().FullName, JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(smartSignalResultItem)).Hash();
-            string resourceId = smartSignalResultItem.ResourceIdentifier.GetResourceId();
+            string resourceId = smartSignalResultItem.ResourceIdentifier.ToResourceId();
             string correlationHash = string.Join("##", predicates.OrderBy(x => x.Key).Select(x => x.Key + "|" + x.Value)).Hash();
 
             // Return the presentation object

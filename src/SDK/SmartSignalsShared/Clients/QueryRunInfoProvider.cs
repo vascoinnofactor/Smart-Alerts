@@ -86,7 +86,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
                     throw new QueryClientInfoProviderException($"Cannot run analysis on more than {MaxNumberOfResourcesInQuery} applications");
                 }
 
-                List<string> workspacesResourceIds = workspaces.Select(workspace => workspace.GetResourceId()).ToList();
+                List<string> workspacesResourceIds = workspaces.Select(workspace => workspace.ToResourceId()).ToList();
                 return new SmartSignalResultItemQueryRunInfo(TelemetryDbType.LogAnalytics, workspacesResourceIds);
             }
             else
@@ -103,7 +103,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
                     throw new QueryClientInfoProviderException($"Cannot run analysis on more than {MaxNumberOfResourcesInQuery} applications");
                 }
 
-                List<string> applicationsResourceIds = resources.Select(application => application.GetResourceId()).ToList();
+                List<string> applicationsResourceIds = resources.Select(application => application.ToResourceId()).ToList();
                 return new SmartSignalResultItemQueryRunInfo(TelemetryDbType.ApplicationInsights, applicationsResourceIds);
             }
         }

@@ -71,7 +71,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             Task<IPage<ResourceGroupInner>> FirstPage() => resourceManagementClient.ResourceGroups.ListAsync(cancellationToken: cancellationToken);
             Task<IPage<ResourceGroupInner>> NextPage(string nextPageLink) => resourceManagementClient.ResourceGroups.ListNextAsync(nextPageLink, cancellationToken);
             return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resource groups in subscription")))
-                .Select(resourceGroup => ResourceIdentifier.CreateWithResourceId(resourceGroup.Id))
+                .Select(resourceGroup => ResourceIdentifier.CreateFromResourceId(resourceGroup.Id))
                 .ToList();
         }
 
@@ -89,7 +89,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             Task<IPage<GenericResourceInner>> FirstPage() => resourceManagementClient.Resources.ListAsync(query, cancellationToken);
             Task<IPage<GenericResourceInner>> NextPage(string nextPageLink) => resourceManagementClient.Resources.ListNextAsync(nextPageLink, cancellationToken);
             return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in subscription")))
-                .Select(resource => ResourceIdentifier.CreateWithResourceId(resource.Id))
+                .Select(resource => ResourceIdentifier.CreateFromResourceId(resource.Id))
                 .ToList();
         }
 
@@ -108,7 +108,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             Task<IPage<GenericResourceInner>> FirstPage() => resourceManagementClient.ResourceGroups.ListResourcesAsync(resourceGroupName, query, cancellationToken);
             Task<IPage<GenericResourceInner>> NextPage(string nextPageLink) => resourceManagementClient.ResourceGroups.ListResourcesNextAsync(nextPageLink, cancellationToken);
             return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in resource group")))
-                .Select(resource => ResourceIdentifier.CreateWithResourceId(resource.Id))
+                .Select(resource => ResourceIdentifier.CreateFromResourceId(resource.Id))
                 .ToList();
         }
 

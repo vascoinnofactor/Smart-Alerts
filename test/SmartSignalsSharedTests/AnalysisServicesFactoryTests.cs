@@ -60,7 +60,7 @@ namespace SmartSignalsSharedTests
             Assert.IsNotNull(client);
             Assert.AreEqual(typeof(ApplicationInsightsTelemetryDataClient), client.GetType(), "Wrong telemetry data client type created");
             Assert.AreEqual(ApplicationId, client.MainTelemetryDbId, "Wrong application Id");
-            CollectionAssert.AreEqual(new[] { resources.First().GetResourceId() }, client.TelemetryResourceIds.ToArray(), "Wrong resource Ids");
+            CollectionAssert.AreEqual(new[] { resources.First().ToResourceId() }, client.TelemetryResourceIds.ToArray(), "Wrong resource Ids");
         }
 
         [TestMethod]
@@ -79,7 +79,7 @@ namespace SmartSignalsSharedTests
             Assert.IsNotNull(client);
             Assert.AreEqual(typeof(LogAnalyticsTelemetryDataClient), client.GetType(), "Wrong telemetry data client type created");
             Assert.AreEqual(WorkspaceId, client.MainTelemetryDbId, "Wrong application Id");
-            CollectionAssert.AreEqual(new[] { resources.First().GetResourceId() }, client.TelemetryResourceIds.ToArray(), "Wrong resource Ids");
+            CollectionAssert.AreEqual(new[] { resources.First().ToResourceId() }, client.TelemetryResourceIds.ToArray(), "Wrong resource Ids");
         }
 
         [TestMethod]
@@ -116,7 +116,7 @@ namespace SmartSignalsSharedTests
         {
             this.queryRunInfoProviderMock
                 .Setup(x => x.GetQueryRunInfoAsync(It.Is<IReadOnlyList<ResourceIdentifier>>(y => y.SequenceEqual(resources)), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => new SmartSignalResultItemQueryRunInfo(telemetryDbType, resources.Select(r => r.GetResourceId()).ToList()));
+                .ReturnsAsync(() => new SmartSignalResultItemQueryRunInfo(telemetryDbType, resources.Select(r => r.ToResourceId()).ToList()));
             if (telemetryDbType == TelemetryDbType.ApplicationInsights)
             {
                 this.azureResourceManagerClientMock

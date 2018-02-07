@@ -163,6 +163,22 @@ namespace SmartSignalsSDKTests
             this.VerifyConversion(testResourceId, testResourceIdentifier);
         }
 
+        [TestMethod]
+        public void WhenCallingToResourceIdTheDictionaryConversionIsSuccessful()
+        {
+            ResourceIdentifier testResourceIdentifier = new ResourceIdentifier(ResourceType.VirtualMachine, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
+            var resourceIdentifier = testResourceIdentifier.ToResourceId();
+
+            testResourceIdentifier = new ResourceIdentifier(ResourceType.VirtualMachineScaleSet, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
+            resourceIdentifier = testResourceIdentifier.ToResourceId();
+
+            testResourceIdentifier = new ResourceIdentifier(ResourceType.ApplicationInsights, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
+            resourceIdentifier = testResourceIdentifier.ToResourceId();
+
+            testResourceIdentifier = new ResourceIdentifier(ResourceType.LogAnalytics, "7904b7bd-5e6b-4415-99a8-355657b7da19", "MyResourceGroupName", "MyVirtualMachineName");
+            resourceIdentifier = testResourceIdentifier.ToResourceId();
+        }
+
         #endregion
 
         #region Private methods
@@ -187,13 +203,13 @@ namespace SmartSignalsSDKTests
 
         private void VerifyConversion(string testResourceId, ResourceIdentifier testResourceIdentifier)
         {
-            var resourceIdentifier = ResourceIdentifier.CreateWithResourceId(testResourceId);
-            var resourceId = resourceIdentifier.GetResourceId();
+            var resourceIdentifier = ResourceIdentifier.CreateFromResourceId(testResourceId);
+            var resourceId = resourceIdentifier.ToResourceId();
             Assert.AreEqual(testResourceId, resourceId, "Resource IDs are different");
             Assert.AreEqual(testResourceIdentifier, resourceIdentifier, "Resource identifiers are are different");
 
-            resourceId = testResourceIdentifier.GetResourceId();
-            resourceIdentifier = ResourceIdentifier.CreateWithResourceId(resourceId);
+            resourceId = testResourceIdentifier.ToResourceId();
+            resourceIdentifier = ResourceIdentifier.CreateFromResourceId(resourceId);
             Assert.AreEqual(testResourceId, resourceId, "Resource IDs are different");
             Assert.AreEqual(testResourceIdentifier, resourceIdentifier, "Resource identifiers are are different");
         }

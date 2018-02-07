@@ -94,7 +94,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
 
             foreach (SmartSignalResultItemPresentation resultItem in smartSignalResultItems)
             {
-                ResourceIdentifier resource = ResourceIdentifier.CreateWithResourceId(alertRule.ResourceId);
+                ResourceIdentifier resource = ResourceIdentifier.CreateFromResourceId(alertRule.ResourceId);
 
                 // TODO: Fix links
                 string emailBody = Resources.SmartSignalEmailTemplate
@@ -127,17 +127,23 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
                     {
                         string content = response.Body != null ? await response.Body.ReadAsStringAsync() : string.Empty;
                         var message = $"Failed to send signal results Email for signal {alertRule.SignalId}. Fail StatusCode: {response.StatusCode}. Content: {content}.";
+                        this.tracer.TraceError(message);
                         exceptions.Add(new EmailSendingException(message));
                     }
                 }
                 catch (Exception e)
                 {
-                    exceptions.Add(new EmailSendingException("SendEmailAsync failed", e));
+                    this.tracer.TraceError($"Failed to send email. Exception: {e}");
+                    exceptions.Add(new EmailSendingException($"Exception was thrown fo sending signal results Email for signal {alertRule.SignalId}. Exception: {e}"));
                 }
             }
 
             if (exceptions.Count > 0)
             {
+                this.tracer.TraceError(
+                    $"Failed to send one or more signal result emails." +
+                    $"Number of exceptions thrown: {exceptions.Count()}. " +
+                    $"Exceptions: {String.Join(", ", exceptions.Select(e => e.Message))}");
                 throw new AggregateException("Failed to send one or more signal result emails", exceptions);
             }
 

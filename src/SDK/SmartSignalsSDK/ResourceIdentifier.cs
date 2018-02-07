@@ -8,6 +8,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Text.RegularExpressions;
     using Newtonsoft.Json;
@@ -20,13 +21,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// <summary>
         /// A dictionary, mapping <see cref="ResourceType"/> enumeration values to matching ARM string
         /// </summary>
-        public static readonly Dictionary<ResourceType, string> MapResourceTypeToString = new Dictionary<ResourceType, string>()
-        {
-            [ResourceType.VirtualMachine] = "Microsoft.Compute/virtualMachines",
-            [ResourceType.VirtualMachineScaleSet] = "Microsoft.Compute/virtualMachineScaleSets",
-            [ResourceType.ApplicationInsights] = "Microsoft.Insights/components",
-            [ResourceType.LogAnalytics] = "Microsoft.OperationalInsights/workspaces"
-        };
+        public static readonly ReadOnlyDictionary<ResourceType, string> MapResourceTypeToString = 
+            new ReadOnlyDictionary<ResourceType, string>(
+                new Dictionary<ResourceType, string>()
+                {
+                    [ResourceType.VirtualMachine] = "Microsoft.Compute/virtualMachines",
+                    [ResourceType.VirtualMachineScaleSet] = "Microsoft.Compute/virtualMachineScaleSets",
+                    [ResourceType.ApplicationInsights] = "Microsoft.Insights/components",
+                    [ResourceType.LogAnalytics] = "Microsoft.OperationalInsights/workspaces"
+                });
 
         private const string SubscriptionRegexPattern = "/subscriptions/(?<subscriptionId>[^/]*)";
         private const string ResourceGroupRegexPattern = SubscriptionRegexPattern + "/resourceGroups/(?<resourceGroupName>[^/]*)";
@@ -142,15 +145,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         public string ResourceName { get; }
 
         /// <summary>
-        /// Gets the <see cref="ResourceIdentifier"/> structure that represents the resource identified by the specified resource ID.
-        /// The resource ID is a string in the ARM resource ID format, for example:
+        /// Creates a new instance of the <see cref="ResourceIdentifier"/> structure that represents the resource identified by the <paramref name="resourceId"/>.
+        /// The <paramref name="resourceId"/> parameter is expected to be in the ARM resource ID format, for example:
         /// <example>
         /// /subscriptions/7904b7bd-5e6b-4415-99a8-355657b7da19/resourceGroups/MyResourceGroupName/providers/Microsoft.Compute/virtualMachines/MyVirtualMachineName
         /// </example>
         /// </summary>
         /// <param name="resourceId">The resource ID</param>
         /// <returns>The <see cref="ResourceIdentifier"/> structure.</returns>
-        public static ResourceIdentifier CreateWithResourceId(string resourceId)
+        public static ResourceIdentifier CreateFromResourceId(string resourceId)
         {
             // Match resource pattern
             Match m = Regex.Match(resourceId, ResourceRegexPattern);
@@ -160,7 +163,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
                 string resourceProviderAndType = m.Groups["resourceProviderAndType"].Value;
                 if (!MapStringToResourceType.TryGetValue(resourceProviderAndType, out ResourceType resourceType))
                 {
-                    throw new ArgumentException($"Resource type {resourceType} is not supported");
+                    throw new ArgumentException($"Resource type {resourceType} is not supported.", nameof(resourceId));
                 }
 
                 return new ResourceIdentifier(resourceType, m.Groups["subscriptionId"].Value, m.Groups["resourceGroupName"].Value, m.Groups["resourceName"].Value);
@@ -180,7 +183,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
                 return new ResourceIdentifier(ResourceType.Subscription, m.Groups["subscriptionId"].Value, string.Empty, string.Empty);
             }
 
-            throw new ArgumentException($"Invalid resource ID provided: {resourceId}");
+            throw new ArgumentException($"Invalid resource ID provided: {resourceId}", nameof(resourceId));
         }
 
         #region Overrides of ValueType
@@ -249,7 +252,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// </example>
         /// </summary>
         /// <returns>The resource ID.</returns>
-        public string GetResourceId()
+        public string ToResourceId()
         {
             // Find the regex pattern based on the type
             string pattern;
@@ -264,25 +267,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
                     break;
                 default:
                     pattern = ResourceRegexPattern;
-                    if (!MapResourceTypeToString.TryGetValue(this.ResourceType, out resourceProviderAndType))
-                    {
-                        throw new ArgumentException($"Resource type {this.ResourceType} is not supported");
-                    }
-
+                    MapResourceTypeToString.TryGetValue(this.ResourceType, out resourceProviderAndType);
                     break;
             }
 
             // Replace the pattern components based on the resource identifier properties
             pattern = pattern.Replace("(?<subscriptionId>[^/]*)", this.SubscriptionId);
-            if (this.ResourceType != ResourceType.Subscription)
-            {
-                pattern = pattern.Replace("(?<resourceGroupName>[^/]*)", this.ResourceGroupName);
-                if (this.ResourceType != ResourceType.ResourceGroup)
-                {
-                    pattern = pattern.Replace("(?<resourceProviderAndType>.*)", resourceProviderAndType);
-                    pattern = pattern.Replace("(?<resourceName>[^/]*)", this.ResourceName);
-                }
-            }
+            pattern = pattern.Replace("(?<resourceGroupName>[^/]*)", this.ResourceGroupName);
+            pattern = pattern.Replace("(?<resourceProviderAndType>.*)", resourceProviderAndType);
+            pattern = pattern.Replace("(?<resourceName>[^/]*)", this.ResourceName);
 
             return pattern;
         }

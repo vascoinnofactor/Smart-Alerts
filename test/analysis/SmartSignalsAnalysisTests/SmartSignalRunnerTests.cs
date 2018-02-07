@@ -169,7 +169,7 @@ namespace SmartSignalsAnalysisTests
                     break;
             }
 
-            this.resourceIds = new List<string>() { resourceId.GetResourceId() };
+            this.resourceIds = new List<string>() { resourceId.ToResourceId() };
             this.request = new SmartSignalRequest(this.resourceIds, "1", DateTime.UtcNow.AddDays(-1), TimeSpan.FromDays(1), new SmartSignalSettings());
 
             var smartSignalManifest = new SmartSignalManifest("1", "Test signal", "Test signal description", Version.Parse("1.0"), "assembly", "class", new List<ResourceType>() { signalResourceType }, new List<int> { 60 });

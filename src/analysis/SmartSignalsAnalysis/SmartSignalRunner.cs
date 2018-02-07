@@ -139,7 +139,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
             HashSet<ResourceIdentifier> resourcesForSignal = new HashSet<ResourceIdentifier>();
             foreach (string requestResourceId in requestResourceIds)
             {
-                ResourceIdentifier requestResource = ResourceIdentifier.CreateWithResourceId(requestResourceId);
+                ResourceIdentifier requestResource = ResourceIdentifier.CreateFromResourceId(requestResourceId);
 
                 if (smartSignalManifest.SupportedResourceTypes.Contains(requestResource.ResourceType))
                 {
