@@ -43,9 +43,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// </summary>
         /// <param name="subscriptionId">The subscription ID.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="maxResourcesToReturn">(optional) The maximum resources to return - default is 100. Once value is null, all resources will return.</param>
         /// <returns>A <see cref="Task{TResult}"/>, returning the resource groups.</returns>
-        Task<IList<ResourceIdentifier>> GetAllResourceGroupsInSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken, int? maxResourcesToReturn = 100);
+        Task<IList<ResourceIdentifier>> GetAllResourceGroupsInSubscriptionAsync(string subscriptionId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Enumerates all the resources of the specified types in the specified subscription.
@@ -53,9 +52,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <param name="subscriptionId">The subscription ID.</param>
         /// <param name="resourceTypes">The types of resource to enumerate.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="maxResourcesToReturn">(optional) The maximum resources to return - default is 100. Once value is null, all resources will return.</param>
         /// <returns>A <see cref="Task{TResult}"/>, returning the resource identifiers.</returns>
-        Task<IList<ResourceIdentifier>> GetAllResourcesInSubscriptionAsync(string subscriptionId, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken, int? maxResourcesToReturn = 100);
+        Task<IList<ResourceIdentifier>> GetAllResourcesInSubscriptionAsync(string subscriptionId, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken);
 
         /// <summary>
         /// Enumerates all the resources in the specified resource group.
@@ -64,9 +62,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <param name="resourceGroupName">The resource group name.</param>
         /// <param name="resourceTypes">The types of resource to enumerate.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="maxResourcesToReturn">(optional) The maximum resources to return - default is 100. Once value is null, all resources will return.</param>
         /// <returns>A <see cref="Task{TResult}"/>, returning the resource identifiers.</returns>
-        Task<IList<ResourceIdentifier>> GetAllResourcesInResourceGroupAsync(string subscriptionId, string resourceGroupName, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken, int? maxResourcesToReturn = 100);
+        Task<IList<ResourceIdentifier>> GetAllResourcesInResourceGroupAsync(string subscriptionId, string resourceGroupName, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken);
 
         /// <summary>
         /// Enumerates all the accessible subscriptions.
