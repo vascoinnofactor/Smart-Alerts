@@ -38,27 +38,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// </summary>
         private const string DependencyName = "ARM";
 
-        private const string SubscriptionRegexPattern = "/subscriptions/(?<subscriptionId>[^/]*)";
-        private const string ResourceGroupRegexPattern = SubscriptionRegexPattern + "/resourceGroups/(?<resourceGroupName>[^/]*)";
-        private const string ResourceRegexPattern = ResourceGroupRegexPattern + "/providers/(?<resourceProviderAndType>.*)/(?<resourceName>[^/]*)";
-
         private static readonly ConcurrentDictionary<string, ProviderInner> ProvidersCache = new ConcurrentDictionary<string, ProviderInner>(StringComparer.CurrentCultureIgnoreCase);
-
-        /// <summary>
-        /// A dictionary, mapping <see cref="ResourceType"/> enumeration values to matching ARM string
-        /// </summary>
-        private static readonly Dictionary<ResourceType, string> MapResourceTypeToString = new Dictionary<ResourceType, string>()
-        {
-            [ResourceType.VirtualMachine] = "Microsoft.Compute/virtualMachines",
-            [ResourceType.VirtualMachineScaleSet] = "Microsoft.Compute/virtualMachineScaleSets",
-            [ResourceType.ApplicationInsights] = "Microsoft.Insights/components",
-            [ResourceType.LogAnalytics] = "Microsoft.OperationalInsights/workspaces"
-        };
-
-        /// <summary>
-        /// A dictionary, mapping ARM strings to their matching <see cref="ResourceType"/> enumeration values
-        /// </summary>
-        private static readonly Dictionary<string, ResourceType> MapStringToResourceType = MapResourceTypeToString.ToDictionary(x => x.Value, x => x.Key, StringComparer.CurrentCultureIgnoreCase);
 
         private readonly ServiceClientCredentials credentials;
         private readonly ITracer tracer;
@@ -80,95 +60,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         }
 
         /// <summary>
-        /// Gets the resource ID that represents the resource identified by the specified <see cref="ResourceIdentifier"/> structure.
-        /// The resource ID is a string in the ARM resource ID format, for example:
-        /// <example>
-        /// /subscriptions/7904b7bd-5e6b-4415-99a8-355657b7da19/resourceGroups/MyResourceGroupName/providers/Microsoft.Compute/virtualMachines/MyVirtualMachineName
-        /// </example>
-        /// </summary>
-        /// <param name="resourceIdentifier">The <see cref="ResourceIdentifier"/> structure.</param>
-        /// <returns>The resource ID.</returns>
-        public string GetResourceId(ResourceIdentifier resourceIdentifier)
-        {
-            // Find the regex pattern based on the type
-            string pattern;
-            string resourceProviderAndType = string.Empty;
-            switch (resourceIdentifier.ResourceType)
-            {
-                case ResourceType.Subscription:
-                    pattern = SubscriptionRegexPattern;
-                    break;
-                case ResourceType.ResourceGroup:
-                    pattern = ResourceGroupRegexPattern;
-                    break;
-                default:
-                    pattern = ResourceRegexPattern;
-                    if (!MapResourceTypeToString.TryGetValue(resourceIdentifier.ResourceType, out resourceProviderAndType))
-                    {
-                        throw new ArgumentException($"Resource type {resourceIdentifier.ResourceType} is not supported");
-                    }
-
-                    break;
-            }
-
-            // Replace the pattern components based on the resource identifier properties
-            pattern = pattern.Replace("(?<subscriptionId>[^/]*)", resourceIdentifier.SubscriptionId);
-            if (resourceIdentifier.ResourceType != ResourceType.Subscription)
-            {
-                pattern = pattern.Replace("(?<resourceGroupName>[^/]*)", resourceIdentifier.ResourceGroupName);
-                if (resourceIdentifier.ResourceType != ResourceType.ResourceGroup)
-                {
-                    pattern = pattern.Replace("(?<resourceProviderAndType>.*)", resourceProviderAndType);
-                    pattern = pattern.Replace("(?<resourceName>[^/]*)", resourceIdentifier.ResourceName);
-                }
-            }
-
-            return pattern;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="ResourceIdentifier"/> structure that represents the resource identified by the specified resource ID.
-        /// The resource ID is a string in the ARM resource ID format, for example:
-        /// <example>
-        /// /subscriptions/7904b7bd-5e6b-4415-99a8-355657b7da19/resourceGroups/MyResourceGroupName/providers/Microsoft.Compute/virtualMachines/MyVirtualMachineName
-        /// </example>
-        /// </summary>
-        /// <param name="resourceId">The resource ID</param>
-        /// <returns>The <see cref="ResourceIdentifier"/> structure.</returns>
-        public ResourceIdentifier GetResourceIdentifier(string resourceId)
-        {
-            // Match resource pattern
-            Match m = Regex.Match(resourceId, ResourceRegexPattern);
-            if (m.Success)
-            {
-                // Verify that the resource is of a supported type
-                string resourceProviderAndType = m.Groups["resourceProviderAndType"].Value;
-                if (!MapStringToResourceType.TryGetValue(resourceProviderAndType, out ResourceType resourceType))
-                {
-                    throw new ArgumentException($"Resource type {resourceType} is not supported");
-                }
-
-                return ResourceIdentifier.Create(resourceType, m.Groups["subscriptionId"].Value, m.Groups["resourceGroupName"].Value, m.Groups["resourceName"].Value);
-            }
-
-            // Match resource group pattern
-            m = Regex.Match(resourceId, ResourceGroupRegexPattern);
-            if (m.Success)
-            {
-                return ResourceIdentifier.Create(m.Groups["subscriptionId"].Value, m.Groups["resourceGroupName"].Value);
-            }
-
-            // Match subscription pattern
-            m = Regex.Match(resourceId, SubscriptionRegexPattern);
-            if (m.Success)
-            {
-                return ResourceIdentifier.Create(m.Groups["subscriptionId"].Value);
-            }
-
-            throw new ArgumentException($"Invalid resource ID provided: {resourceId}");
-        }
-
-        /// <summary>
         /// Enumerates all the resource groups in the specified subscription.
         /// </summary>
         /// <param name="subscriptionId">The subscription ID.</param>
@@ -180,7 +71,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             Task<IPage<ResourceGroupInner>> FirstPage() => resourceManagementClient.ResourceGroups.ListAsync(cancellationToken: cancellationToken);
             Task<IPage<ResourceGroupInner>> NextPage(string nextPageLink) => resourceManagementClient.ResourceGroups.ListNextAsync(nextPageLink, cancellationToken);
             return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resource groups in subscription")))
-                .Select(resourceGroup => this.GetResourceIdentifier(resourceGroup.Id))
+                .Select(resourceGroup => ResourceIdentifier.CreateFromResourceId(resourceGroup.Id))
                 .ToList();
         }
 
@@ -198,7 +89,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             Task<IPage<GenericResourceInner>> FirstPage() => resourceManagementClient.Resources.ListAsync(query, cancellationToken);
             Task<IPage<GenericResourceInner>> NextPage(string nextPageLink) => resourceManagementClient.Resources.ListNextAsync(nextPageLink, cancellationToken);
             return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in subscription")))
-                .Select(resource => this.GetResourceIdentifier(resource.Id))
+                .Select(resource => ResourceIdentifier.CreateFromResourceId(resource.Id))
                 .ToList();
         }
 
@@ -217,7 +108,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             Task<IPage<GenericResourceInner>> FirstPage() => resourceManagementClient.ResourceGroups.ListResourcesAsync(resourceGroupName, query, cancellationToken);
             Task<IPage<GenericResourceInner>> NextPage(string nextPageLink) => resourceManagementClient.ResourceGroups.ListResourcesNextAsync(nextPageLink, cancellationToken);
             return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in resource group")))
-                .Select(resource => this.GetResourceIdentifier(resource.Id))
+                .Select(resource => ResourceIdentifier.CreateFromResourceId(resource.Id))
                 .ToList();
         }
 
@@ -254,7 +145,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             var client = this.GetResourceManagementClient(resourceIdentifier.SubscriptionId);
 
             // Get the resource type string
-            if (!MapResourceTypeToString.TryGetValue(resourceIdentifier.ResourceType, out string resourceTypeString))
+            if (!ResourceIdentifier.MapResourceTypeToString.TryGetValue(resourceIdentifier.ResourceType, out string resourceTypeString))
             {
                 throw new ArgumentException($"Resource type {resourceIdentifier.ResourceType} is not supported for the GetResourceProperties method");
             }
@@ -462,7 +353,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             List<string> resourceTypesStrings = new List<string>();
             foreach (ResourceType resourceType in resourceTypes)
             {
-                if (!MapResourceTypeToString.TryGetValue(resourceType, out string resourceTypeString))
+                if (!ResourceIdentifier.MapResourceTypeToString.TryGetValue(resourceType, out string resourceTypeString))
                 {
                     throw new ArgumentException($"Resource type {resourceType} is not supported");
                 }
