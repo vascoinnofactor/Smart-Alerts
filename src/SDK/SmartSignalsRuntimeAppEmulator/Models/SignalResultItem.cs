@@ -17,12 +17,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
 
         private ResourceIdentifier resourceIdentifier;
 
-        ////private string severity;
-
-        ////private string alertType;
-
-        ////private string status;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SignalResultItem"/> class
         /// </summary>

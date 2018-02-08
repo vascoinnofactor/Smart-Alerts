@@ -21,8 +21,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
         private SmartSignalResult selectedResult;
 
-        private ObservableCollection<User> users;
-
         #region Ctros
 
         /// <summary>
@@ -30,12 +28,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// </summary>
         public SignalsResultsControlViewModel()
         {
-            List<User> items = new List<User>();
-            items.Add(new User() { Name = "John Doe", Age = 42, Mail = "john@doe-family.com" });
-            items.Add(new User() { Name = "Jane Doe", Age = 39, Mail = "jane@doe-family.com" });
-            items.Add(new User() { Name = "Sammy Doe", Age = 7, Mail = "sammy.doe@gmail.com" });
-
-            this.Users = new ObservableCollection<User>(items);
         }
 
         /// <summary>
@@ -46,13 +38,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         public SignalsResultsControlViewModel(SmartSignalRunner signalRunner)
         {
             this.SignalRunner = signalRunner;
-
-            List<User> items = new List<User>();
-            items.Add(new User() { Name = "John Doe", Age = 42, Mail = "john@doe-family.com" });
-            items.Add(new User() { Name = "Jane Doe", Age = 39, Mail = "jane@doe-family.com" });
-            items.Add(new User() { Name = "Sammy Doe", Age = 7, Mail = "sammy.doe@gmail.com" });
-
-            this.Users = new ObservableCollection<User>(items);
         }
 
         #endregion
@@ -89,23 +74,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
             set
             {
                 this.selectedResult = value;
-                this.OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets the signal runner.
-        /// </summary>
-        public ObservableCollection<User> Users
-        {
-            get
-            {
-                return this.users;
-            }
-
-            private set
-            {
-                this.users = value;
                 this.OnPropertyChanged();
             }
         }
