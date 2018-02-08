@@ -5,9 +5,10 @@
 // -----------------------------------------------------------------------
 
 import keys from '../../actionTypeKeys';
+import AlertRule from '../../../models/AlertRule';
 
 /**
- * Represents an action for adding alert rule.
+ * Represents an action for adding alert rule is in progress.
  */
 export interface AddAlertRuleInProgressAction {
     readonly type: keys.ADD_ALERT_RULE_INPROGRESS;
@@ -18,6 +19,9 @@ export interface AddAlertRuleInProgressAction {
  */
 export interface AddAlertRuleSuccessAction {
     readonly type: keys.ADD_ALERT_RULE_SUCCESS;
+    readonly payload: {
+        readonly alertRule: AlertRule;
+    };
 }
 
 /**

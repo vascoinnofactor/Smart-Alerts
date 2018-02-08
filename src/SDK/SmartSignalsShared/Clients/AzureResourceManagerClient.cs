@@ -17,6 +17,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
     using Microsoft.Azure.Management.ResourceManager.Fluent;
     using Microsoft.Azure.Management.ResourceManager.Fluent.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
+    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Microsoft.Rest;
     using Microsoft.Rest.Azure;
     using Microsoft.Rest.Azure.OData;
@@ -29,11 +30,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
     public class AzureResourceManagerClient : IAzureResourceManagerClient
     {
         /// <summary>
-        /// The default maximal number of allowed resources to enumerate
-        /// </summary>
-        private const int DefaultMaxResourcesToEnumerate = 100;
-
-        /// <summary>
         /// The dependency name, for telemetry
         /// </summary>
         private const string DependencyName = "ARM";
@@ -42,7 +38,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 
         private readonly ServiceClientCredentials credentials;
         private readonly ITracer tracer;
-        private readonly int maxResourcesToEnumerate;
         private readonly Policy retryPolicy;
 
         /// <summary>
@@ -50,12 +45,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// </summary>
         /// <param name="credentialsFactory">The credentials factory</param>
         /// <param name="tracer">The tracer</param>
-        /// <param name="maxResourcesToEnumerate">The maximal number of allowed resources to enumerate</param>
-        public AzureResourceManagerClient(ICredentialsFactory credentialsFactory, ITracer tracer, int maxResourcesToEnumerate = DefaultMaxResourcesToEnumerate)
+        public AzureResourceManagerClient(ICredentialsFactory credentialsFactory, ITracer tracer)
         {
             this.credentials = credentialsFactory.Create("https://management.azure.com/");
             this.tracer = tracer;
-            this.maxResourcesToEnumerate = maxResourcesToEnumerate;
             this.retryPolicy = PolicyExtensions.CreateDefaultPolicy(this.tracer, DependencyName);
         }
 
@@ -88,7 +81,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             ODataQuery<GenericResourceFilterInner> query = this.GetResourcesByTypeQuery(resourceTypes);
             Task<IPage<GenericResourceInner>> FirstPage() => resourceManagementClient.Resources.ListAsync(query, cancellationToken);
             Task<IPage<GenericResourceInner>> NextPage(string nextPageLink) => resourceManagementClient.Resources.ListNextAsync(nextPageLink, cancellationToken);
-            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in subscription")))
+            return (await this.RunAndTrack(() => this.ReadAllPages(FirstPage, NextPage, "resources in subscription with filtering")))
                 .Select(resource => ResourceIdentifier.CreateFromResourceId(resource.Id))
                 .ToList();
         }
@@ -293,9 +286,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 
         /// <summary>
         /// Enumerate all results, using the specified paging functions.
+        /// We are not passing to this method the cancellation token as the <see cref="firstPage"/> function responsible for it.
         /// </summary>
         /// <typeparam name="T">The type of item returned in the paged results</typeparam>
-        /// <exception cref="TooManyResourcesException">Thrown when too many items are found</exception>
         /// <param name="firstPage">A function that returns the first results page</param>
         /// <param name="nextPage">A function that returns the next results page, given the next page link</param>
         /// <param name="enumerationDescription">The enumeration description, to include in the exception error message</param>
@@ -310,12 +303,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
                 int prevCount = items.Count;
                 items.AddRange(currentPage);
                 int currentPageCount = items.Count - prevCount;
-
-                // Check limit
-                if (items.Count >= this.maxResourcesToEnumerate)
-                {
-                    throw new TooManyResourcesException($"Could not enumerate {enumerationDescription} - over {this.maxResourcesToEnumerate} items found");
-                }
 
                 // If this is the last page, we are done
                 if (currentPageCount == 0 || string.IsNullOrEmpty(currentPage.NextPageLink))

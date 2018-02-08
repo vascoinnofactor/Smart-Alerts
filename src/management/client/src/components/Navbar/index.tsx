@@ -14,6 +14,7 @@ import ListItem from 'react-md/lib/Lists/ListItem';
 import FontIcon from 'react-md/lib/FontIcons';
 import SignalResultsPage from '../../pages/SignalResults';
 import SignalsPage from '../../pages/Signals';
+import AlertRule from '../../pages/AlertRule';
 import User from '../../models/User';
 import StoreState from '../../store/StoreState';
 
@@ -90,16 +91,22 @@ class Navbar extends React.PureComponent<NavbarProps> {
             >
               <Switch>
                 <Route 
-                  path="/signalResults/:id?" 
-                  render={(props) => 
-                    <SignalResultsPage selectedSignalResultNumber={props.match.params.id} />
-                  }
+                    path="/signalResults/:id?" 
+                    render={(props) => 
+                        <SignalResultsPage selectedSignalResultNumber={props.match.params.id} />
+                    }
                 />
                 <Route 
-                  path="/signals/:id?" 
-                  render={(props) => 
-                    <SignalsPage selectedSignalNumber={props.match.params.id}/>
-                  }
+                    path="/signals/:id?" 
+                    render={(props) => 
+                        <SignalsPage selectedSignalNumber={props.match.params.id}/>
+                    }
+                />
+                <Route 
+                    path="/alertRule" 
+                    render={(props) => 
+                        <AlertRule />
+                    }
                 />
               </Switch>
             </NavigationDrawer>

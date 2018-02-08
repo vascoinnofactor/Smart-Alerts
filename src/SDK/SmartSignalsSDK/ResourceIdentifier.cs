@@ -125,11 +125,13 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// <summary>
         /// Gets the type of the resource.
         /// </summary>
+        [JsonProperty("resourceType")]
         public ResourceType ResourceType { get; }
 
         /// <summary>
         /// Gets the ID of the subscription the resource belongs to.
         /// </summary>
+        [JsonProperty("subscriptionId")]
         public string SubscriptionId { get; }
 
         /// <summary>
@@ -137,11 +139,13 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// This can be <code>null</code> if the resource is a subscription or
         /// resource group.
         /// </summary>
+        [JsonProperty("resourceGroupName")]
         public string ResourceGroupName { get; }
 
         /// <summary>
         /// Gets the name of the resource.
         /// </summary>
+        [JsonProperty("resourceName")]
         public string ResourceName { get; }
 
         /// <summary>

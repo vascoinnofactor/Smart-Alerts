@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 
 import SignalConfiguration from './SignalConfiguration';
+import ResourceType from '../enums/ResourceType';
 
 /**
  * This model represents the Signal entity
@@ -23,7 +24,12 @@ export default interface Signal {
     /**
      * Gets the signal supported cadences (in minutes).
      */
-    SupportedCadences: number[];
+    supportedCadences: number[];
+
+    /**
+     * Gets the signal supported resource types.
+     */
+    supportedResourceTypes: ResourceType[];
 
     /**
      * Gets the signal configurations.

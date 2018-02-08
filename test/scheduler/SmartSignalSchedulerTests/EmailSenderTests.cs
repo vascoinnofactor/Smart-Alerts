@@ -45,8 +45,7 @@ namespace SmartSignalSchedulerTests
                     EmailRecipients = new List<string>() { "someEmail@microsoft.com" }
                 },
                 CurrentExecutionTime = DateTime.UtcNow,
-                LastExecutionTime = DateTime.UtcNow.AddHours(-1),
-                Cadence = new TimeSpan()
+                LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
         }
 

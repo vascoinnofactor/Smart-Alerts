@@ -6,6 +6,8 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
 {
+    using Newtonsoft.Json;
+
     /// <summary>
     /// Represents an Azure subscription.
     /// </summary>
@@ -25,11 +27,13 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <summary>
         /// Gets the subscription id.
         /// </summary>
+        [JsonProperty("id")]
         public string Id { get; }
 
         /// <summary>
         /// Gets the subscription display name.
         /// </summary>
+        [JsonProperty("displayName")]
         public string DisplayName { get; }
     }
 }
