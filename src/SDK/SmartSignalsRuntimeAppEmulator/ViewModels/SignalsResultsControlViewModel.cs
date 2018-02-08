@@ -6,8 +6,6 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 {
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls;
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
     using Unity.Attributes;
