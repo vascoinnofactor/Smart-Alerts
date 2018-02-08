@@ -46,6 +46,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\SignalResultsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,5 +71,10 @@
   <ItemGroup>
     <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj" />
     <ProjectReference Include="..\SmartSignalsShared\SmartSignalsShared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Controls\SignalResultsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
   </ItemGroup>
 </Project>

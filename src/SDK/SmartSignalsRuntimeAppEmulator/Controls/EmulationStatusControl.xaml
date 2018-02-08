@@ -54,7 +54,7 @@
 
         <TextBlock Style="{StaticResource ControlText}" Text="Results found" Margin="0,0,0,10"/>
         <TextBlock Margin="0,0,0,20" HorizontalAlignment="Left">
-            <Run FontSize="30" Text="{Binding Path=SignalRunner.Result.ResultItems.Count, Mode=OneWay}"/>
+            <Run FontSize="30" Text="{Binding Path=SignalRunner.Results.Count, Mode=OneWay}"/>
             <Separator Width="5" Visibility="Hidden"/>
             <Hyperlink NavigateUri="http://stackoverflow.com">View</Hyperlink>
         </TextBlock>

@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls.SignalResultsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels"
+             xmlns:converters="clr-namespace:Microsoft.Azure.Monitoring.SmartSignals.Emulator.Converters"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=viewModels:SignalsResultsControlViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="600" d:DesignWidth="1500">
+    <UserControl.Resources>
+        <Style x:Key="ResultsColumnHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="5,0,0,0"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="#FFECF0F1" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="0.5"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" BorderBrush="#FFA5A5A5" BorderThickness="0,0,0.5,0" Padding="20,20,20,0">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding SignalRunner.Results.Count, StringFormat=SIGNAL RESULTS : {0}}"/>
+                <ListView Margin="10" ItemsSource="{Binding SignalRunner.Results}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn HeaderContainerStyle="{StaticResource ResultsColumnHeaderStyle}" Header="NAME" Width="200" DisplayMemberBinding="{Binding ResultItemPresentation.SignalName}" />
+                            <GridViewColumn HeaderContainerStyle="{StaticResource ResultsColumnHeaderStyle}" Header="SEVERITY" Width="100" DisplayMemberBinding="{Binding Severity}" />
+                            <GridViewColumn HeaderContainerStyle="{StaticResource ResultsColumnHeaderStyle}" Header="ALERT TYPE" Width="100" DisplayMemberBinding="{Binding Type}" />
+                            <GridViewColumn HeaderContainerStyle="{StaticResource ResultsColumnHeaderStyle}" Header="STATUS" Width="100" DisplayMemberBinding="{Binding Status}" />
+                            <GridViewColumn HeaderContainerStyle="{StaticResource ResultsColumnHeaderStyle}" Header="TARGET RESOURCE" Width="120" DisplayMemberBinding="{Binding ResourceIdentifier.ResourceName}" />
+                            <GridViewColumn HeaderContainerStyle="{StaticResource ResultsColumnHeaderStyle}" Header="MONITOR SERVICE" Width="120" DisplayMemberBinding="{Binding MonitorService}" />
+                            <GridViewColumn HeaderContainerStyle="{StaticResource ResultsColumnHeaderStyle}" Header="START TIME" Width="140" DisplayMemberBinding="{Binding ResultItemPresentation.AnalysisTimestamp}" />
+                            <GridViewColumn HeaderContainerStyle="{StaticResource ResultsColumnHeaderStyle}" Header="RESOURCE TYPE" Width="120" DisplayMemberBinding="{Binding ResourceIdentifier.ResourceType}" />
+                            <GridViewColumn HeaderContainerStyle="{StaticResource ResultsColumnHeaderStyle}" Header="ALERT CRITERIA" Width="250" DisplayMemberBinding="{Binding ResultItemPresentation.Title}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

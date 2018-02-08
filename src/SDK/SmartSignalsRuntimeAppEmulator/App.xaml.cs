@@ -65,7 +65,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             var httpClientWrapper = new HttpClientWrapper();
             IAnalysisServicesFactory analysisServicesFactory = new AnalysisServicesFactory(consoleTracer, httpClientWrapper, credentialsFactory, azureResourceManagerClient, queryRunInroProvider);
 
-            var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, stringTracer);
+            var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, azureResourceManagerClient, queryRunInroProvider, signalManifest, stringTracer);
 
             // Create a Unity container with all the required models and view models registrations
             Container = new UnityContainer();

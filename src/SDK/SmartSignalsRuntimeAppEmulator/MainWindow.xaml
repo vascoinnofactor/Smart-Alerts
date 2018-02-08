@@ -106,7 +106,7 @@
                         </Canvas>
                     </Grid>
                 </TabItem.Header>
-                <Label Content="The results"/>
+                <controls:SignalResultsControl/>
             </TabItem>
         </TabControl>
 
