@@ -30,6 +30,11 @@ import {
 import {
     LoginSuccessAction
 } from './authentication';
+import {
+    GetResourceInProgressAction,
+    GetResourceSuccessAction,
+    GetResourceFailAction
+} from './resource/get';
 
 type ActionTypes = GetSignalResultFailAction | 
                    GetSignalResultInProgressAction | 
@@ -43,6 +48,9 @@ type ActionTypes = GetSignalResultFailAction |
                    GetQueryResultInProgressAction |
                    GetQueryResultSuccessAction |
                    GetQueryResultFailAction |
-                   LoginSuccessAction;
+                   LoginSuccessAction |
+                   GetResourceInProgressAction |
+                   GetResourceSuccessAction |
+                   GetResourceFailAction;
 
 export default ActionTypes;

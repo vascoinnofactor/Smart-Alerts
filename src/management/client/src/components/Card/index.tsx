@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Card as MDCard, CardTitle, CardText } from 'react-md/lib/Cards';
 import { Tooltipped } from 'react-md/lib/Tooltips';
+import CircularProgress from 'react-md/lib/Progress/CircularProgress';
 import { Moment } from 'moment';
 import * as moment from 'moment';
 
@@ -18,10 +19,9 @@ import ChartMetadata from '../../models/ChartMetadata';
 import StoreState from '../../store/StoreState';
 import DataTable from '../../models/DataTable';
 import { getQueryResult } from '../../actions/queryResult/queryResultActions';
+import QueryRunInfo from '../../models/QueryRunInfo';
 
 import './indexStyle.css';
-import QueryRunInfo from '../../models/QueryRunInfo';
-import CircularProgress from 'react-md/lib/Progress/CircularProgress';
 
 /**
  * Represents the Card component props for the dispatch functions

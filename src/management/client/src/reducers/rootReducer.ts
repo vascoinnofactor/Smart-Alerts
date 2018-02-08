@@ -12,6 +12,7 @@ import signals from './signalReducer';
 import queryResults from './queryResultReducer';
 import isAuthenticated from './isAuthenticatedReducer';
 import userDetails from './userDetailsReducer';
+import resources from './resourceReducer';
 
 /**
  * Defines the root reducer - a combination of all the reducers.
@@ -21,7 +22,8 @@ const rootReducer = combineReducers<StoreState>({
     signals,
     queryResults,
     isAuthenticated,
-    userDetails
+    userDetails,
+    resources
 });
 
 export default rootReducer;

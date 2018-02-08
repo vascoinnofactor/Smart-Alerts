@@ -4,4 +4,4 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-export default 'http://localhost:7071';
+export default 'https://smartsignals-fa.azurewebsites.net';

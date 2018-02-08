@@ -116,7 +116,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
             foreach (var resultItem in signalResult.ResultItems)
             {
                 SmartSignalResultItemQueryRunInfo queryRunInfo = await this.queryRunInfoProvider.GetQueryRunInfoAsync(new List<ResourceIdentifier>() { resultItem.ResourceIdentifier }, cancellationToken);
-                results.Add(SmartSignalResultItemPresentation.CreateFromResultItem(request, signalManifest.Name, resultItem, this.azureResourceManagerClient, queryRunInfo));
+                results.Add(SmartSignalResultItemPresentation.CreateFromResultItem(request, signalManifest.Name, resultItem, queryRunInfo));
             }
 
             this.tracer.TraceInformation($"Returning {results.Count} results");
@@ -138,7 +138,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
             HashSet<ResourceIdentifier> resourcesForSignal = new HashSet<ResourceIdentifier>();
             foreach (string requestResourceId in requestResourceIds)
             {
-                ResourceIdentifier requestResource = this.azureResourceManagerClient.GetResourceIdentifier(requestResourceId);
+                ResourceIdentifier requestResource = ResourceIdentifier.CreateFromResourceId(requestResourceId);
 
                 if (smartSignalManifest.SupportedResourceTypes.Contains(requestResource.ResourceType))
                 {

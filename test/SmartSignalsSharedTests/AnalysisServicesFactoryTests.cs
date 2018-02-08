@@ -41,10 +41,6 @@ namespace SmartSignalsSharedTests
             this.azureResourceManagerClientMock = new Mock<IAzureResourceManagerClient>();
             this.queryRunInfoProviderMock = new Mock<IQueryRunInfoProvider>();
 
-            this.azureResourceManagerClientMock
-                .Setup(x => x.GetResourceId(It.IsAny<ResourceIdentifier>()))
-                .Returns((ResourceIdentifier r) => r.ResourceName);
-
             Environment.SetEnvironmentVariable("APPSETTING_AnalyticsQueryTimeoutInMinutes", "15");
         }
 
@@ -53,7 +49,7 @@ namespace SmartSignalsSharedTests
         {
             var resources = new List<ResourceIdentifier>()
             {
-                ResourceIdentifier.Create(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName)
+                new ResourceIdentifier(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName)
             };
 
             this.SetupTest(resources, TelemetryDbType.ApplicationInsights, ApplicationId);
@@ -64,7 +60,7 @@ namespace SmartSignalsSharedTests
             Assert.IsNotNull(client);
             Assert.AreEqual(typeof(ApplicationInsightsTelemetryDataClient), client.GetType(), "Wrong telemetry data client type created");
             Assert.AreEqual(ApplicationId, client.MainTelemetryDbId, "Wrong application Id");
-            CollectionAssert.AreEqual(new[] { ResourceName }, client.TelemetryResourceIds.ToArray(), "Wrong resource Ids");
+            CollectionAssert.AreEqual(new[] { resources.First().ToResourceId() }, client.TelemetryResourceIds.ToArray(), "Wrong resource Ids");
         }
 
         [TestMethod]
@@ -72,7 +68,7 @@ namespace SmartSignalsSharedTests
         {
             var resources = new List<ResourceIdentifier>()
             {
-                ResourceIdentifier.Create(ResourceType.VirtualMachine, SubscriptionId, ResourceGroupName, ResourceName)
+                new ResourceIdentifier(ResourceType.VirtualMachine, SubscriptionId, ResourceGroupName, ResourceName)
             };
 
             this.SetupTest(resources, TelemetryDbType.LogAnalytics, WorkspaceId);
@@ -83,7 +79,7 @@ namespace SmartSignalsSharedTests
             Assert.IsNotNull(client);
             Assert.AreEqual(typeof(LogAnalyticsTelemetryDataClient), client.GetType(), "Wrong telemetry data client type created");
             Assert.AreEqual(WorkspaceId, client.MainTelemetryDbId, "Wrong application Id");
-            CollectionAssert.AreEqual(new[] { ResourceName }, client.TelemetryResourceIds.ToArray(), "Wrong resource Ids");
+            CollectionAssert.AreEqual(new[] { resources.First().ToResourceId() }, client.TelemetryResourceIds.ToArray(), "Wrong resource Ids");
         }
 
         [TestMethod]
@@ -92,7 +88,7 @@ namespace SmartSignalsSharedTests
         {
             var resources = new List<ResourceIdentifier>()
             {
-                ResourceIdentifier.Create(ResourceType.VirtualMachine, SubscriptionId, ResourceGroupName, ResourceName)
+                new ResourceIdentifier(ResourceType.VirtualMachine, SubscriptionId, ResourceGroupName, ResourceName)
             };
 
             this.SetupTest(resources, TelemetryDbType.LogAnalytics, WorkspaceId);
@@ -107,7 +103,7 @@ namespace SmartSignalsSharedTests
         {
             var resources = new List<ResourceIdentifier>()
             {
-                ResourceIdentifier.Create(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName)
+                new ResourceIdentifier(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName)
             };
 
             this.SetupTest(resources, TelemetryDbType.ApplicationInsights, ApplicationId);
@@ -120,10 +116,7 @@ namespace SmartSignalsSharedTests
         {
             this.queryRunInfoProviderMock
                 .Setup(x => x.GetQueryRunInfoAsync(It.Is<IReadOnlyList<ResourceIdentifier>>(y => y.SequenceEqual(resources)), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => new SmartSignalResultItemQueryRunInfo(telemetryDbType, resources.Select(r => r.ResourceName).ToList()));
-            this.azureResourceManagerClientMock
-                .Setup(x => x.GetResourceIdentifier(It.Is<string>(s => s == ResourceName)))
-                .Returns(() => resources[0]);
+                .ReturnsAsync(() => new SmartSignalResultItemQueryRunInfo(telemetryDbType, resources.Select(r => r.ToResourceId()).ToList()));
             if (telemetryDbType == TelemetryDbType.ApplicationInsights)
             {
                 this.azureResourceManagerClientMock

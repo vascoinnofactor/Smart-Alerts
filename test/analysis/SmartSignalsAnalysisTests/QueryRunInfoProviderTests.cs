@@ -25,7 +25,7 @@ namespace SmartSignalsAnalysisTests
         private const string ApplicationId = "applicationId";
         private static readonly List<string> WorkspaceIds = new List<string>() { "workspaceId1", "workspaceId2", "workspaceId3" };
         private static readonly List<string> WorkspaceNames = new List<string>() { "workspaceName1", "workspaceName2", "workspaceName3" };
-        private static readonly List<ResourceIdentifier> Workspaces = WorkspaceNames.Select(name => ResourceIdentifier.Create(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, name)).ToList();
+        private static readonly List<ResourceIdentifier> Workspaces = WorkspaceNames.Select(name => new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, name)).ToList();
 
         private Mock<IAzureResourceManagerClient> azureResourceManagerClientMock;
 
@@ -46,9 +46,6 @@ namespace SmartSignalsAnalysisTests
             this.azureResourceManagerClientMock
                 .Setup(x => x.GetAllResourcesInSubscriptionAsync(SubscriptionId, It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Workspaces);
-            this.azureResourceManagerClientMock
-                .Setup(x => x.GetResourceId(It.IsAny<ResourceIdentifier>()))
-                .Returns((ResourceIdentifier resourceIdentifier) => resourceIdentifier.ResourceName);
         }
 
         [TestMethod]
@@ -56,7 +53,7 @@ namespace SmartSignalsAnalysisTests
         {
             var resources = new List<ResourceIdentifier>()
             {
-                ResourceIdentifier.Create(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName)
+                new ResourceIdentifier(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName)
             };
 
             IQueryRunInfoProvider provider = new QueryRunInfoProvider(this.azureResourceManagerClientMock.Object);
@@ -65,7 +62,7 @@ namespace SmartSignalsAnalysisTests
 
             Assert.IsNotNull(queryRunInfo, "Query run information is null");
             Assert.AreEqual(TelemetryDbType.ApplicationInsights, queryRunInfo.Type, "Wrong telemetry DB type");
-            CollectionAssert.AreEqual(new[] { ResourceName }, queryRunInfo.ResourceIds.ToArray(), "Wrong resource IDs");
+            CollectionAssert.AreEqual(new[] { resources.First().ToResourceId() }, queryRunInfo.ResourceIds.ToArray(), "Wrong resource IDs");
         }
 
         [TestMethod]
@@ -77,8 +74,8 @@ namespace SmartSignalsAnalysisTests
             {
                 var resources = new List<ResourceIdentifier>()
                 {
-                    ResourceIdentifier.Create(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName + "111"),
-                    ResourceIdentifier.Create(ResourceType.VirtualMachine, SubscriptionId, ResourceGroupName, ResourceName)
+                    new ResourceIdentifier(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName + "111"),
+                    new ResourceIdentifier(ResourceType.VirtualMachine, SubscriptionId, ResourceGroupName, ResourceName)
                 };
 
                 await provider.GetQueryRunInfoAsync(resources, default(CancellationToken));
@@ -92,8 +89,8 @@ namespace SmartSignalsAnalysisTests
             {
                 var resources = new List<ResourceIdentifier>()
                 {
-                    ResourceIdentifier.Create(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[0]),
-                    ResourceIdentifier.Create(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName)
+                    new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[0]),
+                    new ResourceIdentifier(ResourceType.ApplicationInsights, SubscriptionId, ResourceGroupName, ResourceName)
                 };
 
                 await provider.GetQueryRunInfoAsync(resources, default(CancellationToken));
@@ -109,16 +106,17 @@ namespace SmartSignalsAnalysisTests
         {
             var resources = new List<ResourceIdentifier>()
             {
-                ResourceIdentifier.Create(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[0]),
-                ResourceIdentifier.Create(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[1])
+                new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[0]),
+                new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[1])
             };
 
+            string[] resourceIds = resources.Select(r => r.ToResourceId()).ToArray();
             IQueryRunInfoProvider provider = new QueryRunInfoProvider(this.azureResourceManagerClientMock.Object);
             SmartSignalResultItemQueryRunInfo queryRunInfo = await provider.GetQueryRunInfoAsync(resources, default(CancellationToken));
 
             Assert.IsNotNull(queryRunInfo, "Query run information is null");
             Assert.AreEqual(TelemetryDbType.LogAnalytics, queryRunInfo.Type, "Wrong telemetry DB type");
-            CollectionAssert.AreEqual(new[] { WorkspaceNames[0], WorkspaceNames[1] }, queryRunInfo.ResourceIds.ToArray(), "Wrong resource IDs");
+            CollectionAssert.AreEqual(resourceIds, queryRunInfo.ResourceIds.ToArray(), "Wrong resource IDs");
         }
 
         [TestMethod]
@@ -126,16 +124,18 @@ namespace SmartSignalsAnalysisTests
         {
             var resources = new List<ResourceIdentifier>()
             {
-                ResourceIdentifier.Create(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[0]),
-                ResourceIdentifier.Create(ResourceType.VirtualMachine, SubscriptionId, ResourceGroupName, ResourceName)
+                new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[0]),
+                new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[1]),
+                new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId, ResourceGroupName, WorkspaceNames[2])
             };
 
+            string[] array = resources.Select(r => r.ToResourceId()).ToArray();
             IQueryRunInfoProvider provider = new QueryRunInfoProvider(this.azureResourceManagerClientMock.Object);
             SmartSignalResultItemQueryRunInfo queryRunInfo = await provider.GetQueryRunInfoAsync(resources, default(CancellationToken));
 
             Assert.IsNotNull(queryRunInfo, "Query run information is null");
             Assert.AreEqual(TelemetryDbType.LogAnalytics, queryRunInfo.Type, "Wrong telemetry DB type");
-            CollectionAssert.AreEqual(WorkspaceNames, queryRunInfo.ResourceIds.ToArray(), "Wrong resource IDs");
+            CollectionAssert.AreEqual(array, queryRunInfo.ResourceIds.ToArray(), "Wrong resource IDs");
         }
 
         [TestMethod]
@@ -151,15 +151,15 @@ namespace SmartSignalsAnalysisTests
         {
             var resources = new List<ResourceIdentifier>()
             {
-                ResourceIdentifier.Create(ResourceType.VirtualMachine, SubscriptionId + "1", ResourceGroupName + "1", ResourceName + "1"),
-                ResourceIdentifier.Create(ResourceType.VirtualMachine, SubscriptionId + "2", ResourceGroupName + "2", ResourceName + "2")
+                new ResourceIdentifier(ResourceType.VirtualMachine, SubscriptionId + "1", ResourceGroupName + "1", ResourceName + "1"),
+                new ResourceIdentifier(ResourceType.VirtualMachine, SubscriptionId + "2", ResourceGroupName + "2", ResourceName + "2")
             };
 
             var workspaces = new List<ResourceIdentifier>()
             {
-                ResourceIdentifier.Create(ResourceType.LogAnalytics, SubscriptionId + "1", ResourceGroupName + "1", ResourceName + "1"),
-                ResourceIdentifier.Create(ResourceType.LogAnalytics, SubscriptionId + "2", ResourceGroupName + "2", ResourceName + "2"),
-                ResourceIdentifier.Create(ResourceType.LogAnalytics, SubscriptionId + "2", ResourceGroupName + "2", ResourceName + "3")
+                new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId + "1", ResourceGroupName + "1", ResourceName + "1"),
+                new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId + "2", ResourceGroupName + "2", ResourceName + "2"),
+                new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId + "2", ResourceGroupName + "2", ResourceName + "3")
             };
 
             this.azureResourceManagerClientMock
@@ -178,7 +178,7 @@ namespace SmartSignalsAnalysisTests
             Assert.IsNotNull(queryRunInfo, "Query run information is null");
             this.azureResourceManagerClientMock.Verify(x => x.GetAllResourcesInSubscriptionAsync(SubscriptionId + "1", It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()), Times.Once);
             this.azureResourceManagerClientMock.Verify(x => x.GetAllResourcesInSubscriptionAsync(SubscriptionId + "2", It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()), Times.Once);
-            CollectionAssert.AreEqual(workspaces.Select(x => x.ResourceName).ToList(), queryRunInfo.ResourceIds.ToArray().ToArray());
+            CollectionAssert.AreEqual(workspaces.Select(w => w.ToResourceId()).ToArray(), queryRunInfo.ResourceIds.ToArray());
         }
 
         [TestMethod]
@@ -190,7 +190,7 @@ namespace SmartSignalsAnalysisTests
             try
             {
                 List<ResourceIdentifier> resources = Enumerable.Range(1, TooManyResourcesCount)
-                    .Select(i => ResourceIdentifier.Create(ResourceType.ApplicationInsights, SubscriptionId + i, ResourceGroupName + i, ResourceName + i)).ToList();
+                    .Select(i => new ResourceIdentifier(ResourceType.ApplicationInsights, SubscriptionId + i, ResourceGroupName + i, ResourceName + i)).ToList();
                 await provider.GetQueryRunInfoAsync(resources, default(CancellationToken));
                 Assert.Fail("An exception should be thrown");
             }
@@ -201,7 +201,7 @@ namespace SmartSignalsAnalysisTests
             try
             {
                 List<ResourceIdentifier> resources = Enumerable.Range(1, TooManyResourcesCount)
-                    .Select(i => ResourceIdentifier.Create(ResourceType.LogAnalytics, SubscriptionId + i, ResourceGroupName + i, ResourceName + i)).ToList();
+                    .Select(i => new ResourceIdentifier(ResourceType.LogAnalytics, SubscriptionId + i, ResourceGroupName + i, ResourceName + i)).ToList();
                 await provider.GetQueryRunInfoAsync(resources, default(CancellationToken));
                 Assert.Fail("An exception should be thrown");
             }

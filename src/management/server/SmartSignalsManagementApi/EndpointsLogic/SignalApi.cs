@@ -54,6 +54,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
                    Id = manifest.Id,
                    Name = manifest.Name,
                    SupportedCadences = new List<int>(manifest.SupportedCadencesInMinutes),
+                   SupportedResourceTypes = new List<ResourceType>(manifest.SupportedResourceTypes),
                    Configurations = new List<SignalConfiguration>()
                 }).ToList();
 

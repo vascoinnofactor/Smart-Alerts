@@ -10,7 +10,6 @@
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
     <PackageReference Include="StyleCop.MSBuild" Version="5.0.0" />
-    <PackageReference Include="NCrontab" Version="3.3.0" />
     <PackageReference Include="Castle.Core" Version="4.2.1" />
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
   </ItemGroup>

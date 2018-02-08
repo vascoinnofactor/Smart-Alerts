@@ -36,7 +36,19 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation
         /// <param name="properties">The result item properties</param>
         /// <param name="rawProperties">The raw result item properties</param>
         /// <param name="queryRunInfo">The query run information</param>
-        public SmartSignalResultItemPresentation(string id, string title, SmartSignalResultItemPresentationSummary summary, string resourceId, string correlationHash, string signalId, string signalName, DateTime analysisTimestamp, int analysisWindowSizeInMinutes, List<SmartSignalResultItemPresentationProperty> properties, IReadOnlyDictionary<string, string> rawProperties, SmartSignalResultItemQueryRunInfo queryRunInfo)
+        public SmartSignalResultItemPresentation(
+            string id, 
+            string title, 
+            SmartSignalResultItemPresentationSummary summary, 
+            string resourceId, 
+            string correlationHash, 
+            string signalId, 
+            string signalName, 
+            DateTime analysisTimestamp, 
+            int analysisWindowSizeInMinutes, 
+            List<SmartSignalResultItemPresentationProperty> properties, 
+            IReadOnlyDictionary<string, string> rawProperties, 
+            SmartSignalResultItemQueryRunInfo queryRunInfo)
         {
             this.Id = id;
             this.Title = title;
@@ -130,10 +142,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation
         /// <param name="request">The smart signal request</param>
         /// <param name="signalName">The signal name</param>
         /// <param name="smartSignalResultItem">The result item</param>
-        /// <param name="azureResourceManagerClient">The azure resource manager client</param>
         /// <param name="queryRunInfo">The query run information</param>
         /// <returns>The presentation</returns>
-        public static SmartSignalResultItemPresentation CreateFromResultItem(SmartSignalRequest request, string signalName, SmartSignalResultItem smartSignalResultItem, IAzureResourceManagerClient azureResourceManagerClient, SmartSignalResultItemQueryRunInfo queryRunInfo)
+        public static SmartSignalResultItemPresentation CreateFromResultItem(SmartSignalRequest request, string signalName, SmartSignalResultItem smartSignalResultItem, SmartSignalResultItemQueryRunInfo queryRunInfo)
         {
             // A null result item has null presentation
             if (smartSignalResultItem == null)
@@ -221,7 +232,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation
             }
 
             string id = string.Join("##", smartSignalResultItem.GetType().FullName, JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(smartSignalResultItem)).Hash();
-            string resourceId = azureResourceManagerClient.GetResourceId(smartSignalResultItem.ResourceIdentifier);
+            string resourceId = smartSignalResultItem.ResourceIdentifier.ToResourceId();
             string correlationHash = string.Join("##", predicates.OrderBy(x => x.Key).Select(x => x.Key + "|" + x.Value)).Hash();
 
             // Return the presentation object

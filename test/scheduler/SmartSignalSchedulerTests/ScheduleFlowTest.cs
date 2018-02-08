@@ -9,10 +9,8 @@ namespace SmartSignalSchedulerTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher;
@@ -61,7 +59,7 @@ namespace SmartSignalSchedulerTests
                 {
                     SignalId = "s1",
                     Id = "r1",
-                    ResourceId = "resourceId1",
+                    ResourceId = "1",
                 },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
@@ -71,7 +69,7 @@ namespace SmartSignalSchedulerTests
                 {
                     SignalId = "s2",
                     Id = "r2",
-                    ResourceId = "resourceId2",
+                    ResourceId = "2",
                 },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
@@ -81,7 +79,7 @@ namespace SmartSignalSchedulerTests
 
             // first signal execution throws exception and the second one returns a result
             const string ResultItemTitle = "someTitle";
-            this.analysisExecuterMock.SetupSequence(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "resourceId1" || lst.First() == "resourceId2")))
+            this.analysisExecuterMock.SetupSequence(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "1" || lst.First() == "2")))
                 .Throws(new Exception())
                 .ReturnsAsync(new List<SmartSignalResultItemPresentation> { new TestResultItem(ResultItemTitle) });
 
@@ -91,7 +89,7 @@ namespace SmartSignalSchedulerTests
             
             // Verify that these were called only once since the first signal execution throwed exception
             this.publisherMock.Verify(m => m.PublishSignalResultItemsAsync("s2", It.Is<IList<SmartSignalResultItemPresentation>>(items => items.Count == 1 && items.First().Title == ResultItemTitle)), Times.Once);
-            this.emailSenderMock.Verify(m => m.SendSignalResultEmailAsync(It.IsAny<IList<string>>(), "s2", It.Is<IList<SmartSignalResultItemPresentation>>(items => items.Count == 1 && items.First().Title == ResultItemTitle)), Times.Once);
+            this.emailSenderMock.Verify(m => m.SendSignalResultEmailAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<SmartSignalResultItemPresentation>>(items => items.Count == 1 && items.First().Title == ResultItemTitle)), Times.Once);
             this.signalRunTrackerMock.Verify(m => m.UpdateSignalRunAsync(It.IsAny<SignalExecutionInfo>()), Times.Once());
             this.signalRunTrackerMock.Verify(m => m.UpdateSignalRunAsync(signalExecution2));
         }
@@ -106,7 +104,7 @@ namespace SmartSignalSchedulerTests
                 {
                     Id = "r1",
                     SignalId = "s1",
-                    ResourceId = "resourceId1",
+                    ResourceId = "1",
                 },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
@@ -116,7 +114,7 @@ namespace SmartSignalSchedulerTests
                 {
                     Id = "r2",
                     SignalId = "s2",
-                    ResourceId = "resourceId2",
+                    ResourceId = "2",
                 },
                 LastExecutionTime = DateTime.UtcNow.AddHours(-1)
             };
@@ -125,7 +123,7 @@ namespace SmartSignalSchedulerTests
             this.signalRunTrackerMock.Setup(m => m.GetSignalsToRunAsync(It.IsAny<IList<AlertRule>>())).ReturnsAsync(signalExecutions);
 
             // each signal execution returns a result
-            this.analysisExecuterMock.Setup(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "resourceId1" || lst.First() == "resourceId2")))
+            this.analysisExecuterMock.Setup(m => m.ExecuteSignalAsync(It.IsAny<SignalExecutionInfo>(), It.Is<IList<string>>(lst => lst.First() == "1" || lst.First() == "2")))
                 .ReturnsAsync(new List<SmartSignalResultItemPresentation> { new TestResultItem("title") });
 
             await this.scheduleFlow.RunAsync();
@@ -133,7 +131,7 @@ namespace SmartSignalSchedulerTests
             // Verify result items were published and signal tracker was updated for each signal execution
             this.alertRuleStoreMock.Verify(m => m.GetAllAlertRulesAsync(), Times.Once);
             this.publisherMock.Verify(m => m.PublishSignalResultItemsAsync(It.IsAny<string>(), It.IsAny<IList<SmartSignalResultItemPresentation>>()), Times.Exactly(2));
-            this.emailSenderMock.Verify(m => m.SendSignalResultEmailAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<IList<SmartSignalResultItemPresentation>>()), Times.Exactly(2));
+            this.emailSenderMock.Verify(m => m.SendSignalResultEmailAsync(It.IsAny<SignalExecutionInfo>(), It.IsAny<IList<SmartSignalResultItemPresentation>>()), Times.Exactly(2));
             this.signalRunTrackerMock.Verify(m => m.UpdateSignalRunAsync(It.IsAny<SignalExecutionInfo>()), Times.Exactly(2));
         }
 

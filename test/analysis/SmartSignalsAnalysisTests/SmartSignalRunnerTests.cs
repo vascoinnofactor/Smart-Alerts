@@ -154,8 +154,21 @@ namespace SmartSignalsAnalysisTests
         {
             this.tracerMock = new Mock<ITracer>();
 
-            this.resourceIds = new List<string>() { requestResourceType.ToString() };
+            ResourceIdentifier resourceId;
+            switch (requestResourceType)
+            {
+                case ResourceType.Subscription:
+                    resourceId = new ResourceIdentifier(requestResourceType, "subscriptionId", string.Empty, string.Empty);
+                    break;
+                case ResourceType.ResourceGroup:
+                    resourceId = new ResourceIdentifier(requestResourceType, "subscriptionId", "resourceGroup", string.Empty);
+                    break;
+                default:
+                    resourceId = new ResourceIdentifier(requestResourceType, "subscriptionId", "resourceGroup", "resourceName");
+                    break;
+            }
 
+            this.resourceIds = new List<string>() { resourceId.ToResourceId() };
             this.request = new SmartSignalRequest(this.resourceIds, "1", DateTime.UtcNow.AddDays(-1), TimeSpan.FromDays(1), new SmartSignalSettings());
 
             var smartSignalManifest = new SmartSignalManifest("1", "Test signal", "Test signal description", Version.Parse("1.0"), "assembly", "class", new List<ResourceType>() { signalResourceType }, new List<int> { 60 });
@@ -177,32 +190,14 @@ namespace SmartSignalsAnalysisTests
 
             this.azureResourceManagerClientMock = new Mock<IAzureResourceManagerClient>();
             this.azureResourceManagerClientMock
-                .Setup(x => x.GetResourceIdentifier(It.IsAny<string>()))
-                .Returns((string resourceId) =>
-                {
-                    ResourceType resourceType = (ResourceType)Enum.Parse(typeof(ResourceType), resourceId);
-                    if (resourceType == ResourceType.Subscription)
-                    {
-                        return ResourceIdentifier.Create("subscriptionId");
-                    }
-                    else if (resourceType == ResourceType.ResourceGroup)
-                    {
-                        return ResourceIdentifier.Create("subscriptionId", "resourceGroupName");
-                    }
-                    else
-                    {
-                        return ResourceIdentifier.Create(resourceType, "subscriptionId", "resourceGroupName", "resourceName");
-                    }
-                });
-            this.azureResourceManagerClientMock
                 .Setup(x => x.GetAllResourceGroupsInSubscriptionAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((string subscriptionId, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { ResourceIdentifier.Create(subscriptionId, "resourceGroupName") });
+                .ReturnsAsync((string subscriptionId, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { new ResourceIdentifier(ResourceType.ResourceGroup, subscriptionId, "resourceGroupName", string.Empty) });
             this.azureResourceManagerClientMock
                 .Setup(x => x.GetAllResourcesInSubscriptionAsync(It.IsAny<string>(), It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((string subscriptionId, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { ResourceIdentifier.Create(ResourceType.VirtualMachine, subscriptionId, "resourceGroupName", "resourceName") });
+                .ReturnsAsync((string subscriptionId, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { new ResourceIdentifier(ResourceType.VirtualMachine, subscriptionId, "resourceGroupName", "resourceName") });
             this.azureResourceManagerClientMock
                 .Setup(x => x.GetAllResourcesInResourceGroupAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((string subscriptionId, string resourceGroupName, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { ResourceIdentifier.Create(ResourceType.VirtualMachine, subscriptionId, resourceGroupName, "resourceName") });
+                .ReturnsAsync((string subscriptionId, string resourceGroupName, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { new ResourceIdentifier(ResourceType.VirtualMachine, subscriptionId, resourceGroupName, "resourceName") });
 
             this.queryRunInfoProviderMock = new Mock<IQueryRunInfoProvider>();
         }

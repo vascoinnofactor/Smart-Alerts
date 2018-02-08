@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------
+// <copyright file="User.ts" company="Microsoft Corporation">
+//        Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 export default interface User {
     /**
      * The user email.

@@ -22,15 +22,9 @@ namespace SmartSignalsAnalysisTests
     {
         private const string SignalName = "signalName";
 
-        private Mock<IAzureResourceManagerClient> azureResourceManagerClientMock;
-
         [TestInitialize]
         public void TestInitialize()
         {
-            this.azureResourceManagerClientMock = new Mock<IAzureResourceManagerClient>();
-            this.azureResourceManagerClientMock
-                .Setup(x => x.GetResourceId(It.IsAny<ResourceIdentifier>()))
-                .Returns((ResourceIdentifier resourceIdentifier) => resourceIdentifier.ResourceName);
         }
 
         [TestMethod]
@@ -138,7 +132,7 @@ namespace SmartSignalsAnalysisTests
             DateTime lastExecutionTime = DateTime.Now.Date.AddDays(-1);
             string resourceId = "resourceId";
             var request = new SmartSignalRequest(new List<string>() { resourceId }, "signalId", lastExecutionTime, TimeSpan.FromDays(1), new SmartSignalSettings());
-            return SmartSignalResultItemPresentation.CreateFromResultItem(request, SignalName, resultItem, this.azureResourceManagerClientMock.Object, queryRunInfo);
+            return SmartSignalResultItemPresentation.CreateFromResultItem(request, SignalName, resultItem, queryRunInfo);
         }
 
         private void VerifyProperty(List<SmartSignalResultItemPresentationProperty> properties, string name, ResultItemPresentationSection displayCategory, string value, string infoBalloon)

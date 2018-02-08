@@ -5,12 +5,15 @@ $md-secondary-color: $md-pink-a-200;
 $md-font-regular: 300;
 $md-navigation-drawer-enforce-height: true;
 
+// Set the data table header height
+$md-data-table-header-height: 35px;
+
 @include react-md-everything;
 
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: "Segoe UI";
 }
 
 // Remove the default a-href style
