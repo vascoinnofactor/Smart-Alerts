@@ -147,8 +147,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
                     var smartSignalRequest = new SmartSignalRequest(resourceIds, this.smartSignalManifes.Id, null, analysisCadence, smartSignalsSettings);
                     SmartSignalResultItemQueryRunInfo queryRunInfo = await this.queryRunInfoProvider.GetQueryRunInfoAsync(new List<ResourceIdentifier>() { resultItem.ResourceIdentifier }, this.cancellationTokenSource.Token);
                     SmartSignalResultItemPresentation resultItemPresentation = SmartSignalResultItemPresentation.CreateFromResultItem(
-                        smartSignalRequest, this.smartSignalManifes.Name, resultItem, this.azureResourceManagerClient, queryRunInfo);
-                    ResourceIdentifier resourceIdentifier = this.azureResourceManagerClient.GetResourceIdentifier(resultItemPresentation.ResourceId);
+                        smartSignalRequest, this.smartSignalManifes.Name, resultItem, queryRunInfo);
+                    ResourceIdentifier resourceIdentifier = ResourceIdentifier.CreateFromResourceId(resultItemPresentation.ResourceId);
 
                     signalResultItems.Add(new SignalResultItem(resultItemPresentation, resourceIdentifier));
                 }

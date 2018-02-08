@@ -6,11 +6,12 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
     using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Exceptions;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
