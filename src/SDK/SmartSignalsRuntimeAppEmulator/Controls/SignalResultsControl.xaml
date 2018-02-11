@@ -7,20 +7,6 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=viewModels:SignalsResultsControlViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="600" d:DesignWidth="1500">
-    <UserControl.Resources>
-        <Style TargetType="{x:Type GridViewColumnHeader}" x:Key="ResultsColumnHeaderStyle">
-            <Setter Property="FontSize" Value="10"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Margin" Value="5,0,0,0"/>
-            <Setter Property="Background" Value="White"/>
-        </Style>
-        <Style TargetType="{x:Type ListView}">
-            <Style.Resources>
-                <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource ResultsColumnHeaderStyle}" />
-            </Style.Resources>
-        </Style>
-    </UserControl.Resources>
     <Grid Background="#FFECF0F1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="0.5"/>

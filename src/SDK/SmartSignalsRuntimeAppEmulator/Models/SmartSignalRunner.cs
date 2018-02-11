@@ -125,7 +125,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
             var analysisRequest = new AnalysisRequest(resources, null, analysisCadence, this.analysisServicesFactory);
             try
             {
-                // Run Signl
+                // Run Signal
                 this.IsSignalRunning = true;
 
                 SmartSignalResult signalResults = await this.smartSignal.AnalyzeResourcesAsync(

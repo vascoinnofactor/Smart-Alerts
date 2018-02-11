@@ -85,7 +85,7 @@
                 <TabItem.Header>
                     <Image Source="Media/ic_settings_white_48dp_1x.png" Height="40" />
                 </TabItem.Header>
-                <controls:SignalsControl/>
+                <controls:SignalConfigurationControl/>
             </TabItem>
             <TabItem HorizontalAlignment="Left" Width="44">
                 <TabItem.Header>
