@@ -76,7 +76,7 @@ export default class SignalsListDrawerView extends
                             ))
                         }
                     </TableBody>
-                </DataTable>
+                </DataTable>    
                 <Button 
                     type="submit" 
                     flat 

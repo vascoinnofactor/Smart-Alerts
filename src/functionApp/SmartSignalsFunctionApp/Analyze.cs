@@ -54,7 +54,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// <returns>The analysis response.</returns>
         [FunctionName("Analyze")]
         public static async Task<HttpResponseMessage> RunAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post")]HttpRequestMessage request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "analyze")]HttpRequestMessage request,
             TraceWriter log,
             ExecutionContext context,
             CancellationToken cancellationToken)

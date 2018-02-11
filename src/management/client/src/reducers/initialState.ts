@@ -28,7 +28,7 @@ const defaultState: StoreState = {
     },
     resources: {
         isFetching: false,
-        resources: [],
+        azureSubscriptionsResources: [],
     },
     isAuthenticated: false,
     userDetails: null

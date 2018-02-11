@@ -7,15 +7,17 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
+    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
@@ -48,14 +50,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         }
 
         /// <summary>
-        /// Add the given alert rule to the alert rules store..
+        /// Add the given alert rule to the alert rules store.
         /// </summary>
         /// <param name="req">The incoming request.</param>
         /// <param name="log">The logger.</param>
         /// <param name="cancellationToken">A cancellation token to control the function's execution.</param>
         /// <returns>200 if request was successful, 500 if not.</returns>
-        [FunctionName("alertRule")]
-        public static async Task<HttpResponseMessage> AddAlertRule([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
+        [FunctionName("AddAlertRule")]
+        public static async Task<HttpResponseMessage> AddAlertRule([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "alertRule")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {
@@ -66,7 +68,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                 try
                 {
                     // Read given parameters from body
-                    var addAlertRule = await req.Content.ReadAsAsync<AddAlertRule>(cancellationToken);
+                    var alertRuleEntityToAdd = await req.Content.ReadAsAsync<AlertRuleApiEntity>(cancellationToken);
 
                     // Check authorization
                     bool isAuthorized = await authorizationManagementClient.IsAuthorizedAsync(req, cancellationToken);
@@ -75,9 +77,67 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                         return req.CreateErrorResponse(HttpStatusCode.Forbidden, "The client is not authorized to perform this action");
                     }
 
-                    await alertRuleApi.AddAlertRuleAsync(addAlertRule, cancellationToken);
+                    await alertRuleApi.AddAlertRuleAsync(alertRuleEntityToAdd, cancellationToken);
 
                     return req.CreateResponse(HttpStatusCode.OK);
+                }
+                catch (SmartSignalsManagementApiException e)
+                {
+                    tracer.TraceError($"Failed to add alert rule due to managed exception: {e}");
+
+                    return req.CreateErrorResponse(e.StatusCode, "Failed to add the given alert rule", e);
+                }
+                catch (Exception e)
+                {
+                    tracer.TraceError($"Failed to add alert rule due to un-managed exception: {e}");
+
+                    return req.CreateErrorResponse(HttpStatusCode.InternalServerError, "Failed to add the given alert rule", e);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the alert rules.
+        /// </summary>
+        /// <param name="req">The incoming request.</param>
+        /// <param name="log">The logger.</param>
+        /// <param name="cancellationToken">A cancellation token to control the function's execution.</param>
+        /// <returns>200 if request was successful, 500 if not.</returns>
+        [FunctionName("GetAlertRule")]
+        public static async Task<HttpResponseMessage> GetAlertRules([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "alertRule")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
+        {
+            using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
+            {
+                ITracer tracer = childContainer.Resolve<ITracer>();
+                var alertRuleApi = childContainer.Resolve<IAlertRuleApi>();
+                var authorizationManagementClient = childContainer.Resolve<IAuthorizationManagementClient>();
+
+                try
+                {
+                    // Check authorization
+                    bool isAuthorized = await authorizationManagementClient.IsAuthorizedAsync(req, cancellationToken);
+                    if (!isAuthorized)
+                    {
+                        return req.CreateErrorResponse(HttpStatusCode.Forbidden, "The client is not authorized to perform this action");
+                    }
+
+                    var alertRules = await alertRuleApi.GetAlertRulesAsync();
+
+                    // Convert the alert rules to alert rules entities that the alert rules API entities
+                    List<AlertRuleApiEntity> alertRuleApiEntities = alertRules.Select(alertRule => new AlertRuleApiEntity
+                    {
+                        ResourceId = alertRule.ResourceId,
+                        SignalId = alertRule.SignalId,
+                        Name = alertRule.Name,
+                        Description = alertRule.Description,
+                        CadenceInMinutes = (int)alertRule.Cadence.TotalMinutes,
+                        EmailRecipients = alertRule.EmailRecipients
+                    }).ToList();
+
+                    return req.CreateResponse(new ListAlertRulesResponse
+                    {   
+                        AlertRules = alertRuleApiEntities
+                    });
                 }
                 catch (SmartSignalsManagementApiException e)
                 {

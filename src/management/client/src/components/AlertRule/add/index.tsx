@@ -6,11 +6,11 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
 import { Grid, Row } from 'react-flexbox-grid';
 import Button from 'react-md/lib/Buttons';
 import FontIcon from 'react-md/lib/FontIcons';
 import Chip from 'react-md/lib/Chips';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import Drawer from '../../Drawer';
 import AzureResourcesViewer from '../../AzureResourcesViewer';
@@ -24,6 +24,7 @@ import { addAlertRule } from '../../../actions/alertRule/alertRuleActions';
 import AzureSubscriptionResources from '../../../models/AzureSubscriptionResources';
 import AlertRule from '../../../models/AlertRule';
 import FormatUtils from '../../../utils/FormatUtils';
+import ResourceType from '../../../enums/ResourceType';
 
 import './indexStyle.css';
 
@@ -137,7 +138,14 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
                         this.getSignalChipElement(this.state.selectedSignal)
                     }
                     <div className="select-resource-text-button">
-                        <a href="#" onClick={this.showSignalsListDrawer}>Select signal</a>
+                        {
+                            this.state.selectedResource &&
+                            <a href="#" onClick={this.showSignalsListDrawer}>Select signal</a>
+                        }
+                        {
+                            !this.state.selectedResource &&
+                            'Select signal'
+                        }
                     </div>
 
                     <div className="text-before-input-box run-every-header">
@@ -202,29 +210,41 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
                         </Button>
                     </Row>
                 </Grid>
-
-                {/* The drawers being used in this screen */}
+                
                 <Drawer 
                     onVisibilityChange={this.changeAzureResourcesDrawerVisibility} 
                     visible={this.state.showResourcesDrawer}
                 >
-                    <AzureResourcesViewer
-                        onDoneButtonPressed={this.onSelectResourceCompleted} 
-                        azureSubscriptionsResources={this.props.azureResources} 
-                    />
+                    {
+                        this.props.azureResources.length > 0 &&
+                        <AzureResourcesViewer
+                            onDoneButtonPressed={this.onSelectResourceCompleted} 
+                            azureSubscriptionsResources={this.props.azureResources} 
+                        />
+                    }
                 </Drawer>
-
+                
                 <Drawer 
                     onVisibilityChange={this.changeSignalListDrawerVisibility} 
                     visible={this.state.showSignalsDrawer}
                 >
-                    <SignalsListDrawerView 
-                        signals={this.props.signals} 
-                        onDoneButtonPressed={this.onSelectSignalCompleted} 
-                    />
+                    {
+                        this.state.selectedResource &&
+                        <SignalsListDrawerView 
+                            signals={this.getSignalsBySelectedResource(this.props.signals,
+                                                                       this.state.selectedResource)} 
+                            onDoneButtonPressed={this.onSelectSignalCompleted} 
+                        />
+                    }
                 </Drawer>
             </div>
         );
+    }
+
+    private getSignalsBySelectedResource = (signals: ReadonlyArray<Signal>,
+                                            selectedResource: SelectedAzureResource) => {
+        return signals.filter(signal => signal.supportedResourceTypes.find(supportedResourceType =>
+                supportedResourceType.toString() === ResourceType[selectedResource.resourceType]) !== undefined);    
     }
 
     private onSelectResourceCompleted = (selectedResource: SelectedAzureResource) => {
@@ -337,7 +357,7 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
  */
 function mapStateToProps(state: StoreState): AddAlertRuleStateProps {
     return {
-        azureResources: state.resources.resources,
+        azureResources: state.resources.azureSubscriptionsResources,
         signals: state.signals.items
     };
 }

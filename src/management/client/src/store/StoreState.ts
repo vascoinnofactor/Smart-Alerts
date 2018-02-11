@@ -58,7 +58,7 @@ export default interface StoreState {
  */
 export interface ResourcesStoreState {
     isFetching: boolean;
-    resources: ReadonlyArray<AzureSubscriptionResources>;
+    azureSubscriptionsResources: ReadonlyArray<AzureSubscriptionResources>;
 }
 
 /**

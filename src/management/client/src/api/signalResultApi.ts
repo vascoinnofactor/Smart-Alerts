@@ -16,7 +16,7 @@ import { azureResourceManagementUrl } from './urls';
  * Gets a list of signals results without any flitering
  */
 export async function getSignalsResultsAsync(): Promise<ListSmartSignalResultResponse> {
-    const utcNowMinusDay = moment.utc().add(-1, 'days');
+    const utcNowMinusDay = moment.utc().add(-2, 'days');
     const requestUrl = `${baseUrl}/api/signalResult?startTime=${utcNowMinusDay.format('MM/DD/YYYY HH:mm')}`;
 
     // Get the user AAD token
