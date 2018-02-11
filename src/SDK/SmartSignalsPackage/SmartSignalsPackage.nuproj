@@ -41,6 +41,10 @@
       <PackageDirectory>Tools</PackageDirectory>
       <TargetSubdirectory>net461</TargetSubdirectory>
     </ProjectReference>
+    <ProjectReference Include="..\SmartSignalsRuntimeAppEmulator\SmartSignalsRuntimeAppEmulator.csproj">
+      <PackageDirectory>Tools</PackageDirectory>
+      <TargetSubdirectory>net461</TargetSubdirectory>
+    </ProjectReference>
     <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj" />
     <File Include="..\SmartSignalsBuildTask\build\**.*">
       <TargetPath>build\</TargetPath>
