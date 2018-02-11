@@ -9,6 +9,7 @@ namespace SmartSignalsSharedTests
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Diagnostics;
     using System.IO;
     using System.Net;
     using System.Net.Http;
@@ -66,9 +67,10 @@ namespace SmartSignalsSharedTests
         }
 
         [TestMethod]
-        public async Task WhenQueryReturnsAnErrorThenTheCorrectExceptionIsThrown()
+        public async Task WhenQueryFailsThenTheCorrectExceptionIsThrown()
         {
-            var client = new LogAnalyticsTelemetryDataClient(this.tracerMock.Object, new TestHttpClientWrapper(error: true), this.credentialsFactoryMock.Object, WorkspaceId, WorkspaceNames, TimeSpan.FromMinutes(10));
+            var httpClientWrapper = new TestHttpClientWrapper(error: true);
+            var client = new LogAnalyticsTelemetryDataClient(this.tracerMock.Object, httpClientWrapper, this.credentialsFactoryMock.Object, WorkspaceId, WorkspaceNames, TimeSpan.FromMinutes(10));
             try
             {
                 await client.RunQueryAsync(Query, default(CancellationToken));
@@ -76,12 +78,34 @@ namespace SmartSignalsSharedTests
             }
             catch (TelemetryDataClientException e)
             {
+                Assert.AreEqual(1, httpClientWrapper.NumberOfCalls);
                 Assert.AreEqual($"[test error code] test error message\r\n query = {Query}", e.Message, "Exception message mismatch");
                 Assert.IsNotNull(e.InnerException, "Inner exception is null");
                 Assert.AreEqual(typeof(TelemetryDataClientException), e.InnerException.GetType(), "Inner exception is null");
                 Assert.AreEqual("[test inner error code] test inner error message", e.InnerException.Message, "Inner exception message mismatch");
                 Assert.IsNull(e.InnerException.InnerException, "Inner exception of inner exception is not null");
             }
+        }
+
+        [TestMethod]
+        public async Task WhenQueryFailsWithThrottlingErrorThenTheRequestIsRetried()
+        {
+            var httpClientWrapper = new TestHttpClientWrapper(throttlingError: true);
+            var client = new LogAnalyticsTelemetryDataClient(this.tracerMock.Object, httpClientWrapper, this.credentialsFactoryMock.Object, WorkspaceId, WorkspaceNames, TimeSpan.FromMinutes(10));
+            Stopwatch sw = Stopwatch.StartNew();
+            try
+            {
+                await client.RunQueryAsync(Query, default(CancellationToken));
+                Assert.Fail("An exception should have been thrown");
+            }
+            catch (ServerThrottlingException)
+            {
+                Assert.AreEqual(4, httpClientWrapper.NumberOfCalls);
+            }
+
+            sw.Stop();
+            Trace.TraceInformation($"Query run took {sw.Elapsed.TotalSeconds} seconds");
+            Assert.IsTrue(sw.Elapsed.TotalSeconds >= 3 && sw.Elapsed.TotalSeconds < 6, $"Too many seconds elapsed - expected in the range [3,6), actual: {sw.Elapsed.TotalSeconds}");
         }
 
         private static void VerifyDataTables(IList<DataTable> expectedTables, IList<DataTable> actualTables)
@@ -106,14 +130,19 @@ namespace SmartSignalsSharedTests
             private readonly bool emptyResults;
             private readonly bool applicationInsights;
             private readonly bool error;
+            private readonly bool throttlingError;
 
-            public TestHttpClientWrapper(bool invalidType = false, bool emptyResults = false, bool applicationInsights = false, bool error = false)
+            public TestHttpClientWrapper(bool invalidType = false, bool emptyResults = false, bool applicationInsights = false, bool error = false, bool throttlingError = false)
             {
                 this.invalidType = invalidType;
                 this.emptyResults = emptyResults;
                 this.applicationInsights = applicationInsights;
                 this.error = error;
+                this.throttlingError = throttlingError;
+                this.NumberOfCalls = 0;
             }
+
+            public int NumberOfCalls { get; private set; }
 
             public TimeSpan Timeout { get; set; }
 
@@ -140,6 +169,8 @@ namespace SmartSignalsSharedTests
 
             public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
+                this.NumberOfCalls++;
+
                 // Verify request
                 string expectedUri = this.applicationInsights ? $"https://api.applicationinsights.io/v1/apps/{WorkspaceId}/query" : $"https://api.loganalytics.io/v1/workspaces/{WorkspaceId}/query";
                 Assert.AreEqual(expectedUri, request.RequestUri.ToString(), "Request URI mismatch");
@@ -175,6 +206,14 @@ namespace SmartSignalsSharedTests
                     {
                         Content = new StringContent(errorObject.ToString())
                     };
+                }
+
+                // Return throttling error if requested
+                if (this.throttlingError)
+                {
+                    var response = new HttpResponseMessage((HttpStatusCode)429);
+                    response.Headers.Add("Retry-After", new[] { "1" });
+                    return response;
                 }
 
                 // Return OK result

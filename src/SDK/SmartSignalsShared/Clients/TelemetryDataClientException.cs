@@ -18,6 +18,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryDataClientException"/> class,
+        /// with the specified error message.
+        /// </summary>
+        /// <param name="message">The error message</param>
+        public TelemetryDataClientException(string message)
+            : base(message)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryDataClientException"/> class,
         /// with the details contained in the specified error response in OData JSON format.
         /// </summary>
         /// <param name="errorObject">The error object, in OData JSON format</param>
@@ -49,7 +59,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <param name="query">The query that was run</param>
         /// <param name="depth">The depth of the inner exception</param>
         private TelemetryDataClientException(JObject errorObject, string query, int depth)
-            : base(BuildExceptionMessage(errorObject, query), BuildInnerException(errorObject["innererror"], depth))
+            : base(BuildExceptionMessage(errorObject, query), BuildInnerException(errorObject, depth))
         {
         }
 
@@ -78,16 +88,22 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <summary>
         /// Creates the inner exception from the specified inner error token.
         /// </summary>
-        /// <param name="innerErrorObject">The inner error token</param>
+        /// <param name="errorObject">The error token</param>
         /// <param name="depth">The depth of the inner exception</param>
         /// <returns>The inner exception</returns>
-        private static TelemetryDataClientException BuildInnerException(JToken innerErrorObject, int depth)
+        private static TelemetryDataClientException BuildInnerException(JObject errorObject, int depth)
         {
-            if (depth >= 5 || innerErrorObject == null)
+            if (depth >= 5 || errorObject == null)
             {
                 return null;
             }
-            
+
+            JToken innerErrorObject = errorObject["innererror"];
+            if (innerErrorObject == null)
+            {
+                return null;
+            }
+
             return new TelemetryDataClientException((JObject)innerErrorObject, string.Empty, depth + 1);
         }
     }

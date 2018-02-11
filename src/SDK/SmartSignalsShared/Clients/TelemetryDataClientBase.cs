@@ -27,6 +27,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
     /// </summary>
     public abstract class TelemetryDataClientBase : ITelemetryDataClient
     {
+        private const int ServerThrottlingErrorCode = 429;
+        private const int ServerThrottlingMaxWaitTimeInSeconds = 120;
+
         private readonly ITracer tracer;
         private readonly IHttpClientWrapper httpClientWrapper;
         private readonly ServiceClientCredentials credentials;
@@ -61,7 +64,24 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             this.TelemetryDbType = telemetryDbType;
             this.MainTelemetryDbId = Diagnostics.EnsureStringNotNullOrWhiteSpace(() => mainTelemetryDbId);
             this.TelemetryResourceIds = telemetryResourceIds?.ToList() ?? new List<string>();
-            this.retryPolicy = PolicyExtensions.CreateDefaultPolicy(this.tracer, this.TelemetryDbType.ToString());
+
+            // The retry policy retries 3 times, handling throttling errors, and waiting the time specified in the throttling error
+            this.retryPolicy = Policy
+                .Handle<ServerThrottlingException>()
+                .WaitAndRetryAsync(
+                    retryCount: PolicyExtensions.DefaultRetryCount,
+                    sleepDurationProvider: (retryAttempt, exception, context) =>
+                    {
+                        // Get the time to wait from the throttling exception, or use exponential retry
+                        int timeToWaitInSeconds = (exception as ServerThrottlingException)?.TimeToWaitInSeconds ?? 0;
+                        if (timeToWaitInSeconds <= 0)
+                        {
+                            timeToWaitInSeconds = (int)Math.Pow(2, retryAttempt);
+                        }
+                                                  
+                        return TimeSpan.FromSeconds(timeToWaitInSeconds);
+                    },
+                    onRetryAsync: (exception, timeWaited, retryAttempt, context) => Task.CompletedTask);
 
             // Extract the host part of the URI as the credentials resource
             UriBuilder builder = new UriBuilder()
@@ -103,50 +123,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
         /// <returns>A <see cref="Task{TResult}"/>, returning the query result.</returns>
         public async Task<IList<DataTable>> RunQueryAsync(string query, CancellationToken cancellationToken)
         {
+            // Trace and run the query with the retry policy
             this.tracer.TraceInformation($"Running query with an instance of {this.GetType().Name}");
             this.tracer.TraceVerbose($"Query: {query}");
-
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, this.queryUri);
-
-            // Prepare request headers
-            request.Headers.Add("Prefer", $"wait={this.Timeout.TotalSeconds}");
-
-            // Prepare request content
-            JObject requestContent = new JObject
-            {
-                ["query"] = query
-            };
-
-            this.UpdateRequestContent(requestContent);
-            request.Content = new StringContent(requestContent.ToString(), Encoding.UTF8, "application/json");
-
-            // Set the credentials
-            if (this.credentials != null)
-            {
-                await this.credentials.ProcessHttpRequestAsync(request, cancellationToken);
-            }
-
-            // Send request and get the response as JSON
-            Stopwatch queryStopwatch = Stopwatch.StartNew();
-            HttpResponseMessage response = await this.retryPolicy.RunAndTrackDependencyAsync(this.tracer, this.TelemetryDbType.ToString(), "RunQuery", () => this.httpClientWrapper.SendAsync(request, cancellationToken));
-            queryStopwatch.Stop();
-            this.tracer.TraceInformation($"Query completed in {queryStopwatch.ElapsedMilliseconds}ms");
-            string responseContent = await response.Content.ReadAsStringAsync();
-            JObject responseObject = JObject.Parse(responseContent);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                // Parse the error and throw
-                JObject errorObject = (JObject)responseObject["error"];
-                this.tracer.TraceInformation($"Query returned an error: {errorObject}");
-                throw new TelemetryDataClientException(errorObject, query);
-            }
-            else
-            {
-                IList<DataTable> dataTables = this.ReadTables(responseObject);
-                this.tracer.TraceInformation($"Query returned {dataTables.Count} table{(dataTables.Count == 1 ? "" : "s")}, containing [{string.Join(",", dataTables.Select(dataTable => dataTable.Rows.Count.ToString()))}] rows");
-                return dataTables;
-            }
+            return await this.retryPolicy.RunAndTrackDependencyAsync(this.tracer, this.TelemetryDbType.ToString(), "RunQuery", () => this.RunQueryInternalAsync(query, cancellationToken));
         }
 
         /// <summary>
@@ -229,6 +209,77 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
             }
 
             return dataTables;
+        }
+
+        /// <summary>
+        /// Run a query against the relevant telemetry database.
+        /// </summary>
+        /// <param name="query">The query to run.</param>
+        /// <param name="cancellationToken">The cancellation token to use.</param>
+        /// <returns>A <see cref="Task{TResult}"/>, returning the query result.</returns>
+        private async Task<IList<DataTable>> RunQueryInternalAsync(string query, CancellationToken cancellationToken)
+        {
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, this.queryUri);
+
+            // Prepare request headers
+            request.Headers.Add("Prefer", $"wait={this.Timeout.TotalSeconds}");
+
+            // Prepare request content
+            JObject requestContent = new JObject
+            {
+                ["query"] = query
+            };
+
+            this.UpdateRequestContent(requestContent);
+            request.Content = new StringContent(requestContent.ToString(), Encoding.UTF8, "application/json");
+
+            // Set the credentials
+            if (this.credentials != null)
+            {
+                await this.credentials.ProcessHttpRequestAsync(request, cancellationToken);
+            }
+
+            // Send request and get the response as JSON
+            Stopwatch queryStopwatch = Stopwatch.StartNew();
+            HttpResponseMessage response = await this.httpClientWrapper.SendAsync(request, cancellationToken);
+            queryStopwatch.Stop();
+            this.tracer.TraceInformation($"Query completed in {queryStopwatch.ElapsedMilliseconds}ms");
+            string responseContent = response.Content == null ? string.Empty : await response.Content.ReadAsStringAsync();
+            JObject responseObject = string.IsNullOrEmpty(responseContent) ? null : JObject.Parse(responseContent);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Check if we got a throttling error
+                if ((int)response.StatusCode == ServerThrottlingErrorCode)
+                {
+                    int timeToWaitInSeconds = 0;
+                    if (response.Headers.TryGetValues("Retry-After", out IEnumerable<string> values))
+                    {
+                        int.TryParse(values.FirstOrDefault(), out timeToWaitInSeconds);
+                    }
+
+                    if (timeToWaitInSeconds > ServerThrottlingMaxWaitTimeInSeconds)
+                    {
+                        throw new TelemetryDataClientException($"Received a throttling error with time to wait of {timeToWaitInSeconds} seconds, which is too long");
+                    }
+                    
+                    throw new ServerThrottlingException(timeToWaitInSeconds);
+                }
+                else
+                {
+                    // Parse the error and throw
+                    JObject errorObject = (JObject)responseObject?["error"];
+                    this.tracer.TraceInformation($"Query returned an error: {errorObject}");
+                    throw new TelemetryDataClientException(errorObject, query);
+                }
+            }
+            else
+            {
+                // Parse the response object
+                IList<DataTable> dataTables = this.ReadTables(responseObject);
+                this.tracer.TraceInformation($"Query returned {dataTables.Count} table{(dataTables.Count == 1 ? "" : "s")}, containing [{string.Join(",", dataTables.Select(dataTable => dataTable.Rows.Count.ToString()))}] rows");
+                return dataTables;
+            }
         }
     }
 }

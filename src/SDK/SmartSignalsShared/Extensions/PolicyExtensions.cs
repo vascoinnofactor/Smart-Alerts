@@ -17,6 +17,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Extensions
     public static class PolicyExtensions
     {
         /// <summary>
+        /// The default retry count
+        /// </summary>
+        public const int DefaultRetryCount = 3;
+
+        /// <summary>
         /// Runs an asynchronous dependency operation, using the specified policy, sends
         /// telemetry information about it using the specified tracer, and returns the
         /// operation result.
@@ -64,7 +69,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Extensions
         /// <param name="dependencyName">The dependency name</param>
         /// <param name="retryCount">The retry count (3 by default)</param>
         /// <returns>The retry policy</returns>
-        public static Policy CreateDefaultPolicy(ITracer tracer, string dependencyName, int retryCount = 3)
+        public static Policy CreateDefaultPolicy(ITracer tracer, string dependencyName, int retryCount = DefaultRetryCount)
         {
             return Policy.Handle<Exception>(ex => true).WaitAndRetryAsync(
                 retryCount,
