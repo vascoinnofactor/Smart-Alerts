@@ -96,6 +96,7 @@ export interface QueryResultStoreState {
  */
 export interface AlertRulesStoreState {
     isFetching: boolean;
+    isUpdating: boolean;
     items: ReadonlyArray<AlertRule>;
     lastUpdated: Moment | null;
     failureReason?: FailureReason;

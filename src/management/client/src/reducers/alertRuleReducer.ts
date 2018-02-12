@@ -46,7 +46,7 @@ export default function alertRuleReducer(
 function onAddAlertRuleInProgress(currentState: AlertRulesStoreState): AlertRulesStoreState {
     return {
         ...currentState,
-        isFetching: true
+        isUpdating: true
     };
 }
 
@@ -60,7 +60,7 @@ function onAddAlertRuleSuccess(action: AddAlertRuleSuccessAction, currentState: 
     return {
         ...currentState,
         items: [...currentState.items, { ...action.payload.alertRule }],
-        isFetching: false,
+        isUpdating: false,
         lastUpdated: null
     };
 }
@@ -74,7 +74,7 @@ function onAddAlertRuleFail(action: AddAlertRuleFailAction, currentState: AlertR
     : AlertRulesStoreState {
     return {
         ...currentState,
-        isFetching: false,
+        isUpdating: false,
         failureReason: {
             error: action.payload.error
         }

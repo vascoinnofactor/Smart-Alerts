@@ -11,13 +11,15 @@ import { Grid, Row } from 'react-flexbox-grid';
 import Button from 'react-md/lib/Buttons';
 import FontIcon from 'react-md/lib/FontIcons';
 import Chip from 'react-md/lib/Chips';
+import { CircularProgress } from 'react-md/lib/Progress';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import Drawer from '../../Drawer';
 import AzureResourcesViewer from '../../AzureResourcesViewer';
 import SelectedAzureResource from '../../AzureResourcesViewer/SelectedAzureResource';
 import Signal from '../../../models/Signal';
 import SignalsListDrawerView from '../../Signals/SignalsManagement/signalsListDrawerView';
-import StoreState from '../../../store/StoreState';
+import StoreState, { AlertRulesStoreState } from '../../../store/StoreState';
 import { getAzureResources } from '../../../actions/resource/resourceActions';
 import { getSignals } from '../../../actions/signal/signalActions';
 import { addAlertRule } from '../../../actions/alertRule/alertRuleActions';
@@ -43,7 +45,14 @@ interface AddAlertRuleDispatchProps {
 interface AddAlertRuleStateProps {
     signals: ReadonlyArray<Signal>;
     azureResources: ReadonlyArray<AzureSubscriptionResources>;
+    alertRules: AlertRulesStoreState;
 }
+
+/**
+ * Represents the AddAlertRule component props for the incoming properties
+ */
+interface AddAlertRuleOwnProps extends RouteComponentProps<{}> {
+} 
 
 /**
  * Represents the AddAlertRule component state
@@ -61,7 +70,8 @@ interface AddAlertRuleState {
 
 // Create a type combined from all the props
 type AddAlertRuleProps = AddAlertRuleDispatchProps &
-                         AddAlertRuleStateProps;
+                         AddAlertRuleStateProps &
+                         AddAlertRuleOwnProps;
 
 class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState> {
     constructor(props: AddAlertRuleProps) {
@@ -205,12 +215,21 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
                             className="submit-button" 
                             iconEl={<FontIcon>{'add_alert'}</FontIcon>}
                             onClick={this.onSubmitButtonPressed}
+                            disabled={this.props.alertRules.isUpdating}
                         >
                             Create alert rule
                         </Button>
+                        {
+                            this.props.alertRules.isUpdating &&
+                            <CircularProgress
+                                id="add-alert-rule-submit-button-loading" 
+                                className="add-alert-rule-loading" 
+                            />
+                        }
                     </Row>
                 </Grid>
                 
+                {/* Drawer for showing the Azure resources viewer */}
                 <Drawer 
                     onVisibilityChange={this.changeAzureResourcesDrawerVisibility} 
                     visible={this.state.showResourcesDrawer}
@@ -222,8 +241,15 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
                             azureSubscriptionsResources={this.props.azureResources} 
                         />
                     }
+                    {
+                        this.props.azureResources.length === 0 &&
+                        <div className="azure-resources-drawer-loading">
+                            <CircularProgress id="loading-azure-resources" />
+                        </div>
+                    }
                 </Drawer>
                 
+                {/* Drawer for showing the signals list */}
                 <Drawer 
                     onVisibilityChange={this.changeSignalListDrawerVisibility} 
                     visible={this.state.showSignalsDrawer}
@@ -243,6 +269,14 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
 
     private getSignalsBySelectedResource = (signals: ReadonlyArray<Signal>,
                                             selectedResource: SelectedAzureResource) => {
+        // In case the selected resource is subscription/resource group - return all signals
+        // This is because in that case we are iterating within all resources in that 
+        // subscription/resource group
+        if (selectedResource.resourceType === ResourceType.Subscription ||
+            selectedResource.resourceType === ResourceType.ResourceGroup) {
+            return signals;
+        }
+
         return signals.filter(signal => signal.supportedResourceTypes.find(supportedResourceType =>
                 supportedResourceType.toString() === ResourceType[selectedResource.resourceType]) !== undefined);    
     }
@@ -348,6 +382,8 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
         };
 
         await this.props.addAlertRule(alertRule);
+
+        this.props.history.push('/alertRules');
     }
 }
 
@@ -358,7 +394,8 @@ class AddAlertRule extends React.Component<AddAlertRuleProps, AddAlertRuleState>
 function mapStateToProps(state: StoreState): AddAlertRuleStateProps {
     return {
         azureResources: state.resources.azureSubscriptionsResources,
-        signals: state.signals.items
+        signals: state.signals.items,
+        alertRules: state.alertRules
     };
 }
 
@@ -374,4 +411,6 @@ function mapDispatchToProps(dispatch: Dispatch<StoreState>): AddAlertRuleDispatc
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddAlertRule);
+// Casting to any in order to prevent the competability issue with Redux - Router
+// tslint:disable-next-line:no-any
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AddAlertRule) as any);

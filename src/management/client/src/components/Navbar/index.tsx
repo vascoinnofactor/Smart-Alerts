@@ -12,11 +12,10 @@ import Avatar from 'react-md/lib/Avatars';
 import NavigationDrawer from 'react-md/lib/NavigationDrawers';
 import ListItem from 'react-md/lib/Lists/ListItem';
 import FontIcon from 'react-md/lib/FontIcons';
-// import SignalResultsPage from '../../pages/SignalResults';
-import SignalsPage from '../../pages/Signals';
 import AddAlertRule from '../../pages/AlertRule';
 import ViewAlertRules from '../../components/AlertRule/ViewAlertRules';
 import SignalResultsView from '../../components/SignalResults/signalResultsView';
+import SignalsView from '../../components/Signals/SignalsManagement/signalsView';
 import User from '../../models/User';
 import StoreState from '../../store/StoreState';
 
@@ -41,7 +40,7 @@ const navigationItems = [
         <ListItem
           key={1002}
           component={Link}
-          to="/alertRule"
+          to="/alertRules"
           leftIcon={<FontIcon className="item-icon">{'add_alert'}</FontIcon>}
           tileClassName="md-list-tile--mini"
           primaryText={name || 'Dashboard'}
@@ -113,17 +112,17 @@ class Navbar extends React.PureComponent<NavbarProps> {
                 <Route 
                     path="/signals/:id?" 
                     render={(props) => 
-                        <SignalsPage selectedSignalNumber={props.match.params.id}/>
+                        <SignalsView />
                     }
                 />
                 <Route 
-                    path="/alertRule/add" 
+                    path="/alertRules/add" 
                     render={(props) => 
                         <AddAlertRule />
                     }
                 />
                 <Route 
-                    path="/alertRule" 
+                    path="/alertRules" 
                     render={(props) => 
                         <ViewAlertRules />
                     }

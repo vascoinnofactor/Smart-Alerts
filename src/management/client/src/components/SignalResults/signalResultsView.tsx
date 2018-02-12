@@ -10,6 +10,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { Grid } from 'react-flexbox-grid';
 import { DataTable, TableHeader, TableBody, TableRow, TableColumn } from 'react-md/lib/DataTables';
 import CircularProgress from 'react-md/lib/Progress/CircularProgress';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import Drawer from '../Drawer';
 import StoreState, { SignalsResultsStoreState, ResourcesStoreState } from '../../store/StoreState';
@@ -44,7 +45,7 @@ interface SignalResultViewStateProps {
 /**
  * Represents the SignalResultView component props for the incoming properties
  */
-interface SignalResultViewOwnProps {
+interface SignalResultViewOwnProps extends RouteComponentProps<{}> {
     selectedSignalResultId?: string;
 }
 
@@ -136,7 +137,7 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
                                 <TableBody>
                                     {
                                         this.props.signalResults.items.map((signalResult, index) => (
-                                            <TableRow key={index} onClick={this.onClick}>
+                                            <TableRow key={index} onClick={this.onSignalResultRowClick}>
                                                 <TableColumn>{signalResult.analysisTimestamp}</TableColumn>
                                                 <TableColumn>{signalResult.signalName}</TableColumn>
                                                 <TableColumn>Smart Signal</TableColumn>
@@ -186,14 +187,21 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
         );
     }
 
-    private onClick = (event: React.MouseEvent<HTMLTableRowElement>) => {
+    private onSignalResultRowClick = (event: React.MouseEvent<HTMLTableRowElement>) => {
         let selectedRowNumber: number = event.currentTarget.rowIndex;
-        let selectedSignalResult: SignalResult = this.props.signalResults[selectedRowNumber - 1];
+        let selectedSignalResult: SignalResult = this.props.signalResults.items[selectedRowNumber - 1];
+
+        if (this.props.history) {
+            this.props.history.push(`signalResults/${selectedSignalResult.id}`);
+        }
 
         this.setState({ showSignalResultDetailsDrawer: true, selectedSignalResultId: selectedSignalResult.id });
     }
 
     private onSignalResultDetailsDrawerVisibilityChange = (visible: boolean) => {
+        // Go back in history - remove the signal id from the url
+        this.props.history.goBack();
+
         this.setState({ showSignalResultDetailsDrawer: visible, selectedSignalResultId: undefined });
     }
 
@@ -223,11 +231,12 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
         return chartsProperties.map(property => {
             return {
                 id: ChartMetadataUtils.createChartId(signalResult.id, property.name, property.value),
+                name: property.name,
                 query: property.value,
                 chartType: SignalResultPropertyUtils.getChartTypeFromProperty(property),
                 queryRunInfo: signalResult.queryRunInfo
             } as ChartMetadata;
-        });
+        }).filter(chartMetadata => chartMetadata.query !== '');
     }
 }
 
@@ -253,4 +262,6 @@ function mapDispatchToProps(dispatch: Dispatch<StoreState>): SignalResultViewDis
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignalResultView);
+// Casting to any in order to prevent the competability issue with Redux - Router
+// tslint:disable-next-line:no-any
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SignalResultView) as any);

@@ -45,7 +45,7 @@ class ViewAlertRules extends React.Component<ViewAlertRulesProps> {
     public render() {
         return (
             <div>
-                <Link to={'/alertRule/add'}>
+                <Link to={'/alertRules/add'}>
                     <Button 
                         className="add-alert-rule-button" 
                         iconEl={<FontIcon>{'add'}</FontIcon>}
