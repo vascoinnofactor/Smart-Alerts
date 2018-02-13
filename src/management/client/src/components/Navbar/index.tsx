@@ -105,7 +105,6 @@ class Navbar extends React.PureComponent<NavbarProps> {
                 <Route 
                     path="/signalResults/:id?" 
                     render={(props) => 
-                        // <SignalResultsPage selectedSignalResultNumber={props.match.params.id} />
                         <SignalResultsView selectedSignalResultId={props.match.params.id} />
                     }
                 />

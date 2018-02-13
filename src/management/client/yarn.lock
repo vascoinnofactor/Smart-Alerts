@@ -52,9 +52,9 @@
     "@types/react" "*"
     redux "^3.6.0"
 
-"@types/react-router-dom@4.2.1":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.2.1.tgz#c5583550d7246dea60612cc55a523cf980d56df1"
+"@types/react-router-dom@4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.2.4.tgz#02c43274129ffe0ac42b348f7c8c4a9a4e127c8a"
   dependencies:
     "@types/history" "*"
     "@types/react" "*"
@@ -63,6 +63,13 @@
 "@types/react-router@*":
   version "4.0.17"
   resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.17.tgz#1032c800ed0da188d8a3bb38fe6afa8c917865d5"
+  dependencies:
+    "@types/history" "*"
+    "@types/react" "*"
+
+"@types/react-router@4.0.22":
+  version "4.0.22"
+  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.22.tgz#2b97336eddfdf5886973539539b8ce7037cf629b"
   dependencies:
     "@types/history" "*"
     "@types/react" "*"
