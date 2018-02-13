@@ -8,7 +8,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Grid } from 'react-flexbox-grid';
-import { DataTable, TableHeader, TableBody, TableRow, TableColumn } from 'react-md/lib/DataTables';
+import { DataTable, TableHeader, TableBody, TableRow, TableColumn, TablePagination } from 'react-md/lib/DataTables';
 import CircularProgress from 'react-md/lib/Progress/CircularProgress';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
@@ -60,21 +60,29 @@ type SignalResultViewProps = SignalResultViewDispatchProps &
 interface SignalResultViewState {
     showSignalResultDetailsDrawer: boolean;
     selectedSignalResultId?: string;
+    slicedData: ReadonlyArray<SignalResult>;
 }
 
 class SignalResultView extends React.Component<SignalResultViewProps, SignalResultViewState> {
+    private NumberOfSignalResultsPerPage = 5;
+
     constructor(props: SignalResultViewProps) {
         super(props);
 
         this.state = {
             showSignalResultDetailsDrawer: props.selectedSignalResultId !== undefined,
-            selectedSignalResultId: undefined
+            selectedSignalResultId: undefined,
+            slicedData: new Array()
         };
     }
 
     public async componentDidMount() {
         await this.props.getSignalResult();
         await this.props.getAzureResources();
+    }
+
+    public componentWillReceiveProps(nextProps: Readonly<SignalResultViewProps>) {
+        this.setState({ slicedData: nextProps.signalResults.items.slice(0, this.NumberOfSignalResultsPerPage)});
     }
 
     public render() {
@@ -134,9 +142,10 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
                             </TableHeader>
                             {
                                 this.props.signalResults.items.length > 0 &&
+                                // tslint:disable-next-line:no-unused-expression
                                 <TableBody>
                                     {
-                                        this.props.signalResults.items.map((signalResult, index) => (
+                                        this.state.slicedData.map((signalResult, index) => (
                                             <TableRow key={index} onClick={this.onSignalResultRowClick}>
                                                 <TableColumn>{signalResult.analysisTimestamp}</TableColumn>
                                                 <TableColumn>{signalResult.signalName}</TableColumn>
@@ -152,13 +161,23 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
                                     }
                                 </TableBody>
                             }
+                            {
+                                this.props.signalResults.items.length > 0 &&
+                                <TablePagination 
+                                    rows={this.props.signalResults.items.length} 
+                                    onPagination={this.handlePagination} 
+                                    rowsPerPageLabel="Results per page"
+                                    rowsPerPage={this.NumberOfSignalResultsPerPage}
+                                    className="table-pagination"
+                                    defaultRowsPerPage={this.NumberOfSignalResultsPerPage}
+                                />
+                            }
                         </DataTable>
-
                         {
-                                this.props.signalResults.items.length === 0 &&
-                                <div className="loading-signal-results">
-                                    <CircularProgress id="view-signal-results-progress" />
-                                </div>
+                            this.props.signalResults.items.length === 0 &&
+                            <div className="loading-signal-results">
+                                <CircularProgress id="view-signal-results-progress" />
+                            </div>
                         }
                         </div>
                 </Grid>
@@ -185,6 +204,10 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
                 </Drawer>
             </div>
         );
+    }
+
+    private handlePagination = (start: number, rowsPerPage: number) => {
+        this.setState({ slicedData: this.props.signalResults.items.slice(start, start + rowsPerPage) });
     }
 
     private onSignalResultRowClick = (event: React.MouseEvent<HTMLTableRowElement>) => {

@@ -51,7 +51,7 @@ function onGetSignalResultSuccess(action: GetSignalResultSuccessAction,
     : SignalsResultsStoreState {
     return {
         ...currentState,
-        items: action.payload.results.slice(0, 5),
+        items: action.payload.results,
         isFetching: false,
         lastUpdated: null
     };

@@ -39,6 +39,10 @@
             .loading-alert-rules {
                 width: 100%;
             }
+
+            .table-pagination {
+                position: static;
+            }
         }
     }
 }
@@ -49,4 +53,8 @@
 
 .md-data-table--responsive {
     overflow-x: visible;
+}
+
+.md-table-pagination--controls {
+    position: static !important;
 }
