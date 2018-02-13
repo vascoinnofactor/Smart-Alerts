@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-import * as moment from 'moment';
+import { Moment } from 'moment';
 
 import baseUrl from './baseUrl';
 import ApiError from './apiError';
@@ -15,9 +15,8 @@ import { azureResourceManagementUrl } from './urls';
 /**
  * Gets a list of signals results without any flitering
  */
-export async function getSignalsResultsAsync(): Promise<ListSmartSignalResultResponse> {
-    const utcNowMinusDay = moment.utc().add(-2, 'days');
-    const requestUrl = `${baseUrl}/api/signalResult?startTime=${utcNowMinusDay.format('MM/DD/YYYY HH:mm')}`;
+export async function getSignalsResultsAsync(startTime: Moment): Promise<ListSmartSignalResultResponse> {
+    const requestUrl = `${baseUrl}/api/signalResult?startTime=${startTime.format('MM/DD/YYYY HH:mm')}`;
 
     // Get the user AAD token
     let userAccessToken = await ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator()

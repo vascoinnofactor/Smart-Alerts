@@ -11,6 +11,8 @@ import { Grid } from 'react-flexbox-grid';
 import { DataTable, TableHeader, TableBody, TableRow, TableColumn, TablePagination } from 'react-md/lib/DataTables';
 import CircularProgress from 'react-md/lib/Progress/CircularProgress';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { Moment } from 'moment';
+import * as moment from 'moment';
 
 import Drawer from '../Drawer';
 import StoreState, { SignalsResultsStoreState, ResourcesStoreState } from '../../store/StoreState';
@@ -30,7 +32,7 @@ import './signalResultViewStyle.css';
  * Represents the SignalResultView component props for the dispatch functions
  */
 interface SignalResultViewDispatchProps {
-    getSignalResult: () => (dispatch: Dispatch<StoreState>) => Promise<void>;
+    getSignalResult: (startTime: Moment) => (dispatch: Dispatch<StoreState>) => Promise<void>;
     getAzureResources: () => (dispatch: Dispatch<StoreState>) => Promise<void>;
 }
 
@@ -64,7 +66,7 @@ interface SignalResultViewState {
 }
 
 class SignalResultView extends React.Component<SignalResultViewProps, SignalResultViewState> {
-    private NumberOfSignalResultsPerPage = 5;
+    private NumberOfSignalResultsPerPage = 10;
 
     constructor(props: SignalResultViewProps) {
         super(props);
@@ -77,7 +79,9 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
     }
 
     public async componentDidMount() {
-        await this.props.getSignalResult();
+        // We are getting the signal results from the last hour (as this it the default)
+        await this.props.getSignalResult(moment.utc().add(-1, 'hour'));
+
         await this.props.getAzureResources();
     }
 
@@ -122,7 +126,7 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
                             <div className="text-before-select-box-filter">
                                 * Time range
                             </div>
-                            <select className="select-box">
+                            <select className="select-box" onChange={this.onTimeRangeSelectionChanged}>
                                 <option value="1">Last 1 hour</option>
                                 <option value="6">Last 6 hours</option>
                                 <option value="24">Last day</option>
@@ -141,8 +145,7 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
                                 </TableRow>
                             </TableHeader>
                             {
-                                this.props.signalResults.items.length > 0 &&
-                                // tslint:disable-next-line:no-unused-expression
+                                !this.props.signalResults.isFetching &&
                                 <TableBody>
                                     {
                                         this.state.slicedData.map((signalResult, index) => (
@@ -162,7 +165,7 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
                                 </TableBody>
                             }
                             {
-                                this.props.signalResults.items.length > 0 &&
+                                !this.props.signalResults.isFetching &&
                                 <TablePagination 
                                     rows={this.props.signalResults.items.length} 
                                     onPagination={this.handlePagination} 
@@ -174,7 +177,7 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
                             }
                         </DataTable>
                         {
-                            this.props.signalResults.items.length === 0 &&
+                            this.props.signalResults.isFetching &&
                             <div className="loading-signal-results">
                                 <CircularProgress id="view-signal-results-progress" />
                             </div>
@@ -204,6 +207,10 @@ class SignalResultView extends React.Component<SignalResultViewProps, SignalResu
                 </Drawer>
             </div>
         );
+    }
+
+    private onTimeRangeSelectionChanged = async (event: React.FormEvent<HTMLSelectElement>) => {
+        await this.props.getSignalResult(moment.utc().add(-Number(event.currentTarget.value), 'hour'));
     }
 
     private handlePagination = (start: number, rowsPerPage: number) => {
