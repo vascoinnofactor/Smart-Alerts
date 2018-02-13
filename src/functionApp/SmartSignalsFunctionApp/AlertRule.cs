@@ -141,13 +141,13 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                 }
                 catch (SmartSignalsManagementApiException e)
                 {
-                    tracer.TraceError($"Failed to add alert rule due to managed exception: {e}");
+                    tracer.TraceError($"Failed to get alert rules due to managed exception: {e}");
 
                     return req.CreateErrorResponse(e.StatusCode, "Failed to add the given alert rule", e);
                 }
                 catch (Exception e)
                 {
-                    tracer.TraceError($"Failed to add alert rule due to un-managed exception: {e}");
+                    tracer.TraceError($"Failed to get alert rules due to un-managed exception: {e}");
 
                     return req.CreateErrorResponse(HttpStatusCode.InternalServerError, "Failed to add the given alert rule", e);
                 }
