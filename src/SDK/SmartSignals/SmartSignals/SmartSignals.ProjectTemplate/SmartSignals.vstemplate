@@ -20,7 +20,7 @@
       Items referenced in here must also be referenced in the project file.
       -->
       <ProjectItem ReplaceParameters="true" OpenInEditor="true">SmartSignal.cs</ProjectItem>
-      <ProjectItem ReplaceParameters="true" OpenInEditor="false">SmartSignalResult.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" OpenInEditor="false">SmartSignalResultItem.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" OpenInEditor="false">Manifest.json</ProjectItem>
     </Project>
   </TemplateContent>

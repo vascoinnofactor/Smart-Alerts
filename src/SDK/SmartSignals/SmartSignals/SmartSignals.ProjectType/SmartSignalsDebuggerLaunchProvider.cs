@@ -19,7 +19,6 @@ namespace SmartSignals
         {
         }
 
-        // TODO: Specify the assembly full name here
         [ExportPropertyXamlRuleDefinition("SmartSignals, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9be6e469bc4921f1", "XamlRuleToCode:SmartSignalsDebugger.xaml", "Project")]
         [AppliesTo(MyUnconfiguredProject.UniqueCapability)]
         private object DebuggerXaml { get { throw new NotImplementedException(); } }
@@ -42,13 +41,11 @@ namespace SmartSignals
             var settings = new DebugLaunchSettings(launchOptions);
 
             // The properties that are available via DebuggerProperties are determined by the property XAML files in your project.
-            var debuggerProperties = await this.DebuggerProperties.GetSmartSignalsDebuggerPropertiesAsync();
-            settings.CurrentDirectory = await debuggerProperties.SmartSignalsDebuggerWorkingDirectory.GetEvaluatedValueAtEndAsync();
+            var debuggerProperties = await this.DebuggerProperties.GetSmartSignalsDebuggerPropertiesAsync();     
             settings.Executable = await debuggerProperties.SmartSignalsDebuggerCommand.GetEvaluatedValueAtEndAsync();
             settings.Arguments = await debuggerProperties.SmartSignalsDebuggerCommandArguments.GetEvaluatedValueAtEndAsync();
             settings.LaunchOperation = DebugLaunchOperation.CreateProcess;
 
-            // TODO: Specify the right debugger engine
             settings.LaunchDebugEngineGuid = DebuggerEngines.ManagedOnlyEngine;
 
             return new IDebugLaunchSettings[] { settings };

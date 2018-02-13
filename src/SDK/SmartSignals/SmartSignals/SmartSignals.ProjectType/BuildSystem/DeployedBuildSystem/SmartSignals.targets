@@ -19,7 +19,7 @@
 
   <Target Name="Run">
     <Message Text="$(RunCommandArguments)" />
-    <Exec Command='$(RunCommand) "$(MSBuildProjectDirectory)\$(StartItem)" $(RunCommandArguments)' WorkingDirectory="$(RunWorkingDirectory)" />
+    <Exec Command='$(RunCommand) $(RunCommandArguments)' />
   </Target>
 
   <Target Name="Build" >

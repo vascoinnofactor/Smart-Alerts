@@ -8,7 +8,7 @@
   <Import Project="$(CustomProjectExtensionsPath)SmartSignals.props" />
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>$safeprojectname$</RootNamespace>
     <AssemblyName>$safeprojectname$</AssemblyName>
   </PropertyGroup>
