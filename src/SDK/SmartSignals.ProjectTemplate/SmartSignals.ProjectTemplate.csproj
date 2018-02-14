@@ -68,7 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SmartSignalsSDK\SmartSignalsSDK.csproj">
+    <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj">
       <Project>{8c942f8e-1741-4d63-87cb-d79c0f0ec02c}</Project>
       <Name>SmartSignalsSDK</Name>
     </ProjectReference>
