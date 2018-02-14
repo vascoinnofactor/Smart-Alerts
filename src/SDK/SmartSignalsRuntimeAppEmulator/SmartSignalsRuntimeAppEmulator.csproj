@@ -50,6 +50,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\SignalResultDetailsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,14 +71,10 @@
     <Resource Include="Media\ic_settings_white_48dp_2x.png" />
     <Resource Include="Media\ic_power_settings_new_white_48dp_1x.png" />
     <Resource Include="Media\ic_power_settings_new_white_48dp_2x.png" />
+    <Resource Include="Media\ic_close.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj" />
     <ProjectReference Include="..\SmartSignalsShared\SmartSignalsShared.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Controls\SignalConfigurationControl.xaml.cs">
-      <DependentUpon>SignalConfigurationControl.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
 </Project>

@@ -4,18 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels"
+             xmlns:converters="clr-namespace:Microsoft.Azure.Monitoring.SmartSignals.Emulator.Converters"
+             xmlns:local="clr-namespace:Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=viewModels:SignalsResultsControlViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="600" d:DesignWidth="1500">
+    <UserControl.Resources>
+        <converters:ConverterChain x:Key="NullToVisibilityConverter">
+            <converters:NullToBooleanConverter/>
+            <BooleanToVisibilityConverter/>
+        </converters:ConverterChain>
+    </UserControl.Resources>
     <Grid Background="#FFECF0F1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="0.5"/>
+            <ColumnDefinition Width="400" MinWidth="0.5"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" BorderBrush="#FFA5A5A5" BorderThickness="0,0,0.5,0" Padding="20,20,20,0">
+        <Border Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="#FFA5A5A5" BorderThickness="0,0,0.5,0" Padding="20,20,20,0">
             <StackPanel Orientation="Vertical">
                 <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding SignalRunner.Results.Count, StringFormat=SIGNAL RESULTS : {0}}"/>
-                <ListView Margin="10" ItemsSource="{Binding SignalRunner.Results}">
+                <ListView ItemsSource="{Binding SignalRunner.Results}" SelectionMode="Single" SelectedItem="{Binding SelectedResult}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="NAME" Width="200" DisplayMemberBinding="{Binding ResultItemPresentation.SignalName}" />
@@ -30,6 +39,18 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1" BorderThickness="0.5,0,0,0" Padding="20,20,20,0" Background="#FFECF0F1"
+                BorderBrush="#FFA5A5A5"
+                Visibility="{Binding Path=SelectedResult, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="10"/>
+            </Border.Effect>
+            <StackPanel Orientation="Vertical">
+                <local:SignalResultDetailsControl
+                    DataContext="{Binding SignalResultDetailsControlViewModel}" />
             </StackPanel>
         </Border>
     </Grid>

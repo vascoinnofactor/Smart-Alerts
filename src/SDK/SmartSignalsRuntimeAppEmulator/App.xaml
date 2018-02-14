@@ -19,13 +19,13 @@
         <Style TargetType="TextBlock" x:Key="SectionHeader">
             <Setter Property="Foreground" Value="#FF2C3E51"/>
             <Setter Property="FontSize" Value="25"/>
-            <Setter Property="Margin" Value="0,0,100,30"/>
+            <Setter Property="Margin" Value="0,0,100,25"/>
         </Style>
 
         <Style TargetType="TextBlock" x:Key="SignalNameTitle">
-            <Setter Property="Foreground" Value="#0404B4"/>
+            <Setter Property="Foreground" Value="#4f5051"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Margin" Value="0,0,50,30"/>
+            <Setter Property="Margin" Value="0,0,50,20"/>
         </Style>
 
         <Style TargetType="TextBlock" x:Key="ControlText">

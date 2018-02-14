@@ -11,13 +11,20 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     using Unity.Attributes;
 
     /// <summary>
+    /// Occurs when the user closed the result details control.
+    /// </summary>
+    public delegate void ResultDetailsControlClosedEventHandler();
+
+    /// <summary>
     /// The view model class for the <see cref="SignalResultsControl"/> control.
     /// </summary>
     public class SignalsResultsControlViewModel : ObservableObject
     {
         private SmartSignalRunner signalRunner;
 
-        private SmartSignalResult selectedResult;
+        private SignalResultItem selectedResult;
+
+        private SignalResultDetailsControlViewModel signalResultDetailsControlViewModel;
 
         #region Ctros
 
@@ -36,9 +43,20 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         public SignalsResultsControlViewModel(SmartSignalRunner signalRunner)
         {
             this.SignalRunner = signalRunner;
+            this.SignalResultDetailsControlViewModel = null;
+
+            this.ResultDetailsControlClosed += () =>
+            {
+                this.SelectedResult = null;
+            };
         }
 
         #endregion
+
+        /// <summary>
+        /// Handler for closing the result details control event.
+        /// </summary>
+        public event ResultDetailsControlClosedEventHandler ResultDetailsControlClosed;
 
         #region Binded Properties
 
@@ -62,7 +80,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <summary>
         /// Gets or sets the selected result.
         /// </summary>
-        public SmartSignalResult SelectedResult
+        public SignalResultItem SelectedResult
         {
             get
             {
@@ -72,6 +90,32 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
             set
             {
                 this.selectedResult = value;
+                this.OnPropertyChanged();
+
+                if (this.selectedResult != null)
+                {
+                    this.SignalResultDetailsControlViewModel = new SignalResultDetailsControlViewModel(this.selectedResult, this.ResultDetailsControlClosed);
+                }
+                else
+                {
+                    this.SignalResultDetailsControlViewModel = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the selected result details control view model.
+        /// </summary>
+        public SignalResultDetailsControlViewModel SignalResultDetailsControlViewModel
+        {
+            get
+            {
+                return this.signalResultDetailsControlViewModel;
+            }
+
+            set
+            {
+                this.signalResultDetailsControlViewModel = value;
                 this.OnPropertyChanged();
             }
         }
