@@ -54,5 +54,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
 
             return new CloudBlobContainerWrapper(cloudBlobContainer);
         }
+
+        public ICloudBlobContainerWrapper GetSmartSignalStateStorageContainer()
+        {
+            var storageConnectionString = ConfigurationReader.ReadConfigConnectionString("StorageConnectionString", true);
+            CloudBlobClient cloudBlobClient = CloudStorageAccount.Parse(storageConnectionString).CreateCloudBlobClient();
+            CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference("signalstate");
+            cloudBlobContainer.CreateIfNotExists();
+
+            return new CloudBlobContainerWrapper(cloudBlobContainer);
+        }
     }
 }
