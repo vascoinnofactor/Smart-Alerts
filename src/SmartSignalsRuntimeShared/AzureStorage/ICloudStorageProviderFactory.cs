@@ -28,5 +28,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
         /// </summary>
         /// <returns>A <see cref="ICloudBlobContainerWrapper"/> for the Smart Signal storage container</returns>
         ICloudBlobContainerWrapper GetSmartSignalGlobalStorageContainer();
+
+        /// <summary>
+        /// Creates an Azure Storage container client for the global Smart Signal storage container
+        /// </summary>
+        /// <returns>A <see cref="ICloudBlobContainerWrapper"/> for the Smart Signal storage container</returns>
+        ICloudBlobContainerWrapper GetSmartSignalStateStorageContainer();
     }
 }

@@ -105,7 +105,6 @@ if (!$currentPackageVersion)
 }
 
 # Login and set Azure subscription context
-Import-Module AzureRm
 $subscriptionId = 'b4b7d4c1-8c25-4da3-bf1c-e50f647a8130'
 if ([string]::IsNullOrEmpty($(Get-AzureRmContext).Account))
 {

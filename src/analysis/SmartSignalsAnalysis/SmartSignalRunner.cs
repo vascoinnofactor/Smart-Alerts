@@ -15,6 +15,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
@@ -31,6 +32,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         private readonly IAnalysisServicesFactory analysisServicesFactory;
         private readonly IAzureResourceManagerClient azureResourceManagerClient;
         private readonly IQueryRunInfoProvider queryRunInfoProvider;
+        private readonly IStateRepository stateRepository;
         private readonly ITracer tracer;
 
         /// <summary>
@@ -48,6 +50,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
             IAnalysisServicesFactory analysisServicesFactory,
             IAzureResourceManagerClient azureResourceManagerClient,
             IQueryRunInfoProvider queryRunInfoProvider,
+            IStateRepository stateRepository,
             ITracer tracer)
         {
             this.smartSignalRepository = Diagnostics.EnsureArgumentNotNull(() => smartSignalRepository);
@@ -55,6 +58,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
             this.analysisServicesFactory = Diagnostics.EnsureArgumentNotNull(() => analysisServicesFactory);
             this.azureResourceManagerClient = Diagnostics.EnsureArgumentNotNull(() => azureResourceManagerClient);
             this.queryRunInfoProvider = Diagnostics.EnsureArgumentNotNull(() => queryRunInfoProvider);
+            this.stateRepository = Diagnostics.EnsureArgumentNotNull(() => stateRepository);
             this.tracer = tracer;
         }
 
