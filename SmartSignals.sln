@@ -93,9 +93,9 @@ Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "SmartSignalsPackage", "src\
 		{1FEA53E4-D3BA-48AF-AA3E-D18E39C06098} = {1FEA53E4-D3BA-48AF-AA3E-D18E39C06098}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartSignals.ProjectTemplate", "src\SDK\SmartSignals.ProjectTemplate\SmartSignals.ProjectTemplate.csproj", "{F4851875-9C13-4FDB-A2E1-D9F17A5E3644}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartSignals.ProjectType", "src\SDK\SmartSignals\SmartSignals\SmartSignals.ProjectType\SmartSignals.ProjectType.csproj", "{6D361361-3A0D-4168-B934-04A303C04636}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartSignals.ProjectType", "src\SDK\SmartSignals.ProjectType\SmartSignals.ProjectType.csproj", "{F08D4D9B-354D-4BCC-8936-9C5622BA7ED7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartSignals.ProjectTemplate", "src\SDK\SmartSignals\SmartSignals\SmartSignals.ProjectTemplate\SmartSignals.ProjectTemplate.csproj", "{F4851875-9C13-4FDB-A2E1-D9F17A5E3644}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -191,14 +191,14 @@ Global
 		{8FDC59D4-895C-41C3-B171-9CB75347AB88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FDC59D4-895C-41C3-B171-9CB75347AB88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FDC59D4-895C-41C3-B171-9CB75347AB88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D361361-3A0D-4168-B934-04A303C04636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D361361-3A0D-4168-B934-04A303C04636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D361361-3A0D-4168-B934-04A303C04636}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D361361-3A0D-4168-B934-04A303C04636}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F4851875-9C13-4FDB-A2E1-D9F17A5E3644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F4851875-9C13-4FDB-A2E1-D9F17A5E3644}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4851875-9C13-4FDB-A2E1-D9F17A5E3644}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4851875-9C13-4FDB-A2E1-D9F17A5E3644}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F08D4D9B-354D-4BCC-8936-9C5622BA7ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F08D4D9B-354D-4BCC-8936-9C5622BA7ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F08D4D9B-354D-4BCC-8936-9C5622BA7ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F08D4D9B-354D-4BCC-8936-9C5622BA7ED7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -242,8 +242,8 @@ Global
 		{BB38D7D3-7C53-42D6-8C1E-35184733A623} = {8EB82F44-C8BC-49D7-8E86-285C7C846211}
 		{1FEA53E4-D3BA-48AF-AA3E-D18E39C06098} = {8EB82F44-C8BC-49D7-8E86-285C7C846211}
 		{8FDC59D4-895C-41C3-B171-9CB75347AB88} = {8EB82F44-C8BC-49D7-8E86-285C7C846211}
+		{6D361361-3A0D-4168-B934-04A303C04636} = {8EB82F44-C8BC-49D7-8E86-285C7C846211}
 		{F4851875-9C13-4FDB-A2E1-D9F17A5E3644} = {8EB82F44-C8BC-49D7-8E86-285C7C846211}
-		{F08D4D9B-354D-4BCC-8936-9C5622BA7ED7} = {8EB82F44-C8BC-49D7-8E86-285C7C846211}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A2B03FA1-C26D-433C-80FD-54E2BAEB0330}
