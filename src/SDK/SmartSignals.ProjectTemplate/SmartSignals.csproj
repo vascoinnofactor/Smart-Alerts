@@ -13,8 +13,7 @@
     <AssemblyName>$safeprojectname$</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Azure.Monitoring.SmartAlerts" Version="1.0.0-beta" />
+    <PackageReference Include="Microsoft.Azure.Monitoring.SmartAlerts" Version="$(SmartAlertVersion)" />
   </ItemGroup>
 
   <ItemGroup>

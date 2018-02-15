@@ -6,6 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 
+    <SmartAlertVersion>1.0.0-beta</SmartAlertVersion>
     <DebuggerFlavor>SmartSignalsDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

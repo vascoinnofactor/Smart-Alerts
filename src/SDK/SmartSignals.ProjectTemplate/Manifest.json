@@ -1,10 +1,10 @@
 ﻿{
-  "id": "DefaultId",
-  "name": "Default name",
-  "description": "Default description",
+  "id": "$safeprojectname$",
+  "name": "$safeprojectname$",
+  "description": "Signal description",
   "version": "1.0",
   "assemblyName": "$safeprojectname$.dll",
   "className": "$safeprojectname$.SmartSignal",
   "supportedResourceTypes": [ "VirtualMachine" ],
-  "supportedCadencesInMinutes": [ 1440, 60 ]
+  "supportedCadencesInMinutes": [ 5 ]
 }
