@@ -2,8 +2,8 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="SmartSignals.ProjectType..01737f2f-e204-4e59-9d2e-b8d8f138f74c" Version="1.0" Language="en-US" Publisher="SmartSignals.ProjectType" />
-        <DisplayName>SmartSignals VSIX</DisplayName>
-        <Description xml:space="preserve">A template for creating a SmartSignal project.</Description>
+        <DisplayName>Smart Signal VSIX</DisplayName>
+        <Description xml:space="preserve">A template for creating a Smart Signal project.</Description>
     </Metadata>
     <Installation AllUsers="true">
         <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="15.0" />

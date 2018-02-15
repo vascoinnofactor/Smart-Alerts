@@ -1,13 +1,9 @@
-﻿/***************************************************************************
+﻿//-----------------------------------------------------------------------
+// <copyright file="SmartSignalUnconfiguredProject.cs" company="Microsoft Corporation">
+//        Copyright (c) Microsoft Corporation.  All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
-Copyright (c) Microsoft Corporation. All rights reserved.
-This code is licensed under the Visual Studio SDK license terms.
-THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-
-***************************************************************************/
 
 namespace SmartSignals
 {
@@ -23,10 +19,10 @@ namespace SmartSignals
     using Task = System.Threading.Tasks.Task;
 
     [Export]
-    [AppliesTo(MyUnconfiguredProject.UniqueCapability)]
+    [AppliesTo(SmartSignalUnconfiguredProject.UniqueCapability)]
     [ProjectTypeRegistration(VsPackage.ProjectTypeGuid, "SmartSignals", "#2", ProjectExtension, Language, resourcePackageGuid: VsPackage.PackageGuid, PossibleProjectExtensions = ProjectExtension, ProjectTemplatesDir = @"..\..\Templates\Projects\MyCustomProject")]
     [ProvideProjectItem(VsPackage.ProjectTypeGuid, "My Items", @"..\..\Templates\ProjectItems\MyCustomProject", 500)]
-    internal class MyUnconfiguredProject
+    internal class SmartSignalUnconfiguredProject
     {
         /// <summary>
         /// The file extension used by your project type.
@@ -47,7 +43,7 @@ namespace SmartSignals
         internal const string Language = "SmartSignals";
 
         [ImportingConstructor]
-        public MyUnconfiguredProject(UnconfiguredProject unconfiguredProject)
+        public SmartSignalUnconfiguredProject(UnconfiguredProject unconfiguredProject)
         {
             this.ProjectHierarchies = new OrderPrecedenceImportCollection<IVsHierarchy>(projectCapabilityCheckProvider: unconfiguredProject);
         }
@@ -65,7 +61,7 @@ namespace SmartSignals
         internal ActiveConfiguredProject<ConfiguredProject> ActiveConfiguredProject { get; private set; }
 
         [Import]
-        internal ActiveConfiguredProject<MyConfiguredProject> MyActiveConfiguredProject { get; private set; }
+        internal ActiveConfiguredProject<SmartSignalConfiguredProject> MyActiveConfiguredProject { get; private set; }
 
         [ImportMany(ExportContractNames.VsTypes.IVsProject, typeof(IVsProject))]
         internal OrderPrecedenceImportCollection<IVsHierarchy> ProjectHierarchies { get; private set; }

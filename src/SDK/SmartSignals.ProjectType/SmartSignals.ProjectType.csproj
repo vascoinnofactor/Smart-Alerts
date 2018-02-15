@@ -141,8 +141,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyConfiguredProject.cs" />
-    <Compile Include="MyUnconfiguredProject.cs" />
+    <Compile Include="SmartSignalConfiguredProject.cs" />
+    <Compile Include="SmartSignalUnconfiguredProject.cs" />
     <Compile Include="ProjectProperties.cs" />
     <Compile Include="SmartSignalsDebuggerLaunchProvider.cs" />
     <Compile Include="VsPackage.cs" />

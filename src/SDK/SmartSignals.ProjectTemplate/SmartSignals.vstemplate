@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
-    <Name>SmartSignal Project</Name>
-    <Description>A template for creating a SmartSignal project.</Description>
+    <Name>Smart Signal Project</Name>
+    <Description>A template for creating a Smart Signal project.</Description>
     <Icon>SmartSignals.ico</Icon>
     <ProjectType>SmartSignals</ProjectType>
     <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
@@ -20,7 +20,7 @@
       Items referenced in here must also be referenced in the project file.
       -->
       <ProjectItem ReplaceParameters="true" OpenInEditor="true">SmartSignal.cs</ProjectItem>
-      <ProjectItem ReplaceParameters="true" OpenInEditor="false">SmartSignalResultItem.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true">SmartSignalResultItem.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" OpenInEditor="false">Manifest.json</ProjectItem>
     </Project>
   </TemplateContent>
