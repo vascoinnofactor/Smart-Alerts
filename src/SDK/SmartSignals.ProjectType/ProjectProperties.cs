@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace SmartSignals
+namespace Microsoft.Azure.Monitoring.SmartSignals.ProjectType
 {
     using System;
     using System.Collections.Generic;

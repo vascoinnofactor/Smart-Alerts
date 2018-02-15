@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.ProjectSystem.Debug;
 using Microsoft.VisualStudio.ProjectSystem.Properties;
 using Microsoft.VisualStudio.ProjectSystem.VS.Debug;
 
-namespace SmartSignals
+namespace Microsoft.Azure.Monitoring.SmartSignals.ProjectType
 {
     [ExportDebugger(SmartSignalsDebugger.SchemaName)]
     [AppliesTo(SmartSignalUnconfiguredProject.UniqueCapability)]
@@ -25,7 +25,7 @@ namespace SmartSignals
         {
         }
 
-        [ExportPropertyXamlRuleDefinition("SmartSignals, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9be6e469bc4921f1", "XamlRuleToCode:SmartSignalsDebugger.xaml", "Project")]
+        [ExportPropertyXamlRuleDefinition("SmartSignal, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9be6e469bc4921f1", "XamlRuleToCode:SmartSignalsDebugger.xaml", "Project")]
         [AppliesTo(SmartSignalUnconfiguredProject.UniqueCapability)]
         private object DebuggerXaml { get { throw new NotImplementedException(); } }
 

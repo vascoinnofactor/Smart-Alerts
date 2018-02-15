@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------
 
 
-namespace SmartSignals
+namespace Microsoft.Azure.Monitoring.SmartSignals.ProjectType
 {
     using System;
     using System.ComponentModel.Composition;
@@ -20,7 +20,7 @@ namespace SmartSignals
 
     [Export]
     [AppliesTo(SmartSignalUnconfiguredProject.UniqueCapability)]
-    [ProjectTypeRegistration(VsPackage.ProjectTypeGuid, "SmartSignals", "#2", ProjectExtension, Language, resourcePackageGuid: VsPackage.PackageGuid, PossibleProjectExtensions = ProjectExtension, ProjectTemplatesDir = @"..\..\Templates\Projects\MyCustomProject")]
+    [ProjectTypeRegistration(VsPackage.ProjectTypeGuid, "SmartSignal", "#2", ProjectExtension, Language, resourcePackageGuid: VsPackage.PackageGuid, PossibleProjectExtensions = ProjectExtension, ProjectTemplatesDir = @"..\..\Templates\Projects\MyCustomProject")]
     [ProvideProjectItem(VsPackage.ProjectTypeGuid, "My Items", @"..\..\Templates\ProjectItems\MyCustomProject", 500)]
     internal class SmartSignalUnconfiguredProject
     {
@@ -40,7 +40,7 @@ namespace SmartSignals
         /// </remarks>
         internal const string UniqueCapability = "SmartSignals";
 
-        internal const string Language = "SmartSignals";
+        internal const string Language = "SmartSignal";
 
         [ImportingConstructor]
         public SmartSignalUnconfiguredProject(UnconfiguredProject unconfiguredProject)
