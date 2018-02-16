@@ -53,7 +53,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             SmartSignalManifest signalManifest = signalPackage.Manifest;
             ISmartSignal signal = signalLoader.LoadSignal(signalPackage);
 
-            // Authenticate the user to AAD
+            // Authenticate the user to Active Directory
             var authenticationServices = new AuthenticationServices();
             authenticationServices.AuthenticateUser();
             ICredentialsFactory credentialsFactory = new ActiveDirectoryCredentialsFactory(authenticationServices);
