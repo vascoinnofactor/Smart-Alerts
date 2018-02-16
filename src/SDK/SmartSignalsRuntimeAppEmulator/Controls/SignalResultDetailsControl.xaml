@@ -38,37 +38,71 @@
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Style="{StaticResource SectionHeader}" Text="DETAILS"/>
             <StackPanel Grid.Column="1">
-                <Button Style="{StaticResource CloseControlBottonStyle}" Command="{Binding CloseControlCommand}"/>
+                <Button Style="{StaticResource CloseControlBottonStyle}" Command="{Binding CloseControlCommand}" Margin="0,0,5,0"/>
             </StackPanel>
         </Grid>
-        <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,0,0,0" Text="PROPERTIES"/>
-        <ListView  Margin="0,0,0,0" ItemsSource="{Binding PropertiesSectionProperties}" SelectionMode="Single" BorderThickness="0" 
-                   Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}" 
-                                   Text="{Binding Name}" />
-                        <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
-                                   Text="{Binding Value}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
 
-        <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,15,0,0" Text="ANALYSIS"/>
-        <ListView  Margin="0,0,0,0" ItemsSource="{Binding AnalysisSectionProperties}" SelectionMode="Single" BorderThickness="0" 
+        <StackPanel>
+            <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,0,0,0" Text="ESSENTIALS"/>
+            <ListView  Margin="0,0,0,0" ItemsSource="{Binding EssentialsSectionProperties}" SelectionMode="Single" BorderThickness="0" 
+                       Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}" 
+                                       Text="{Binding ResourceType}" />
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
+                                       Text="{Binding ResourceName}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,15,0,0" Text="PROPERTIES"/>
+            <ListView  Margin="0,0,0,0" ItemsSource="{Binding PropertiesSectionProperties}" SelectionMode="Single" BorderThickness="0" 
+                       Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}" 
+                                       Text="{Binding Name}" />
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
+                                       Text="{Binding Value}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,15,0,0" Text="ANALYSIS"/>
+            <ListView  Margin="0,0,0,0" ItemsSource="{Binding AnalysisSectionProperties}" SelectionMode="Single" BorderThickness="0" 
                    Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}" 
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}" 
                                    Text="{Binding Name}" />
-                        <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
                                    Text="{Binding Value}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,15,0,0" Text="CHARTS"/>
+            <ListView  Margin="0,0,0,0" ItemsSource="{Binding AnalyticsQuerys}" SelectionMode="Single" BorderThickness="0" 
+                       Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
+                                       Text="{Binding Description}" />
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}">
+                                <Hyperlink Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SignalResultDetailsControl}}, Path=DataContext.OpenAnalyticsQueryCommand}" CommandParameter="{Binding Url}">Click here</Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
     </StackPanel>
 </UserControl>

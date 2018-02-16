@@ -14,11 +14,19 @@
             <converters:NullToBooleanConverter/>
             <BooleanToVisibilityConverter/>
         </converters:ConverterChain>
+
+        <Image x:Key="CloseIcon" Source="../Media/ic_close.png" Height="20" />
+        <Style TargetType="Button" x:Key="CloseControlBottonStyle">
+            <Setter Property="Content" Value="{StaticResource CloseIcon}"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}"/>
+        </Style>
     </UserControl.Resources>
     <Grid Background="#FFECF0F1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="0.5"/>
-            <ColumnDefinition Width="400" MinWidth="0.5"/>
+            <ColumnDefinition Width="480" MinWidth="0.5"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="#FFA5A5A5" BorderThickness="0,0,0.5,0" Padding="20,20,20,0">
@@ -42,16 +50,19 @@
             </StackPanel>
         </Border>
 
-        <Border Grid.Column="1" BorderThickness="0.5,0,0,0" Padding="20,20,20,0" Background="#FFECF0F1"
-                BorderBrush="#FFA5A5A5"
-                Visibility="{Binding Path=SelectedResult, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
+        <Border Grid.Column="1" BorderThickness="0.5,0,0,0" Padding="20,20,20,20" Background="#FFECF0F1" BorderBrush="#FFA5A5A5"
+                Visibility="{Binding Path=SelectedResult, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}" >
             <Border.Effect>
                 <DropShadowEffect ShadowDepth="0" BlurRadius="10"/>
             </Border.Effect>
-            <StackPanel Orientation="Vertical">
-                <local:SignalResultDetailsControl
-                    DataContext="{Binding SignalResultDetailsControlViewModel}" />
-            </StackPanel>
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <StackPanel Orientation="Vertical" Margin="0.2,-1,0,1">
+                    <local:SignalResultDetailsControl
+                        DataContext="{Binding SignalResultDetailsControlViewModel}" />
+                </StackPanel>
+            </ScrollViewer>
+
         </Border>
     </Grid>
 </UserControl>
