@@ -4,16 +4,14 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation
+namespace Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Extensions;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
     using Newtonsoft.Json;
     using SmartFormat;
 

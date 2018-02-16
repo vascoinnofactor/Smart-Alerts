@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Extensions
+namespace Microsoft.Azure.Monitoring.SmartSignals.Extensions
 {
     using System.Security.Cryptography;
     using System.Text;

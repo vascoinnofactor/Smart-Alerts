@@ -146,7 +146,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         }
 
         /// <summary>
-        /// Gets a task that returns the user's resource groups.
+        /// Gets the signal runner.
         /// </summary>
         public SmartSignalRunner SignalRunner
         {
