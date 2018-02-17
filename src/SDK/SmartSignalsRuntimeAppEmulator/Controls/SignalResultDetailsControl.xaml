@@ -10,7 +10,7 @@
         <Style TargetType="TextBlock" x:Key="ResultDetailsSectionHeader">
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="FontWeight" Value="Bold"/>
         </Style>
         <Style TargetType="TextBlock" x:Key="ResultDetailsPropertyTitle">
             <Setter Property="Foreground" Value="#4f5051"/>
@@ -43,20 +43,24 @@
         </Grid>
 
         <StackPanel>
-            <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,0,0,0" Text="ESSENTIALS"/>
-            <ListView  Margin="0,0,0,0" ItemsSource="{Binding EssentialsSectionProperties}" SelectionMode="Single" BorderThickness="0" 
-                       Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}" 
-                                       Text="{Binding ResourceType}" />
-                            <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
-                                       Text="{Binding ResourceName}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,0,0,0" Text="ESSENTIALS"/>
+                </Expander.Header>
+                <ListView  Margin="0,0,0,0" ItemsSource="{Binding EssentialsSectionProperties}" SelectionMode="Single" BorderThickness="0" 
+                           Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}" 
+                                           Text="{Binding ResourceType}" />
+                                <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
+                                           Text="{Binding ResourceName}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Expander>
 
             <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,15,0,0" Text="PROPERTIES"/>
             <ListView  Margin="0,0,0,0" ItemsSource="{Binding PropertiesSectionProperties}" SelectionMode="Single" BorderThickness="0" 
@@ -94,10 +98,11 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
-                                       Text="{Binding Description}" />
                             <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}">
-                                <Hyperlink Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SignalResultDetailsControl}}, Path=DataContext.OpenAnalyticsQueryCommand}" CommandParameter="{Binding Url}">Click here</Hyperlink>
+                                <Hyperlink Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SignalResultDetailsControl}}, Path=DataContext.OpenAnalyticsQueryCommand}" 
+                                           CommandParameter="{Binding Query}">
+                                    <TextBlock Text="{Binding Path=Description}"/>
+                                </Hyperlink>
                             </TextBlock>
                         </StackPanel>
                     </DataTemplate>

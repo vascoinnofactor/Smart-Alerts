@@ -61,11 +61,11 @@
         
         <TextBlock Style="{StaticResource ControlText}" Text="Traces" Margin="0,0,0,10"/>
         <TextBox x:Name="TracerBox" Margin="0,0,0,30" Height="200" AcceptsReturn="True" 
-                 Background="Transparent" BorderBrush="#FF7F7F7F" BorderThickness="1"
+                 Background="White" BorderBrush="#FF7F7F7F" BorderThickness="1"
                  Text="{Binding Tracer.Traces, Mode=OneWay}"
                  IsReadOnly="True" IsTabStop="False" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto"/>
 
-        <Button Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Content="Cancel" Margin="0,35,0,0"
+        <Button Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Content="Cancel" Margin="0,20,0,0"
                 IsEnabled="{Binding Path=SignalRunner.IsSignalRunning, Mode=OneWay}" Command="{Binding CancelSignalRunCommand}" />
 
     </StackPanel>

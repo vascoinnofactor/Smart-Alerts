@@ -14,7 +14,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels;
 
     /// <summary>
-    /// Represents an App Analytics query.
+    /// Represents an Analytics query.
     /// </summary>
     public class AnalyticsQuery
     {
@@ -22,11 +22,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         /// Initializes a new instance of the <see cref="AnalyticsQuery"/> class.
         /// </summary>
         /// <param name="description">The query description</param>
-        /// <param name="url">The URL with the query</param>
-        public AnalyticsQuery(string description, string url)
+        /// <param name="query">The query</param>
+        public AnalyticsQuery(string description, string query)
         {
             this.Description = description;
-            this.Url = url;
+            this.Query = query;
         }
 
         /// <summary>
@@ -37,6 +37,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         /// <summary>
         /// Gets the URL with the query.
         /// </summary>
-        public string Url { get; }
+        public string Query { get; }
     }
 }

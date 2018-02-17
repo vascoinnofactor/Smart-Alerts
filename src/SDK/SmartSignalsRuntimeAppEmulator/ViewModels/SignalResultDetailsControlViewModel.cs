@@ -47,7 +47,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// </summary>
         /// <param name="signalResult">The smart signal runner.</param>
         /// <param name="resultDetailsControlClosed">The smart signal runner gunner.</param>
-        public SignalResultDetailsControlViewModel(SignalResultItem signalResult, ResultDetailsControlClosedEventHandler resultDetailsControlClosed)
+        public SignalResultDetailsControlViewModel(
+            SignalResultItem signalResult, 
+            ResultDetailsControlClosedEventHandler resultDetailsControlClosed)
         {
             this.SignalResult = signalResult;
 
@@ -70,7 +72,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
             List<AnalyticsQuery> queries = this.SignalResult.ResultItemPresentation.Properties
                     .Where(prop => prop.DisplayCategory == ResultItemPresentationSection.Chart)
-                    .Select(chartItem => new AnalyticsQuery("name", "https://www.nba.com")).ToList();
+                    .Select(chartItem => new AnalyticsQuery(chartItem.Name, chartItem.Value)).ToList();
 
             this.AnalyticsQuerys = new ObservableCollection<AnalyticsQuery>(queries);
 
@@ -181,10 +183,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// <summary>
         /// Gets a command to open an analytics kusto query in a new browser tab.
         /// </summary>
-        public CommandHandler OpenAnalyticsQueryCommand => new CommandHandler(parameter =>
+        public CommandHandler OpenAnalyticsQueryCommand => new CommandHandler(queryParameter =>
         {
             // Get the query from the parameter
-            string query = (string)parameter;
+            string query = (string)queryParameter;
 
             // Compress it so we can add it to the query parameters
             string compressedQuery;
@@ -202,13 +204,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
             Console.Write(compressedQuery);
 
             // Compose the URI
-            ////Uri queryDeepLink =
-            ////    new Uri($"https://{IntAnalyticsUrl}/subscriptions/{this.Detection.ApplicationIdentifiers.AccountId}/resourcegroups/Scrubber/components/{this.Detection.ApplicationIdentifiers.ApplicationName}?q={compressedQuery}");
+            string endpoint = this.SignalResult.ResourceIdentifier.ResourceType == ResourceType.ApplicationInsights ?
+                "analytics.applicationinsights.io" :
+                "portal.loganalytics.io";
 
-            ////// And open it in a new browser
-            ////BrowserServices.OpenLinkInBrowser(queryDeepLink);
+            Uri queryDeepLink =
+                new Uri($"https://{endpoint}/subscriptions/{this.SignalResult.ResourceIdentifier.SubscriptionId}/resourcegroups/{this.SignalResult.ResourceIdentifier.ResourceGroupName}/components/{this.SignalResult.ResourceIdentifier.ResourceName}?q={compressedQuery}");
 
-            Process.Start(new ProcessStartInfo("https://analytics.applicationinsights.io/subscriptions/72993b69-db12-44fc-9a66-9c2005c30513/resourcegroups/Fabrikam/components/fabrikamprod?q=H4sIAAAAAAAAAytKLSxNLS4pVuDlqlEoz0gtSlUoycwFiiTmFijY2SokpudrGGZoAqUBhbSbiSoAAAA%3D"));
+            Process.Start(new ProcessStartInfo(queryDeepLink.AbsoluteUri));
         });
 
         #endregion
