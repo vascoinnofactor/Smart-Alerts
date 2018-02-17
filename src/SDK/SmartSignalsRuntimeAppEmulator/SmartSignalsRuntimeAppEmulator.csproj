@@ -77,4 +77,9 @@
     <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj" />
     <ProjectReference Include="..\SmartSignalsShared\SmartSignalsShared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Controls\SignalConfigurationControl.xaml.cs">
+      <DependentUpon>SignalConfigurationControl.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>
