@@ -7,7 +7,7 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
 {
     /// <summary>
-    /// Represents an 
+    /// Represents an Azure resource property (e.g. subscription. resource group).
     /// </summary>
     public class AzureResourceProperty
     {

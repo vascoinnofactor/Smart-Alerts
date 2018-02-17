@@ -19,7 +19,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     using Unity.Attributes;
 
     /// <summary>
-    /// The view model class for the <see cref="SignalResultDetailsControlViewModel"/> control.
+    /// The view model class for the <see cref="SignalResultDetailsControl"/> control.
     /// </summary>
     public class SignalResultDetailsControlViewModel : ObservableObject
     {
@@ -47,6 +47,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// </summary>
         /// <param name="signalResult">The smart signal runner.</param>
         /// <param name="resultDetailsControlClosed">The smart signal runner gunner.</param>
+        [InjectionConstructor]
         public SignalResultDetailsControlViewModel(
             SignalResultItem signalResult, 
             ResultDetailsControlClosedEventHandler resultDetailsControlClosed)
@@ -55,7 +56,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
             this.EssentialsSectionProperties = new ObservableCollection<AzureResourceProperty>(new List<AzureResourceProperty>()
                 {
-                    new AzureResourceProperty("Subscription name", this.SignalResult.ResourceIdentifier.ResourceName),
+                    new AzureResourceProperty("Subscription id", this.SignalResult.ResourceIdentifier.SubscriptionId),
                     new AzureResourceProperty("Resource group", this.SignalResult.ResourceIdentifier.ResourceGroupName),
                     new AzureResourceProperty("Resource type", this.SignalResult.ResourceIdentifier.ResourceType.ToString()),
                     new AzureResourceProperty("Resource name", this.SignalResult.ResourceIdentifier.ResourceName)
@@ -67,8 +68,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
             this.AnalysisSectionProperties = new ObservableCollection<SmartSignalResultItemPresentationProperty>(
                 this.SignalResult.ResultItemPresentation.Properties
-                    .Where(prop => prop.DisplayCategory == ResultItemPresentationSection.Analysis
-                                   && prop.Value != string.Empty).ToList());
+                    .Where(prop => prop.DisplayCategory == ResultItemPresentationSection.Analysis).ToList());
 
             List<AnalyticsQuery> queries = this.SignalResult.ResultItemPresentation.Properties
                     .Where(prop => prop.DisplayCategory == ResultItemPresentationSection.Chart)
@@ -200,8 +200,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
 
                 compressedQuery = Convert.ToBase64String(outputStream.ToArray());
             }
-
-            Console.Write(compressedQuery);
 
             // Compose the URI
             string endpoint = this.SignalResult.ResourceIdentifier.ResourceType == ResourceType.ApplicationInsights ?

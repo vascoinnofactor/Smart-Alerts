@@ -35,7 +35,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         public string Description { get; }
 
         /// <summary>
-        /// Gets the URL with the query.
+        /// Gets the query.
         /// </summary>
         public string Query { get; }
     }

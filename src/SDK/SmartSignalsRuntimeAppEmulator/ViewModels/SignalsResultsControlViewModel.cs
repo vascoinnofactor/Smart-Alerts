@@ -49,11 +49,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
             {
                 this.SelectedResult = null;
             };
-
-            ////this.CloseControlCommand = new CommandHandler(() =>
-            ////{
-            ////    this.SelectedResult = null;
-            ////});
         }
 
         #endregion
