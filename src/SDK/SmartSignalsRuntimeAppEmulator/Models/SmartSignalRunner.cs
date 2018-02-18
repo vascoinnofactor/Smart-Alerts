@@ -8,9 +8,12 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.State;
+    using System.Windows;
+    using Microsoft.Azure.Monitoring.SmartSignals.Package;
+    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
 
     /// <summary>
     /// An observable class that runs a smart signal.
@@ -21,7 +24,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
 
         private readonly IAnalysisServicesFactory analysisServicesFactory;
 
-        private SmartSignalResult result;
+        private readonly IQueryRunInfoProvider queryRunInfoProvider;
+
+        private readonly SmartSignalManifest smartSignalManifes;
+
+        private ObservableCollection<SignalResultItem> results;
 
         private ITracer tracer;
 
@@ -38,32 +45,46 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         /// </summary>
         /// <param name="smartSignal">The smart signal.</param>
         /// <param name="analysisServicesFactory">The analysis services factory.</param>
+        /// <param name="queryRunInfoProvider">The query run information provider.</param>
         /// <param name="stateRepositoryFactory">The state repository factory</param>
         /// <param name="signalId">The is of the signal</param>
         /// <param name="tracer">The tracer.</param>
-        public SmartSignalRunner(ISmartSignal smartSignal, IAnalysisServicesFactory analysisServicesFactory, IStateRepositoryFactory stateRepositoryFactory, string signalId, ITracer tracer)
+        /// <param name="queryRunInfoProvider">The query run information provider.</param>
+        /// <param name="smartSignalManifest">The smart signal manifest.</param>
+        /// <param name="tracer">The tracer.</param>
+        public SmartSignalRunner(
+            ISmartSignal smartSignal,
+            IAnalysisServicesFactory analysisServicesFactory,
+            IQueryRunInfoProvider queryRunInfoProvider,
+            SmartSignalManifest smartSignalManifest, 
+            IStateRepositoryFactory stateRepositoryFactory, 
+            string signalId, 
+            ITracer tracer)
         {
             this.smartSignal = smartSignal;
             this.analysisServicesFactory = analysisServicesFactory;
+            this.queryRunInfoProvider = queryRunInfoProvider;
+            this.smartSignalManifes = smartSignalManifest;
             this.Tracer = tracer;
             this.IsSignalRunning = false;
             this.stateRepositoryFactory = stateRepositoryFactory;
             this.signalId = signalId;
+            this.Results = new ObservableCollection<SignalResultItem>();
         }
 
         /// <summary>
         /// Gets the signal run's result.
         /// </summary>
-        public SmartSignalResult Result
+        public ObservableCollection<SignalResultItem> Results
         {
             get
             {
-                return this.result;
+                return this.results;
             }
 
             private set
             {
-                this.result = value;
+                this.results = value;
                 this.OnPropertyChanged();
             }
         }

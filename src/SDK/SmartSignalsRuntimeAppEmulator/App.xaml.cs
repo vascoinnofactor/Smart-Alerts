@@ -69,7 +69,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             // Create state repository
             IStateRepositoryFactory stateRepositoryFactory = new InMemoryStateRepositoryFactory();
 
-            var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, stateRepositoryFactory, signalManifest.Id, stringTracer);
+            var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, queryRunInroProvider, stateRepositoryFactory, signalManifest.Id, stringTracer);
 
             // Create a Unity container with all the required models and view models registrations
             Container = new UnityContainer();
