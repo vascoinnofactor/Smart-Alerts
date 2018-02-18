@@ -125,10 +125,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         public async Task RunAsync(List<ResourceIdentifier> resources, TimeSpan analysisCadence)
         {
             this.cancellationTokenSource = new CancellationTokenSource();
-
             this.Results.Clear();
             IStateRepository stateRepository = this.stateRepositoryFactory.Create(this.smartSignalManifes.Id);
             var analysisRequest = new AnalysisRequest(resources, null, analysisCadence, this.analysisServicesFactory, stateRepository);
+
             try
             {
                 // Run Signal
