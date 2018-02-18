@@ -66,7 +66,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             var httpClientWrapper = new HttpClientWrapper();
             IAnalysisServicesFactory analysisServicesFactory = new AnalysisServicesFactory(consoleTracer, httpClientWrapper, credentialsFactory, azureResourceManagerClient, queryRunInroProvider);
 
-            // Create state repository
+            // Create state repository factory
             IStateRepositoryFactory stateRepositoryFactory = new InMemoryStateRepositoryFactory();
 
             var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, queryRunInroProvider, signalManifest, stateRepositoryFactory, stringTracer);
