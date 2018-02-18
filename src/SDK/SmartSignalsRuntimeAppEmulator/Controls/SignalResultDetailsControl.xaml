@@ -23,7 +23,7 @@
                 <Expander.Header>
                     <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,0,0,0" Text="ESSENTIALS"/>
                 </Expander.Header>
-                <ListView  Margin="0,0,0,0" ItemsSource="{Binding EssentialsSectionProperties}" SelectionMode="Single" BorderThickness="0" 
+                <ListView ItemsSource="{Binding EssentialsSectionProperties}" SelectionMode="Single" BorderThickness="0" 
                            Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -39,7 +39,7 @@
             </Expander>
 
             <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,15,0,0" Text="PROPERTIES"/>
-            <ListView  Margin="0,0,0,0" ItemsSource="{Binding PropertiesSectionProperties}" SelectionMode="Single" BorderThickness="0" 
+            <ListView ItemsSource="{Binding PropertiesSectionProperties}" SelectionMode="Single" BorderThickness="0" 
                        Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -54,7 +54,7 @@
             </ListView>
 
             <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,15,0,0" Text="ANALYSIS"/>
-            <ListView  Margin="0,0,0,0" ItemsSource="{Binding AnalysisSectionProperties}" SelectionMode="Single" BorderThickness="0" 
+            <ListView ItemsSource="{Binding AnalysisSectionProperties}" SelectionMode="Single" BorderThickness="0" 
                    Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -67,9 +67,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-
-            <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,15,0,0" Text="CHARTS"/>
-            <ListView  Margin="0,0,0,0" ItemsSource="{Binding AnalyticsQuerys}" SelectionMode="Single" BorderThickness="0" 
+            <ListView ItemsSource="{Binding AnalyticsQuerys}" SelectionMode="Single" BorderThickness="0" 
                        Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
