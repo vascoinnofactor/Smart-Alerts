@@ -15,7 +15,7 @@ namespace SmartSignalRunnerChildProcess
     using Microsoft.Azure.Monitoring.SmartSignals.Analysis;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
     using Unity;
 
     /// <summary>

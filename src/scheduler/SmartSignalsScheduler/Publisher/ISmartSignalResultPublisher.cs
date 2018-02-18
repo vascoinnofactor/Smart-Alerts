@@ -8,7 +8,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
 
     /// <summary>
     /// An interface for publishing Smart Signal results

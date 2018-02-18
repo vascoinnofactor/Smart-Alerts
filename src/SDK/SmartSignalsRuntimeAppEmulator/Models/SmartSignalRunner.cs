@@ -9,6 +9,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Collections.ObjectModel;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
@@ -63,8 +65,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         {
             this.smartSignal = smartSignal;
             this.analysisServicesFactory = analysisServicesFactory;
-            this.queryRunInfoProvider = queryRunInfoProvider;
-            this.smartSignalManifes = smartSignalManifest;
             this.Tracer = tracer;
             this.IsSignalRunning = false;
             this.stateRepositoryFactory = stateRepositoryFactory;
@@ -132,18 +132,42 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         public async Task RunAsync(List<ResourceIdentifier> resources, TimeSpan analysisCadence)
         {
             this.cancellationTokenSource = new CancellationTokenSource();
+            this.Results.Clear();
+            var analysisRequest = new AnalysisRequest(resources, null, analysisCadence, this.analysisServicesFactory);
             this.Result = null;
 
             IStateRepository stateRepository = this.stateRepositoryFactory.Create(this.signalId);
             var analysisRequest = new AnalysisRequest(resources, null, analysisCadence, this.analysisServicesFactory, stateRepository);
             try
             {
+                // Run Signal
                 this.IsSignalRunning = true;
 
-                this.Result = await this.smartSignal.AnalyzeResourcesAsync(
+                SmartSignalResult signalResults = await this.smartSignal.AnalyzeResourcesAsync(
                     analysisRequest,
                     this.Tracer,
                     this.cancellationTokenSource.Token);
+
+                // Create signal result items
+                List<SignalResultItem> signalResultItems = new List<SignalResultItem>();
+                foreach (var resultItem in signalResults.ResultItems)
+                {
+                    // Create result item presentation 
+                    var resourceIds = resources.Select(resource => resource.ResourceName).ToList();
+                    var smartSignalsSettings = new SmartSignalSettings();
+                    var smartSignalRequest = new SmartSignalRequest(resourceIds, this.smartSignalManifes.Id, null, analysisCadence, smartSignalsSettings);
+                    SmartSignalResultItemQueryRunInfo queryRunInfo = await this.queryRunInfoProvider.GetQueryRunInfoAsync(new List<ResourceIdentifier>() { resultItem.ResourceIdentifier }, this.cancellationTokenSource.Token);
+                    SmartSignalResultItemPresentation resultItemPresentation = SmartSignalResultItemPresentation.CreateFromResultItem(
+                        smartSignalRequest, this.smartSignalManifes.Name, resultItem, queryRunInfo);
+
+                    // Create Azure resource identifier 
+                    ResourceIdentifier resourceIdentifier = ResourceIdentifier.CreateFromResourceId(resultItemPresentation.ResourceId);
+
+                    signalResultItems.Add(new SignalResultItem(resultItemPresentation, resourceIdentifier));
+                }
+
+                this.Results = new ObservableCollection<SignalResultItem>(signalResultItems);
+                this.tracer.TraceInformation($"Found {this.Results.Count} results");
             }
             catch (OperationCanceledException)
             {
