@@ -55,6 +55,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
             return new CloudBlobContainerWrapper(cloudBlobContainer);
         }
 
+        /// <summary>
+        /// Creates an Azure Storage container client for the signal state storage container
+        /// </summary>
+        /// <returns>A <see cref="ICloudBlobContainerWrapper"/> for the signal state storage container</returns>
         public ICloudBlobContainerWrapper GetSmartSignalStateStorageContainer()
         {
             var storageConnectionString = ConfigurationReader.ReadConfigConnectionString("StorageConnectionString", true);

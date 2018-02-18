@@ -10,6 +10,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
 
     /// <summary>
     /// An observable class that runs a smart signal.
@@ -28,18 +29,26 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
 
         private CancellationTokenSource cancellationTokenSource;
 
+        private IStateRepositoryFactory stateRepositoryFactory;
+
+        private string signalId;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SmartSignalRunner"/> class.
         /// </summary>
         /// <param name="smartSignal">The smart signal.</param>
         /// <param name="analysisServicesFactory">The analysis services factory.</param>
+        /// <param name="stateRepositoryFactory">The state repository factory</param>
+        /// <param name="signalId">The is of the signal</param>
         /// <param name="tracer">The tracer.</param>
-        public SmartSignalRunner(ISmartSignal smartSignal, IAnalysisServicesFactory analysisServicesFactory, ITracer tracer)
+        public SmartSignalRunner(ISmartSignal smartSignal, IAnalysisServicesFactory analysisServicesFactory, IStateRepositoryFactory stateRepositoryFactory, string signalId, ITracer tracer)
         {
             this.smartSignal = smartSignal;
             this.analysisServicesFactory = analysisServicesFactory;
             this.Tracer = tracer;
             this.IsSignalRunning = false;
+            this.stateRepositoryFactory = stateRepositoryFactory;
+            this.signalId = signalId;
         }
 
         /// <summary>
@@ -103,7 +112,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         {
             this.cancellationTokenSource = new CancellationTokenSource();
             this.Result = null;
-            var analysisRequest = new AnalysisRequest(resources, null, analysisCadence, this.analysisServicesFactory);
+
+            IStateRepository stateRepository = this.stateRepositoryFactory.Create(this.signalId);
+            var analysisRequest = new AnalysisRequest(resources, null, analysisCadence, this.analysisServicesFactory, stateRepository);
             try
             {
                 this.IsSignalRunning = true;

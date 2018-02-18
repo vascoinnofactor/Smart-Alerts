@@ -139,7 +139,8 @@ namespace SmartSignalsSharedTests
                 new List<ResourceIdentifier> { resource },
                 DateTime.UtcNow.AddDays(-1),
                 TimeSpan.FromDays(1),
-                new Mock<IAnalysisServicesFactory>().Object);
+                new Mock<IAnalysisServicesFactory>().Object,
+                new Mock<IStateRepository>().Object);
             SmartSignalResult signalResult = await signal.AnalyzeResourcesAsync(analysisRequest, this.tracerMock.Object, default(CancellationToken));
             Assert.AreEqual(1, signalResult.ResultItems.Count, "Incorrect number of result items returned");
             Assert.AreEqual(expectedTitle, signalResult.ResultItems.Single().Title, "Result item title is wrong");
@@ -158,7 +159,8 @@ namespace SmartSignalsSharedTests
                 new List<ResourceIdentifier> { resource }, 
                 DateTime.UtcNow.AddDays(-1), 
                 TimeSpan.FromDays(1), 
-                new Mock<IAnalysisServicesFactory>().Object);
+                new Mock<IAnalysisServicesFactory>().Object,
+                new Mock<IStateRepository>().Object);
             SmartSignalResult signalResult = await signal.AnalyzeResourcesAsync(analysisRequest, this.tracerMock.Object, default(CancellationToken));
             Assert.AreEqual(1, signalResult.ResultItems.Count, "Incorrect number of result items returned");
             Assert.AreEqual(expectedTitle, signalResult.ResultItems.Single().Title, "Result item title is wrong");

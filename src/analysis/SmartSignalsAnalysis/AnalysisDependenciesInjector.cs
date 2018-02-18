@@ -31,7 +31,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
                 .RegisterType<IAnalysisServicesFactory, AnalysisServicesFactory>()
                 .RegisterType<IQueryRunInfoProvider, QueryRunInfoProvider>()
                 .RegisterType<ISmartSignalLoader, SmartSignalLoader>()
-                .RegisterType<IStateRepository, BlobStateRepository>()
+                .RegisterType<IStateRepositoryFactory, BlobStateRepositoryFactory>()
                 .RegisterType<ICloudStorageProviderFactory, CloudStorageProviderFactory>();
 
             if (withChildProcessRunner)

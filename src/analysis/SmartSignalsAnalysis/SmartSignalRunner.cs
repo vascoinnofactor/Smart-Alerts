@@ -32,7 +32,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         private readonly IAnalysisServicesFactory analysisServicesFactory;
         private readonly IAzureResourceManagerClient azureResourceManagerClient;
         private readonly IQueryRunInfoProvider queryRunInfoProvider;
-        private readonly IStateRepository stateRepository;
+        private readonly IStateRepositoryFactory stateRepositoryFactory;
         private readonly ITracer tracer;
 
         /// <summary>
@@ -43,6 +43,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
         /// <param name="analysisServicesFactory">The analysis services factory</param>
         /// <param name="azureResourceManagerClient">The azure resource manager client</param>
         /// <param name="queryRunInfoProvider">The query run information provider</param>
+        /// <param name="stateRepositoryFactory">The state repository factory</param>
         /// <param name="tracer">The tracer</param>
         public SmartSignalRunner(
             ISmartSignalRepository smartSignalRepository,
@@ -50,7 +51,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
             IAnalysisServicesFactory analysisServicesFactory,
             IAzureResourceManagerClient azureResourceManagerClient,
             IQueryRunInfoProvider queryRunInfoProvider,
-            IStateRepository stateRepository,
+            IStateRepositoryFactory stateRepositoryFactory,
             ITracer tracer)
         {
             this.smartSignalRepository = Diagnostics.EnsureArgumentNotNull(() => smartSignalRepository);
@@ -58,7 +59,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
             this.analysisServicesFactory = Diagnostics.EnsureArgumentNotNull(() => analysisServicesFactory);
             this.azureResourceManagerClient = Diagnostics.EnsureArgumentNotNull(() => azureResourceManagerClient);
             this.queryRunInfoProvider = Diagnostics.EnsureArgumentNotNull(() => queryRunInfoProvider);
-            this.stateRepository = Diagnostics.EnsureArgumentNotNull(() => stateRepository);
+            this.stateRepositoryFactory = Diagnostics.EnsureArgumentNotNull(() => stateRepositoryFactory);
             this.tracer = tracer;
         }
 
@@ -90,7 +91,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
             SmartSignalResult signalResult;
             try
             {
-                var analysisRequest = new AnalysisRequest(resources, request.LastExecutionTime, request.Cadence, this.analysisServicesFactory);
+                var analysisRequest = new AnalysisRequest(resources, request.LastExecutionTime, request.Cadence, this.analysisServicesFactory, this.stateRepositoryFactory.Create(request.SignalId));
                 signalResult = await signal.AnalyzeResourcesAsync(analysisRequest, this.tracer, cancellationToken);
                 this.tracer.TraceInformation($"Completed running signal ID {signalManifest.Id}, Name {signalManifest.Name}, returning {signalResult.ResultItems.Count} result items");
             }

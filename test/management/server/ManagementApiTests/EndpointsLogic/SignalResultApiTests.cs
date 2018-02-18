@@ -55,11 +55,11 @@ namespace ManagementApiTests.EndpointsLogic
         {
             this.applicationInsightClientMock.Setup(ai => ai.GetCustomEventsAsync(It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>()))
                                              .ReturnsAsync(this.GetApplicationInsightsEvents());
-            this.signalResultContainerMock.Setup(src => src.DownloadBlobContentAsync(It.IsAny<string>())).ReturnsAsync(this.GetSmartSignalResultItemPresentation());
+            this.signalResultContainerMock.Setup(src => src.DownloadBlobContentAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(this.GetSmartSignalResultItemPresentation());
 
             ListSmartSignalsResultsResponse response = await this.signalResultApi.GetAllSmartSignalResultsAsync(this.startTime, this.endTime, CancellationToken.None);
 
-            this.signalResultContainerMock.Verify(src => src.DownloadBlobContentAsync(It.IsAny<string>()), Times.Once);
+            this.signalResultContainerMock.Verify(src => src.DownloadBlobContentAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.AreEqual(1, response.SignalsResults.Count);
             Assert.AreEqual("someId", response.SignalsResults.First().Id);
             Assert.AreEqual("someTitle", response.SignalsResults.First().Title);
@@ -88,7 +88,7 @@ namespace ManagementApiTests.EndpointsLogic
         {
             this.applicationInsightClientMock.Setup(ai => ai.GetCustomEventsAsync(It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(this.GetApplicationInsightsEvents());
-            this.signalResultContainerMock.Setup(src => src.DownloadBlobContentAsync(It.IsAny<string>())).ReturnsAsync("someCorruptedData");
+            this.signalResultContainerMock.Setup(src => src.DownloadBlobContentAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync("someCorruptedData");
 
             try
             {
@@ -107,7 +107,7 @@ namespace ManagementApiTests.EndpointsLogic
         {
             this.applicationInsightClientMock.Setup(ai => ai.GetCustomEventsAsync(It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>()))
                                  .ReturnsAsync(this.GetApplicationInsightsEvents());
-            this.signalResultContainerMock.Setup(src => src.DownloadBlobContentAsync(It.IsAny<string>())).ThrowsAsync(new StorageException());
+            this.signalResultContainerMock.Setup(src => src.DownloadBlobContentAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ThrowsAsync(new StorageException());
 
             try
             {

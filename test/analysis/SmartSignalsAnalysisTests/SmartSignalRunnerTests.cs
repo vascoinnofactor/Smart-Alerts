@@ -22,6 +22,7 @@ namespace SmartSignalsAnalysisTests
     using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
+    using Unity;
 
     [TestClass]
     public class SmartSignalRunnerTests
@@ -30,12 +31,7 @@ namespace SmartSignalsAnalysisTests
         private List<string> resourceIds;
         private SmartSignalRequest request;
         private TestSignal signal;
-        private Mock<ITracer> tracerMock;
-        private Mock<ISmartSignalRepository> smartSignalsRepositoryMock;
-        private Mock<ISmartSignalLoader> smartSignalLoaderMock;
-        private Mock<IAnalysisServicesFactory> analysisServicesFactoryMock;
-        private Mock<IAzureResourceManagerClient> azureResourceManagerClientMock;
-        private Mock<IQueryRunInfoProvider> queryRunInfoProviderMock;
+        private IUnityContainer testContainer;
 
         [TestInitialize]
         public void TestInitialize()
@@ -47,7 +43,7 @@ namespace SmartSignalsAnalysisTests
         public async Task WhenRunningSignalThenTheCorrectResultItemIsReturned()
         {
             // Run the signal and validate results
-            ISmartSignalRunner runner = new SmartSignalRunner(this.smartSignalsRepositoryMock.Object, this.smartSignalLoaderMock.Object, this.analysisServicesFactoryMock.Object, this.azureResourceManagerClientMock.Object, this.queryRunInfoProviderMock.Object, this.tracerMock.Object);
+            ISmartSignalRunner runner = this.testContainer.Resolve<ISmartSignalRunner>();
             List<SmartSignalResultItemPresentation> resultItemPresentations = await runner.RunAsync(this.request, default(CancellationToken));
             Assert.IsNotNull(resultItemPresentations, "Presentation list is null");
             Assert.AreEqual(1, resultItemPresentations.Count);
@@ -62,7 +58,7 @@ namespace SmartSignalsAnalysisTests
             this.signal.ShouldStuck = true;
 
             // Run the signal asynchronously
-            ISmartSignalRunner runner = new SmartSignalRunner(this.smartSignalsRepositoryMock.Object, this.smartSignalLoaderMock.Object, this.analysisServicesFactoryMock.Object, this.azureResourceManagerClientMock.Object, this.queryRunInfoProviderMock.Object, this.tracerMock.Object);
+            ISmartSignalRunner runner = this.testContainer.Resolve<ISmartSignalRunner>();
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             Task t = runner.RunAsync(this.request, cancellationTokenSource.Token);
             SpinWait.SpinUntil(() => this.signal.IsRunning);
@@ -86,7 +82,7 @@ namespace SmartSignalsAnalysisTests
             this.signal.ShouldThrow = true;
 
             // Run the signal
-            ISmartSignalRunner runner = new SmartSignalRunner(this.smartSignalsRepositoryMock.Object, this.smartSignalLoaderMock.Object, this.analysisServicesFactoryMock.Object, this.azureResourceManagerClientMock.Object, this.queryRunInfoProviderMock.Object, this.tracerMock.Object);
+            ISmartSignalRunner runner = this.testContainer.Resolve<ISmartSignalRunner>();
             try
             {
                 await runner.RunAsync(this.request, default(CancellationToken));
@@ -105,7 +101,7 @@ namespace SmartSignalsAnalysisTests
             this.signal.ShouldThrowCustom = true;
 
             // Run the signal
-            ISmartSignalRunner runner = new SmartSignalRunner(this.smartSignalsRepositoryMock.Object, this.smartSignalLoaderMock.Object, this.analysisServicesFactoryMock.Object, this.azureResourceManagerClientMock.Object, this.queryRunInfoProviderMock.Object, this.tracerMock.Object);
+            ISmartSignalRunner runner = this.testContainer.Resolve<ISmartSignalRunner>();
             await runner.RunAsync(this.request, default(CancellationToken));
         }
 
@@ -131,7 +127,7 @@ namespace SmartSignalsAnalysisTests
         private async Task RunSignalWithResourceTypes(ResourceType requestResourceType, ResourceType signalResourceType, bool shouldFail)
         {
             this.TestInitialize(requestResourceType, signalResourceType);
-            ISmartSignalRunner runner = new SmartSignalRunner(this.smartSignalsRepositoryMock.Object, this.smartSignalLoaderMock.Object, this.analysisServicesFactoryMock.Object, this.azureResourceManagerClientMock.Object, this.queryRunInfoProviderMock.Object, this.tracerMock.Object);
+            ISmartSignalRunner runner = this.testContainer.Resolve<ISmartSignalRunner>();
             try
             {
                 List<SmartSignalResultItemPresentation> resultItemPresentations = await runner.RunAsync(this.request, default(CancellationToken));
@@ -153,7 +149,11 @@ namespace SmartSignalsAnalysisTests
 
         private void TestInitialize(ResourceType requestResourceType, ResourceType signalResourceType)
         {
-            this.tracerMock = new Mock<ITracer>();
+            this.testContainer = new UnityContainer();
+
+            this.testContainer.RegisterType<ISmartSignalRunner, SmartSignalRunner>();
+
+            this.testContainer.RegisterInstance<ITracer>(new Mock<ITracer>().Object);
 
             ResourceIdentifier resourceId;
             switch (requestResourceType)
@@ -175,32 +175,37 @@ namespace SmartSignalsAnalysisTests
             var smartSignalManifest = new SmartSignalManifest("1", "Test signal", "Test signal description", Version.Parse("1.0"), "assembly", "class", new List<ResourceType>() { signalResourceType }, new List<int> { 60 });
             this.smartSignalPackage = new SmartSignalPackage(smartSignalManifest, new Dictionary<string, byte[]> { ["TestSignalLibrary"] = new byte[0] });
 
-            this.smartSignalsRepositoryMock = new Mock<ISmartSignalRepository>();
-            this.smartSignalsRepositoryMock
+            var smartSignalsRepositoryMock = new Mock<ISmartSignalRepository>();
+            smartSignalsRepositoryMock
                 .Setup(x => x.ReadSignalPackageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => this.smartSignalPackage);
+            this.testContainer.RegisterInstance<ISmartSignalRepository>(smartSignalsRepositoryMock.Object);
 
-            this.analysisServicesFactoryMock = new Mock<IAnalysisServicesFactory>();
+            this.testContainer.RegisterInstance<IAnalysisServicesFactory>(new Mock<IAnalysisServicesFactory>().Object);
 
             this.signal = new TestSignal { ExpectedResourceType = signalResourceType };
 
-            this.smartSignalLoaderMock = new Mock<ISmartSignalLoader>();
-            this.smartSignalLoaderMock
+            var smartSignalLoaderMock = new Mock<ISmartSignalLoader>();
+            smartSignalLoaderMock
                 .Setup(x => x.LoadSignal(this.smartSignalPackage))
                 .Returns(this.signal);
+            this.testContainer.RegisterInstance<ISmartSignalLoader>(smartSignalLoaderMock.Object);
 
-            this.azureResourceManagerClientMock = new Mock<IAzureResourceManagerClient>();
-            this.azureResourceManagerClientMock
+            var azureResourceManagerClientMock = new Mock<IAzureResourceManagerClient>();
+            azureResourceManagerClientMock
                 .Setup(x => x.GetAllResourceGroupsInSubscriptionAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((string subscriptionId, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { new ResourceIdentifier(ResourceType.ResourceGroup, subscriptionId, "resourceGroupName", string.Empty) });
-            this.azureResourceManagerClientMock
+            azureResourceManagerClientMock
                 .Setup(x => x.GetAllResourcesInSubscriptionAsync(It.IsAny<string>(), It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((string subscriptionId, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { new ResourceIdentifier(ResourceType.VirtualMachine, subscriptionId, "resourceGroupName", "resourceName") });
-            this.azureResourceManagerClientMock
+            azureResourceManagerClientMock
                 .Setup(x => x.GetAllResourcesInResourceGroupAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<ResourceType>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((string subscriptionId, string resourceGroupName, IEnumerable<ResourceType> resourceTypes, CancellationToken cancellationToken) => new List<ResourceIdentifier>() { new ResourceIdentifier(ResourceType.VirtualMachine, subscriptionId, resourceGroupName, "resourceName") });
+            this.testContainer.RegisterInstance<IAzureResourceManagerClient>(azureResourceManagerClientMock.Object);
 
-            this.queryRunInfoProviderMock = new Mock<IQueryRunInfoProvider>();
+            this.testContainer.RegisterInstance<IQueryRunInfoProvider>(new Mock<IQueryRunInfoProvider>().Object);
+
+            this.testContainer.RegisterInstance<IStateRepositoryFactory>(new Mock<IStateRepositoryFactory>().Object);
         }
 
         private class TestSignal : ISmartSignal

@@ -13,6 +13,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Microsoft.Azure.Monitoring.SmartSignals.Trace;
     using Microsoft.Win32;
@@ -65,7 +66,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             var httpClientWrapper = new HttpClientWrapper();
             IAnalysisServicesFactory analysisServicesFactory = new AnalysisServicesFactory(consoleTracer, httpClientWrapper, credentialsFactory, azureResourceManagerClient, queryRunInroProvider);
 
-            var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, stringTracer);
+            // Create state repository
+            IStateRepositoryFactory stateRepositoryFactory = new InMemoryStateRepositoryFactory();
+
+            var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, stateRepositoryFactory, signalManifest.Id, stringTracer);
 
             // Create a Unity container with all the required models and view models registrations
             Container = new UnityContainer();
@@ -77,7 +81,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
                 .RegisterInstance(signal)
                 .RegisterInstance(signalManifest)
                 .RegisterInstance(analysisServicesFactory)
-                .RegisterInstance(signalRunner);
+                .RegisterInstance(signalRunner)
+                .RegisterInstance(stateRepositoryFactory);
         }
 
         /// <summary>

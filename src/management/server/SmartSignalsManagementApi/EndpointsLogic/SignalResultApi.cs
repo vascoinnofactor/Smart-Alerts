@@ -64,7 +64,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
 
                 // Get the blobs content (as we are getting blob uri, we are creating new CloudBlockBlob for each and extracting the blob name 
                 var blobsContent = await Task.WhenAll(signalResultsBlobsUri.Select(blobUri => this.signalResultStorageContainer
-                                                                                              .DownloadBlobContentAsync(new CloudBlockBlob(new Uri(blobUri)).Name)));
+                                                                                              .DownloadBlobContentAsync(new CloudBlockBlob(new Uri(blobUri)).Name, cancellationToken)));
                 
                 // Deserialize the blobs content to result item
                 IEnumerable<SmartSignalResultItemPresentation> smartSignalsResults = blobsContent.Select(JsonConvert.DeserializeObject<SmartSignalResultItemPresentation>);

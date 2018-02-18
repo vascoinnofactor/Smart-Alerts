@@ -25,6 +25,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// </param>
         /// <param name="analysisCadence">The analysis cadence defined in the Alert Rule which initiated the signal's analysis.</param>
         /// <param name="analysisServicesFactory">The analysis services factory to be used for querying the resources telemetry.</param>
+        /// <param name="stateRepository">The persistent state repository for storing state between analysis runs</param>
         public AnalysisRequest(List<ResourceIdentifier> targetResources, DateTime? lastAnalysisTime, TimeSpan analysisCadence, IAnalysisServicesFactory analysisServicesFactory, IStateRepository stateRepository)
         {
             // Parameter validations
@@ -91,6 +92,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// </summary>
         public IAnalysisServicesFactory AnalysisServicesFactory { get; }
 
-        public IStateRepository StateRepository { get;}
+        /// <summary>
+        /// Gets the persistent state repository for storing state between analysis runs.
+        /// </summary>
+        public IStateRepository StateRepository { get; }
     }
 }

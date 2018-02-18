@@ -68,11 +68,26 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
         /// Downloads the content of a given blob name.
         /// </summary>
         /// <param name="blobName">The blob name.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The blob's content.</returns>
-        public async Task<string> DownloadBlobContentAsync(string blobName)
+        public async Task<string> DownloadBlobContentAsync(string blobName, CancellationToken cancellationToken)
         {
             CloudBlockBlob blob = this.cloudBlobContainer.GetBlockBlobReference(blobName);
-            return await blob.DownloadTextAsync();
+
+            return await blob.DownloadTextAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Deletes blob by name and does not throw if the blob does not exist
+        /// </summary>
+        /// <param name="blobName">The blob name.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The blob's content.</returns>
+        public Task DeleteBlobIfExistsAsync(string blobName, CancellationToken cancellationToken)
+        {
+            CloudBlockBlob blob = this.cloudBlobContainer.GetBlockBlobReference(blobName);
+
+            return blob.DeleteIfExistsAsync(cancellationToken);
         }
     }
 }
