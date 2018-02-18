@@ -126,8 +126,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         {
             this.cancellationTokenSource = new CancellationTokenSource();
 
-            IStateRepository stateRepository = this.stateRepositoryFactory.Create(this.smartSignalManifes.Id);
             this.Results.Clear();
+            IStateRepository stateRepository = this.stateRepositoryFactory.Create(this.smartSignalManifes.Id);
             var analysisRequest = new AnalysisRequest(resources, null, analysisCadence, this.analysisServicesFactory, stateRepository);
             try
             {
