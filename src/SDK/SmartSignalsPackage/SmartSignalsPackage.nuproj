@@ -50,5 +50,8 @@
       <TargetPath>tools\net461\AppEmulator</TargetPath>
     </File>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="build\net461\Microsoft.Azure.Monitoring.SmartAlerts.targets" />
+  </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>

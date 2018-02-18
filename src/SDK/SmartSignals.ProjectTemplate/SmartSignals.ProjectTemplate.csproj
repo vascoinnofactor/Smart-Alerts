@@ -49,8 +49,8 @@
   remove files here, you must also reference them in the ProjectTemplateTemplate.vstemplate file.
   -->
   <ItemGroup>
-    <None Include="SmartSignal.cs" />
-    <None Include="SmartSignalResultItem.cs" />
+    <None Include="MySmartSignal.cs" />
+    <None Include="MySmartSignalResultItem.cs" />
     <None Include="Manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -12,7 +12,7 @@
     </Rule.DataSource>
 
     <StringProperty Name="SmartSignalsDebuggerCommand" DisplayName="Command"
-                Default="$(NuGetPackageRoot)microsoft.azure.monitoring.smartalerts\$(SmartAlertVersion)\tools\net461\AppEmulator\SmartSignalsRuntimeAppEmulator.exe"
+                Default="$(_SmartAlertsEmulatorDir)\SmartSignalsRuntimeAppEmulator.exe"
                 Description="The debug command to execute.">
     </StringProperty>
 

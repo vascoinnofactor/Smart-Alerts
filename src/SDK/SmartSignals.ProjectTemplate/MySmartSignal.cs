@@ -5,10 +5,10 @@
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
 
-/// <summary>
-/// The base class for representing Smart Signal
-/// </summary>
-public class SmartSignal : ISmartSignal
+    /// <summary>
+    /// The base class for representing Smart Signal
+    /// </summary>
+    public class MySmartSignal : ISmartSignal
     {
         /// <summary>
         /// Initiates an asynchronous operation for analyzing the smart signal on the specified resources.
@@ -25,7 +25,7 @@ public class SmartSignal : ISmartSignal
         public Task<SmartSignalResult> AnalyzeResourcesAsync(AnalysisRequest analysisRequest, ITracer tracer, CancellationToken cancellationToken)
         {
             SmartSignalResult smartSignalResult = new SmartSignalResult();
-            smartSignalResult.ResultItems.Add(new SmartSignalResultItem("title", analysisRequest.TargetResources.First()));
+            smartSignalResult.ResultItems.Add(new MySmartSignalResultItem("title", analysisRequest.TargetResources.First()));
             return Task.FromResult(smartSignalResult);
         }
     }
