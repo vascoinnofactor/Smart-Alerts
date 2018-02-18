@@ -10,10 +10,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using System.Collections.ObjectModel;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Windows;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
 
@@ -40,35 +38,30 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
 
         private IStateRepositoryFactory stateRepositoryFactory;
 
-        private string signalId;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SmartSignalRunner"/> class.
         /// </summary>
         /// <param name="smartSignal">The smart signal.</param>
         /// <param name="analysisServicesFactory">The analysis services factory.</param>
         /// <param name="queryRunInfoProvider">The query run information provider.</param>
-        /// <param name="stateRepositoryFactory">The state repository factory</param>
-        /// <param name="signalId">The is of the signal</param>
-        /// <param name="tracer">The tracer.</param>
-        /// <param name="queryRunInfoProvider">The query run information provider.</param>
         /// <param name="smartSignalManifest">The smart signal manifest.</param>
+        /// <param name="stateRepositoryFactory">The state repository factory</param>
         /// <param name="tracer">The tracer.</param>
         public SmartSignalRunner(
             ISmartSignal smartSignal,
             IAnalysisServicesFactory analysisServicesFactory,
             IQueryRunInfoProvider queryRunInfoProvider,
             SmartSignalManifest smartSignalManifest, 
-            IStateRepositoryFactory stateRepositoryFactory, 
-            string signalId, 
+            IStateRepositoryFactory stateRepositoryFactory,
             ITracer tracer)
         {
             this.smartSignal = smartSignal;
             this.analysisServicesFactory = analysisServicesFactory;
+            this.queryRunInfoProvider = queryRunInfoProvider;
+            this.smartSignalManifes = smartSignalManifest;
             this.Tracer = tracer;
             this.IsSignalRunning = false;
             this.stateRepositoryFactory = stateRepositoryFactory;
-            this.signalId = signalId;
             this.Results = new ObservableCollection<SignalResultItem>();
         }
 
@@ -132,11 +125,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
         public async Task RunAsync(List<ResourceIdentifier> resources, TimeSpan analysisCadence)
         {
             this.cancellationTokenSource = new CancellationTokenSource();
-            this.Results.Clear();
-            var analysisRequest = new AnalysisRequest(resources, null, analysisCadence, this.analysisServicesFactory);
-            this.Result = null;
 
-            IStateRepository stateRepository = this.stateRepositoryFactory.Create(this.signalId);
+            IStateRepository stateRepository = this.stateRepositoryFactory.Create(this.smartSignalManifes.Id);
+            this.Results.Clear();
             var analysisRequest = new AnalysisRequest(resources, null, analysisCadence, this.analysisServicesFactory, stateRepository);
             try
             {

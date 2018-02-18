@@ -11,6 +11,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.State;
