@@ -50,7 +50,7 @@ function onGetResourceSuccess(action: GetResourceSuccessAction, currentState: Re
     : ResourcesStoreState {
     return {
         ...currentState,
-        resources: action.payload.results,
+        azureSubscriptionsResources: action.payload.results,
         isFetching: false
     };
 }

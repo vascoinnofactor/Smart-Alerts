@@ -45,8 +45,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
                 .RegisterType<IAuthorizationManagementClient, AuthorizationManagementClient>()
                 .RegisterType<ICloudStorageProviderFactory, CloudStorageProviderFactory>()
                 .RegisterType<IApplicationInsightsClientFactory, ApplicationInsightsClientFactory>()
-                .RegisterType<ISignalResultApi, SignalResultApi>()
-                .RegisterType<ICredentialsFactory, MsiCredentialsFactory>();
+                .RegisterType<ISignalResultApi, SignalResultApi>();
         }
 
         /// <summary>
@@ -56,8 +55,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// <param name="log">The logger.</param>
         /// <param name="cancellationToken">A cancellation token to control the function's execution.</param>
         /// <returns>The signal results.</returns>
-        [FunctionName("signalResult")]
-        public static async Task<HttpResponseMessage> GetAllSmartSignalResults([HttpTrigger(AuthorizationLevel.Anonymous, "get")]HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
+        [FunctionName("GetSignalResult")]
+        public static async Task<HttpResponseMessage> GetAllSmartSignalResults([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signalResult")]HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {

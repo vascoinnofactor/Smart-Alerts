@@ -24,8 +24,9 @@ export default function timelineDataFormat(dataTable: DataTable): TimelineChart 
         let stringColumns: Column[] = dataTable.columnsMetadata.filter(column => column.dataType === 'string');
 
         // Get all the columns which are numeric values
-        let numericColumns: Column[] = dataTable.columnsMetadata.filter(column => column.dataType === 'int' ||
-                                                                                  column.dataType === 'long');
+        let numericColumns: Column[] = dataTable.columnsMetadata.filter(column => column.dataType === 'int'  ||
+                                                                                  column.dataType === 'long' ||
+                                                                                  column.dataType === 'real');
 
         // Sort the rows by timestamp
         dataTable.data.sort((a, b) => { return +new Date(a[timestampColumns[0].name]) - 

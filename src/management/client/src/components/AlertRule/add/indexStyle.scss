@@ -101,5 +101,17 @@ textarea {
             background: #3b3b3b;
             color: white;
         }
+
+        .add-alert-rule-loading {
+            margin-top: 3px;
+            margin-left: 8px;
+        }
     }    
+}
+
+.azure-resources-drawer-loading {
+    width: 500px;
+    padding-top: 40px;
+    padding-left: 40px;
+    padding-right: 40px;
 }
