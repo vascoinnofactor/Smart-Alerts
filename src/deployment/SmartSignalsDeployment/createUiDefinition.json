@@ -5,11 +5,11 @@
   "parameters": {
     "basics": [
       {
-        "name": "siraPrefix",
+        "name": "saraPrefix",
         "type": "Microsoft.Common.TextBox",
-        "label": "The prefix of The SiRA's name",
+        "label": "The prefix of The SARA's name",
         "defaultValue": "",
-        "toolTip": "The SiRA and all of its resources will have this prefix",
+        "toolTip": "The SARA and all of its resources will have this prefix",
         "constraints": {
           "required": true,
           "regex": "^[a-z0-9A-Z]{1,30}$",
@@ -41,9 +41,9 @@
       }
     ],
     "outputs": {
-      "siraPrefix": "[basics('siraPrefix')]",
+      "saraPrefix": "[basics('saraPrefix')]",
       "sendgridApiKey": "[steps('emailSettings').sendgridApiKey]",
-      "applicationResourceName": "[concat(basics('siraPrefix'), 'SiRA')]",
+      "applicationResourceName": "[concat(basics('saraPrefix'), 'SARA')]",
       "functionPackageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignals.zip",
       "sitePackageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignalssite.zip"
     }
