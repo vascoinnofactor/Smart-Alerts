@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------
 
 import * as React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 import Visualization, { VisualizationProps } from '../VisualizationBase';
 import BarsChart from '../../../models/Charts/BarsChart';
@@ -18,35 +18,33 @@ interface BarsProps extends VisualizationProps {
  * This component represents the bars visualization rendering
  */
 export default class Bars extends Visualization<BarsProps> {
-    public render() {
+    protected renderVisualization(): JSX.Element {
         const { chartData, hideLegend, hideYAxis, hideXAxis, className } = this.props;
         
         return (
-            <ResponsiveContainer height={this.props.height}>
-                <BarChart 
-                        data={chartData.data} 
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }} 
-                        className={className}
-                >
-                    <XAxis 
-                        dataKey={chartData.xAxisDataKey} 
-                        tickFormatter={this.hourFormat} 
-                        minTickGap={20}
-                        hide={hideXAxis}
-                    />
-                    <YAxis 
-                        type="number"
-                        hide={hideYAxis} 
-                    />
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={false} />
-                    <Tooltip />
-                    {
-                        !hideLegend &&
-                        <Legend />
-                    }
-                    {this.createBarElements(chartData.barsDataKeys)}
-                </BarChart>
-            </ResponsiveContainer>
+            <BarChart 
+                    data={chartData.data} 
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }} 
+                    className={className}
+            >
+                <XAxis 
+                    dataKey={chartData.xAxisDataKey} 
+                    tickFormatter={this.hourFormat} 
+                    minTickGap={20}
+                    hide={hideXAxis}
+                />
+                <YAxis 
+                    type="number"
+                    hide={hideYAxis} 
+                />
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={false} />
+                <Tooltip />
+                {
+                    !hideLegend &&
+                    <Legend />
+                }
+                {this.createBarElements(chartData.barsDataKeys)}
+            </BarChart>
         );
     }
 

@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Route } from 'react-router-dom';
 import { Grid, Col, Row } from 'react-flexbox-grid';
+import { Moment } from 'moment';
+import * as moment from 'moment';
 
 import SignalResultsCardsPanel from './signalResultsCardsPanel';
 import SignalResultDetailsPanel from './signalResultDetailsPanel';
@@ -26,7 +28,7 @@ import './indexStyle.css';
  * Represents the SignalResultPresentation component props for the dispatch functions
  */
 interface SignalResultPresentationDispatchProps {
-    refreshSignalsResults: () => (dispatch: Dispatch<StoreState>) => Promise<void>;
+    refreshSignalsResults: (startTime: Moment) => (dispatch: Dispatch<StoreState>) => Promise<void>;
 }
 
 /**
@@ -56,7 +58,7 @@ class SignalResultPresentation extends React.PureComponent<SignalResultPresentat
      * Once component mount, refresh the signals results list
      */
     public async componentDidMount() {
-        await this.props.refreshSignalsResults();
+        await this.props.refreshSignalsResults(moment.utc());
     }
 
     public render() {

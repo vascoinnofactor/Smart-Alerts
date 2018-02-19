@@ -12,9 +12,10 @@ import Avatar from 'react-md/lib/Avatars';
 import NavigationDrawer from 'react-md/lib/NavigationDrawers';
 import ListItem from 'react-md/lib/Lists/ListItem';
 import FontIcon from 'react-md/lib/FontIcons';
-import SignalResultsPage from '../../pages/SignalResults';
-import SignalsPage from '../../pages/Signals';
-import AlertRule from '../../pages/AlertRule';
+import AddAlertRule from '../../pages/AlertRule';
+import ViewAlertRules from '../../components/AlertRule/ViewAlertRules';
+import SignalResultsView from '../../components/SignalResults/signalResultsView';
+import SignalsView from '../../components/Signals/SignalsManagement/signalsView';
 import User from '../../models/User';
 import StoreState from '../../store/StoreState';
 
@@ -38,6 +39,17 @@ const navigationItems = [
     (
         <ListItem
           key={1002}
+          component={Link}
+          to="/alertRules"
+          leftIcon={<FontIcon className="item-icon">{'add_alert'}</FontIcon>}
+          tileClassName="md-list-tile--mini"
+          primaryText={name || 'Dashboard'}
+          className="navbar-item-list"
+        />
+    ),
+    (
+        <ListItem
+          key={1003}
           component={Link}
           to="/signals"
           leftIcon={<FontIcon className="item-icon">{'settings'}</FontIcon>}
@@ -93,19 +105,25 @@ class Navbar extends React.PureComponent<NavbarProps> {
                 <Route 
                     path="/signalResults/:id?" 
                     render={(props) => 
-                        <SignalResultsPage selectedSignalResultNumber={props.match.params.id} />
+                        <SignalResultsView selectedSignalResultId={props.match.params.id} />
                     }
                 />
                 <Route 
                     path="/signals/:id?" 
                     render={(props) => 
-                        <SignalsPage selectedSignalNumber={props.match.params.id}/>
+                        <SignalsView />
                     }
                 />
                 <Route 
-                    path="/alertRule" 
+                    path="/alertRules/add" 
                     render={(props) => 
-                        <AlertRule />
+                        <AddAlertRule />
+                    }
+                />
+                <Route 
+                    path="/alertRules" 
+                    render={(props) => 
+                        <ViewAlertRules />
                     }
                 />
               </Switch>

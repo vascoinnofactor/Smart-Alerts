@@ -23,6 +23,7 @@ export class ChartMetadataUtils {
                                       chartType: ChartType): ChartMetadata {
         return {
             id: id,
+            name: 'someName',
             chartType: chartType,
             query: query,
             queryRunInfo: queryRunInfo
