@@ -67,7 +67,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
                 ClientId,
                 RedirectUri,
                 PromptBehavior.Auto,
-                UserIdentifier.AnyUser, 
+                UserIdentifier.AnyUser,
                 "prompt=consent");
         }
 

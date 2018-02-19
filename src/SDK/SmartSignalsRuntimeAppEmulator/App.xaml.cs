@@ -53,7 +53,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             SmartSignalManifest signalManifest = signalPackage.Manifest;
             ISmartSignal signal = signalLoader.LoadSignal(signalPackage);
 
-            // Authenticate the user to AAD
+            // Authenticate the user to Active Directory
             var authenticationServices = new AuthenticationServices();
             authenticationServices.AuthenticateUser();
             ICredentialsFactory credentialsFactory = new ActiveDirectoryCredentialsFactory(authenticationServices);
@@ -65,7 +65,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
             var httpClientWrapper = new HttpClientWrapper();
             IAnalysisServicesFactory analysisServicesFactory = new AnalysisServicesFactory(consoleTracer, httpClientWrapper, credentialsFactory, azureResourceManagerClient, queryRunInroProvider);
 
-            var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, stringTracer);
+            var signalRunner = new SmartSignalRunner(signal, analysisServicesFactory, queryRunInroProvider, signalManifest, stringTracer);
 
             // Create a Unity container with all the required models and view models registrations
             Container = new UnityContainer();
