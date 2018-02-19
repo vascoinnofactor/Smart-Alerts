@@ -54,19 +54,6 @@
             </ListView>
 
             <TextBlock Style="{StaticResource ResultDetailsSectionHeader}" Margin="5,15,0,0" Text="ANALYSIS"/>
-            <ListView ItemsSource="{Binding AnalysisSectionProperties}" SelectionMode="Single" BorderThickness="0" 
-                   Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}" 
-                                   Text="{Binding Name}" />
-                            <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
-                                   Text="{Binding Value}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
             <ListView ItemsSource="{Binding AnalyticsQuerys}" SelectionMode="Single" BorderThickness="0" 
                        Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
                 <ListView.ItemTemplate>
@@ -78,6 +65,19 @@
                                     <TextBlock Text="{Binding Path=Description}"/>
                                 </Hyperlink>
                             </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <ListView ItemsSource="{Binding AnalysisSectionProperties}" SelectionMode="Single" BorderThickness="0" 
+                   Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Control}, Path=Background}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyTitle}" 
+                                   Text="{Binding Name}" />
+                            <TextBlock Style="{StaticResource ResultDetailsPropertyValue}" 
+                                   Text="{Binding Value}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
