@@ -28,13 +28,13 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
         }
 
         /// <summary>
-        /// Creates a state repository for a signal by signal id.
+        /// Creates a state repository for a signal with ID <paramref name="signalId"/>.
         /// </summary>
-        /// <param name="signalId">The id of a signal</param>
-        /// <returns>A state repository associated with the signal</returns>
+        /// <param name="signalId">The ID of the signal to create the state repository for.</param>
+        /// <returns>A state repository associated with the requested signal.</returns>
         public IStateRepository Create(string signalId)
         {
-            return new BlobStateRepository(this.cloudStorageProviderFactory, signalId, this.tracer);
+            return new BlobStateRepository(signalId, this.cloudStorageProviderFactory, this.tracer);
         }
     }
 }

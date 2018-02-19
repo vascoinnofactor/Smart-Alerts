@@ -40,15 +40,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
         /// </summary>
         /// <param name="blobName">The blob name.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The blob's content.</returns>
+        /// <returns>A <see cref="Task"/> object that represents the asynchronous operation, returning the blob's content.</returns>
         Task<string> DownloadBlobContentAsync(string blobName, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Deletes blob by name and does not throw if the blob does not exist
+        /// Deletes blob by name and does not throw if the blob does not exist.
         /// </summary>
-        /// <param name="blobName">The blob name.</param>
+        /// <param name="blobName">The name of the blob to delete.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The blob's content.</returns>
+        /// <returns>A <see cref="Task"/> object that represents the asynchronous operation.</returns>
         Task DeleteBlobIfExistsAsync(string blobName, CancellationToken cancellationToken);
     }
 }

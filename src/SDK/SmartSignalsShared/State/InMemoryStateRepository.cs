@@ -45,7 +45,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.State
         /// <param name="state">The state</param>
         /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>A <see cref="Task{T}"/> to wait on</returns>
-        public Task AddOrUpdateStateAsync<T>(string key, T state, CancellationToken cancellationToken)
+        public Task StoreStateAsync<T>(string key, T state, CancellationToken cancellationToken)
         {
             Diagnostics.EnsureArgumentNotNull(() => key);
 
@@ -65,7 +65,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.State
         /// <param name="key">The key (case insensitive)</param>
         /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>A <see cref="Task{T}"/> to wait on</returns>
-        public Task ClearState(string key, CancellationToken cancellationToken)
+        public Task DeleteStateAsync(string key, CancellationToken cancellationToken)
         {
             Diagnostics.EnsureArgumentNotNull(() => key);
 

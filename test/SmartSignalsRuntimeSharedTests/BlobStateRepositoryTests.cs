@@ -8,6 +8,7 @@ namespace SmartSignalsRuntimeSharedTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -50,16 +51,15 @@ namespace SmartSignalsRuntimeSharedTests
 
             ICloudStorageProviderFactory cloudStorageProviderFactoryMock = Mock.Of<ICloudStorageProviderFactory>(m => m.GetSmartSignalStateStorageContainer() == cloudBlobContainerWrapperMock.Object);
 
-            BlobStateRepository blobStateRepository = new BlobStateRepository(cloudStorageProviderFactoryMock, "TestSignal", (new Mock<ITracer>()).Object);
+            BlobStateRepository blobStateRepository = new BlobStateRepository("TestSignal", cloudStorageProviderFactoryMock, (new Mock<ITracer>()).Object);
 
             await TestBasicFlow(blobStateRepository);
         }
 
         [TestMethod]
-        [Ignore]
         public async Task WhenExecutingBasigStateActionsThenFlowCompletesSuccesfullyWithRealStorage()
         {
-            var storageConnectionString = "****";
+            var storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=smartsignalssa;AccountKey=AeN7F8JxqHv87TPdFBb/frwzgKAifEROi4WmwNuTI/pSA95OBWiCWJCUhKNfgR8m2JuyBiCU3YqnxjUCLL6zvg==;EndpointSuffix=core.windows.net";
             CloudBlobClient cloudBlobClient = CloudStorageAccount.Parse(storageConnectionString).CreateCloudBlobClient();
             CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference("tessignalstatecontainer");
             await cloudBlobContainer.CreateIfNotExistsAsync();
@@ -67,7 +67,7 @@ namespace SmartSignalsRuntimeSharedTests
 
             ICloudStorageProviderFactory cloudStorageProviderFactoryMock = Mock.Of<ICloudStorageProviderFactory>(m => m.GetSmartSignalStateStorageContainer() == cloudBlobContainerWrapper);
 
-            BlobStateRepository blobStateRepository = new BlobStateRepository(cloudStorageProviderFactoryMock, "TestSignal", (new Mock<ITracer>()).Object);
+            BlobStateRepository blobStateRepository = new BlobStateRepository("TestSignal", cloudStorageProviderFactoryMock, (new Mock<ITracer>()).Object);
 
             await TestBasicFlow(blobStateRepository);
 
@@ -92,7 +92,7 @@ namespace SmartSignalsRuntimeSharedTests
             var retrievedState = await blobStateRepository.GetStateAsync<TestState>("key", CancellationToken.None);
             Assert.IsNull(retrievedState);
 
-            await blobStateRepository.AddOrUpdateStateAsync("key", originalState, CancellationToken.None);
+            await blobStateRepository.StoreStateAsync("key", originalState, CancellationToken.None);
 
             retrievedState = await blobStateRepository.GetStateAsync<TestState>("key", CancellationToken.None);
 
@@ -110,7 +110,7 @@ namespace SmartSignalsRuntimeSharedTests
                 Field3 = true
             };
 
-            await blobStateRepository.AddOrUpdateStateAsync("key", updatedState, CancellationToken.None);
+            await blobStateRepository.StoreStateAsync("key", updatedState, CancellationToken.None);
 
             retrievedState = await blobStateRepository.GetStateAsync<TestState>("key", CancellationToken.None);
 
@@ -120,11 +120,11 @@ namespace SmartSignalsRuntimeSharedTests
             Assert.AreEqual(updatedState.Field3, retrievedState.Field3);
             Assert.AreEqual(updatedState.Field4, retrievedState.Field4);
 
-            await blobStateRepository.AddOrUpdateStateAsync("key2", originalState, CancellationToken.None);
-            await blobStateRepository.ClearState("key", CancellationToken.None);
+            await blobStateRepository.StoreStateAsync("key2", originalState, CancellationToken.None);
+            await blobStateRepository.DeleteStateAsync("key", CancellationToken.None);
 
             // clear again, should not throw
-            await blobStateRepository.ClearState("key", CancellationToken.None);
+            await blobStateRepository.DeleteStateAsync("key", CancellationToken.None);
 
             retrievedState = await blobStateRepository.GetStateAsync<TestState>("key", CancellationToken.None);
 
@@ -135,7 +135,7 @@ namespace SmartSignalsRuntimeSharedTests
             Assert.IsNotNull(retrievedState);
         }
 
-        public class TestState
+        private class TestState
         {
             public string Field1 { get; set; }
 

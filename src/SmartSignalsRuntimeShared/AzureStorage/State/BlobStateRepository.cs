@@ -7,8 +7,11 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals
 {
     using System;
+    using System.IO;
+    using System.IO.Compression;
     using System.Linq;
     using System.Net;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
@@ -24,6 +27,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
     /// </summary>
     public class BlobStateRepository : IStateRepository
     {
+        private const int MaxSerializedStateLength = 1024 * 1024 * 1024;
+
         private readonly ICloudBlobContainerWrapper cloudBlobContainerWrapper;
         private readonly string signalId;
         private readonly ITracer tracer;
@@ -31,15 +36,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobStateRepository"/> class
         /// </summary>
-        /// <param name="cloudStorageProviderFactory">The cloud storage provider factory</param>
         /// <param name="signalId">The id of the signal</param>
+        /// <param name="cloudStorageProviderFactory">The cloud storage provider factory</param>
         /// <param name="tracer">The tracer</param>
-        public BlobStateRepository(ICloudStorageProviderFactory cloudStorageProviderFactory, string signalId, ITracer tracer)
+        public BlobStateRepository(string signalId, ICloudStorageProviderFactory cloudStorageProviderFactory, ITracer tracer)
         {
             Diagnostics.EnsureArgumentNotNull(() => signalId);
 
-            this.cloudBlobContainerWrapper = cloudStorageProviderFactory.GetSmartSignalStateStorageContainer();
             this.signalId = signalId;
+            this.cloudBlobContainerWrapper = cloudStorageProviderFactory.GetSmartSignalStateStorageContainer();
             this.tracer = tracer;
         }
 
@@ -51,7 +56,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// <param name="state">The state</param>
         /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>A <see cref="Task{T}"/> to wait on</returns>
-        public Task AddOrUpdateStateAsync<T>(string key, T state, CancellationToken cancellationToken)
+        public Task StoreStateAsync<T>(string key, T state, CancellationToken cancellationToken)
         {
             Diagnostics.EnsureArgumentNotNull(() => key);
 
@@ -63,12 +68,18 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
             key = key.ToLowerInvariant();
 
             string serializedState = JsonConvert.SerializeObject(state);
+            if (serializedState.Length > MaxSerializedStateLength)
+            {
+                throw new StateTooBigException(serializedState.Length, MaxSerializedStateLength);
+            }
+
+            string compressedSerializedState = CompressString(serializedState);
 
             BlobState blobState = new BlobState
             {
                 Key = key,
                 SignalId = this.signalId,
-                SerializedState = serializedState
+                State = compressedSerializedState
             };
 
             string serializedBlobState = JsonConvert.SerializeObject(blobState);
@@ -96,21 +107,27 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
             }
             catch (StorageException ex) when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
             {
-                this.tracer.TraceWarning("State not found in the repository, returning empty state");
+                this.tracer.TraceInformation("State not found in the repository, returning empty state");
                 return default(T);
             }
 
             BlobState blobState = JsonConvert.DeserializeObject<BlobState>(serializedBlobState);
 
-            if (string.Equals(blobState.SignalId, this.signalId) == false 
-                || string.Equals(blobState.Key, key) == false
-                || string.IsNullOrWhiteSpace(blobState.SerializedState))
+            if (string.Equals(blobState.SignalId, this.signalId) == false || string.Equals(blobState.Key, key) == false)
             {
-                this.tracer.TraceWarning("State does not match expected signal id, key or is empty, returning empty state");
+                throw new InvalidDataException("State does not match expected signal id or key");
+            }
+
+            if (string.IsNullOrWhiteSpace(blobState.State))
+            {
                 return default(T);
             }
 
-            return JsonConvert.DeserializeObject<T>(blobState.SerializedState);
+            string compressedSerializedState = blobState.State;
+
+            string serializedState = DecompressString(compressedSerializedState);
+
+            return JsonConvert.DeserializeObject<T>(serializedState);
         }
 
         /// <summary>
@@ -119,13 +136,62 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         /// <param name="key">The key (case insensitive)</param>
         /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>A <see cref="Task{T}"/> to wait on</returns>
-        public Task ClearState(string key, CancellationToken cancellationToken)
+        public Task DeleteStateAsync(string key, CancellationToken cancellationToken)
         {
             Diagnostics.EnsureArgumentNotNull(() => key);
 
             key = key.ToLowerInvariant();
 
             return this.cloudBlobContainerWrapper.DeleteBlobIfExistsAsync(this.GenerateBlobName(key), cancellationToken);
+        }
+
+        /// <summary>
+        /// Generates the name of the blob for storing the state.
+        /// The name of the blob consists of alphanumeric characters of the signal id and hashes of the signal id and key.
+        /// This logic insures that restrictions on blob names in storage do not cause restrictions on signal name or the key.
+        /// The partial, un-hashed signal name is included for debugging purposes.  
+        /// </summary>
+        /// <param name="stringToCompress">The key (case insensitive)</param>
+        /// <returns>The name of the blob</returns>
+        private static string CompressString(string stringToCompress)
+        {
+            byte[] bytesToCompress = Encoding.UTF8.GetBytes(stringToCompress);
+
+            using (var inputStream = new MemoryStream(bytesToCompress))
+            {
+                using (var outputStream = new MemoryStream())
+                {
+                    using (var gzipStream = new GZipStream(outputStream, CompressionMode.Compress))
+                    {
+                        inputStream.CopyTo(gzipStream);
+                    }
+
+                    return Convert.ToBase64String(outputStream.ToArray());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Generates the name of the blob for storing the state.
+        /// The name of the blob consists of alphanumeric characters of the signal id and hashes of the signal id and key.
+        /// This logic insures that restrictions on blob names in storage do not cause restrictions on signal name or the key.
+        /// The partial, un-hashed signal name is included for debugging purposes.  
+        /// </summary>
+        /// <param name="stringToDecompress">The key (case insensitive)</param>
+        /// <returns>The name of the blob</returns>
+        private static string DecompressString(string stringToDecompress)
+        {
+            using (var inputStream = new MemoryStream(Convert.FromBase64String(stringToDecompress)))
+            {
+                using (var outputStream = new MemoryStream())
+                {
+                    using (var gzipStream = new GZipStream(inputStream, CompressionMode.Decompress))
+                    {
+                        gzipStream.CopyTo(outputStream);
+                        return Encoding.UTF8.GetString(outputStream.ToArray());
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -146,6 +212,27 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
             string blobName = $"{safeSignalId}_{signalIdHash}/{keyHash}";
 
             return blobName;
+        }
+
+        /// <summary>
+        /// Represents a signal state written to a blob
+        /// </summary>
+        private class BlobState
+        {
+            /// <summary>
+            /// Gets or sets the signal id
+            /// </summary>
+            public string SignalId { get; set; }
+
+            /// <summary>
+            /// Gets or sets the signal key
+            /// </summary>
+            public string Key { get; set; }
+
+            /// <summary>
+            /// Gets or sets the signal serialized state
+            /// </summary>
+            public string State { get; set; }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SmartSignalsSharedTests
     public class InMemoryStateRepositoryTests
     {
         [TestMethod]
-        public void WhenRunninMultipleStateActionsInParallelThenNoExceptionIsThrown()
+        public void WhenRunningMultipleStateActionsInParallelThenNoExceptionIsThrown()
         {
             var stateRepo = new InMemoryStateRepository("TetsSignal");
 
@@ -28,11 +28,11 @@ namespace SmartSignalsSharedTests
                 .Select(num => new Tuple<string, string>(random.Next(10).ToString(), random.Next(10).ToString()))
                 .ToList();
 
-            Parallel.ForEach(list, (tuple) => TestSigleRun(tuple.Item1, tuple.Item2).Wait());
+            Parallel.ForEach(list, (tuple) => TestSingleRun(tuple.Item1, tuple.Item2).Wait());
         }
 
         [TestMethod]
-        public async Task WhenExecutingBasigStateActionsThenFlowCompletesSuccesfully()
+        public async Task WhenExecutingBasicStateActionsThenFlowCompletesSuccesfully()
         {
             IStateRepository stateRepository = new InMemoryStateRepository("test signal");
 
@@ -43,7 +43,7 @@ namespace SmartSignalsSharedTests
                 Field3 = true
             };
 
-            await stateRepository.AddOrUpdateStateAsync("key", originalState, CancellationToken.None);
+            await stateRepository.StoreStateAsync("key", originalState, CancellationToken.None);
 
             var retrievedState = await stateRepository.GetStateAsync<TestState>("key", CancellationToken.None);
 
@@ -61,7 +61,7 @@ namespace SmartSignalsSharedTests
                 Field3 = true
             };
 
-            await stateRepository.AddOrUpdateStateAsync("key", updatedState, CancellationToken.None);
+            await stateRepository.StoreStateAsync("key", updatedState, CancellationToken.None);
 
             retrievedState = await stateRepository.GetStateAsync<TestState>("key", CancellationToken.None);
 
@@ -71,8 +71,8 @@ namespace SmartSignalsSharedTests
             Assert.AreEqual(updatedState.Field3, retrievedState.Field3);
             Assert.AreEqual(updatedState.Field4, retrievedState.Field4);
 
-            await stateRepository.AddOrUpdateStateAsync("key2", originalState, CancellationToken.None);
-            await stateRepository.ClearState("key", CancellationToken.None);
+            await stateRepository.StoreStateAsync("key2", originalState, CancellationToken.None);
+            await stateRepository.DeleteStateAsync("key", CancellationToken.None);
 
             retrievedState = await stateRepository.GetStateAsync<TestState>("key", CancellationToken.None);
 
@@ -83,21 +83,21 @@ namespace SmartSignalsSharedTests
             Assert.IsNotNull(retrievedState);
         }
 
-        private static async Task TestSigleRun(string signalId, string key)
+        private static async Task TestSingleRun(string signalId, string key)
         {
             var stateRepo = new InMemoryStateRepository(signalId);
 
             var state = new List<int> { 5, 10 };
 
-            await stateRepo.AddOrUpdateStateAsync(key, state, CancellationToken.None);
+            await stateRepo.StoreStateAsync(key, state, CancellationToken.None);
             await stateRepo.GetStateAsync<List<int>>(key, CancellationToken.None);
-            await stateRepo.AddOrUpdateStateAsync(key, state, CancellationToken.None);
+            await stateRepo.StoreStateAsync(key, state, CancellationToken.None);
             await stateRepo.GetStateAsync<List<int>>(key, CancellationToken.None);
-            await stateRepo.ClearState(key, CancellationToken.None);
+            await stateRepo.DeleteStateAsync(key, CancellationToken.None);
             await stateRepo.GetStateAsync<List<int>>(key, CancellationToken.None);
         }
 
-        public class TestState
+        private class TestState
         {
             public string Field1 { get; set; }
 
