@@ -57,7 +57,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
             {
                 ITracer tracer = childContainer.Resolve<ITracer>();
                 var scheduleFlow = childContainer.Resolve<ScheduleFlow>();
-
+                
                 try
                 {
                     tracer.TraceInformation($"Executing schedule flow");

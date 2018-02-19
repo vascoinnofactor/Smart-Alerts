@@ -37,7 +37,7 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenAddingSignalHappyFlow()
         {
-            var addSignalModel = new AddAlertRule()
+            var addSignalModel = new AlertRuleApiEntity()
             {
                 SignalId = Guid.NewGuid().ToString(),
                 ResourceId = "resourceId",
@@ -53,7 +53,7 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenAddingSignalButModelIsInvalidBecauseSignalIdIsEmptyThenThrowException()
         {
-            var addSignalModel = new AddAlertRule()
+            var addSignalModel = new AlertRuleApiEntity()
             {
                 SignalId = string.Empty,
                 ResourceId = "resourceId",
@@ -76,7 +76,7 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenAddingSignalButCadenceValueIsInvalidCronValueThenThrowException()
         {
-            var addSignalModel = new AddAlertRule()
+            var addSignalModel = new AlertRuleApiEntity()
             {
                 SignalId = Guid.NewGuid().ToString(),
                 ResourceId = "resourceId",
@@ -99,7 +99,7 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenAddingSignalButStoreThrowsExceptionThenThrowTheWrappedException()
         {
-            var addSignalModel = new AddAlertRule()
+            var addSignalModel = new AlertRuleApiEntity()
             {
                 SignalId = Guid.NewGuid().ToString(),
                 ResourceId = "resourceId",

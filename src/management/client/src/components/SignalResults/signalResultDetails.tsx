@@ -201,7 +201,8 @@ class SignalResultDetails extends React.Component<SignalResultDetailsProps> {
                                                              undefined,
                                                              undefined,
                                                              undefined,
-                                                             300);
+                                                             300,
+                                                             chartMetadata.name);
             }
 
             return presentedValue;

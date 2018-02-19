@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Label="Globals">
+    <CustomProjectExtensionsPath Condition="Exists('$(LocalAppData)\CustomProjectSystems\SmartSignals\SmartSignals.props')">$(LocalAppData)\CustomProjectSystems\SmartSignals\</CustomProjectExtensionsPath>
+    <CustomProjectExtensionsPath Condition="'$(CustomProjectExtensionsPath)' == ''">$(MSBuildExtensionsPath)\CustomProjectSystems\SmartSignals\</CustomProjectExtensionsPath>
+  </PropertyGroup>
+  
+  <Import Project="$(CustomProjectExtensionsPath)SmartSignals.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <RootNamespace>$safeprojectname$</RootNamespace>
+    <AssemblyName>$safeprojectname$</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Monitoring.SmartAlerts" Version="1.0.0-beta" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Manifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+ 
+  <Import Project="$(CustomProjectExtensionsPath)SmartSignals.targets" />
+</Project>

@@ -16,6 +16,8 @@ interface DrawerProps {
     visible: boolean;
     position?: 'left' | 'right';
     onVisibilityChange: (visible: boolean) => void;
+    minWidth?: string;
+    maxWidth?: string;
 }
 
 interface DrawerState {
@@ -43,6 +45,7 @@ export default class Drawer extends React.Component<DrawerProps, DrawerState> {
                 position={this.props.position ? this.props.position : 'right'}
                 className="drawer"
                 onVisibilityChange={this.handleVisibility}
+                style={{ maxWidth: this.props.maxWidth, minWidth: this.props.minWidth }}
             >
                 {this.props.children}
             </MDDrawer>

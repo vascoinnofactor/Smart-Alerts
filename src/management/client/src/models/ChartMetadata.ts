@@ -14,6 +14,11 @@ export default interface ChartMetadata {
     id: string;
 
     /**
+     * The chart name
+     */
+    name: string;
+    
+    /**
      * Gets the query string
      */
     query: string;

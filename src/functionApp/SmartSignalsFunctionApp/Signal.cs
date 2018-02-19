@@ -11,7 +11,6 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
     using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
@@ -52,8 +51,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
         /// <param name="log">The logger.</param>
         /// <param name="cancellationToken">A cancellation token to control the function's execution.</param>
         /// <returns>The smart signals encoded as JSON.</returns>
-        [FunctionName("signal")]
-        public static async Task<HttpResponseMessage> GetAllSmartSignals([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
+        [FunctionName("GetSignal")]
+        public static async Task<HttpResponseMessage> GetAllSmartSignals([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signal")] HttpRequestMessage req, TraceWriter log, CancellationToken cancellationToken)
         {
             using (IUnityContainer childContainer = Container.CreateChildContainer().WithTracer(log, true))
             {

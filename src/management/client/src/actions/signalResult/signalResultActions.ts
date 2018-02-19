@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 
 import { Dispatch } from 'redux';
+import { Moment } from 'moment';
 
 import keys from '../actionTypeKeys';
 import {
@@ -19,13 +20,13 @@ import { getSignalsResultsAsync } from '../../api/signalResultApi';
 /**
  * Create an action for getting the signals results
  */
-export function getSignalsResults(): (dispatch: Dispatch<StoreState>) => Promise<void> {
+export function getSignalsResults(startTime: Moment): (dispatch: Dispatch<StoreState>) => Promise<void> {
     return async (dispatch: Dispatch<StoreState>) => {
         // Notify get signals results work has started
         dispatch(getSignalResultInProgressAction());
 
         try {
-            const response = await getSignalsResultsAsync();
+            const response = await getSignalsResultsAsync(startTime);
             
             dispatch(getSignalResultSuccessAction(response.signalsResults));
           } catch (error) {
