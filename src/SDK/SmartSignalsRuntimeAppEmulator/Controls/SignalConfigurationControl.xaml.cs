@@ -22,7 +22,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls
         public SignalConfigurationControl()
         {
             this.InitializeComponent();
-            this.DataContext = App.Container.Resolve<SignalsControlViewModel>();
+            this.DataContext = App.Container.Resolve<SignalConfigurationControlViewModel>();
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SignalsControlViewModel.cs" company="Microsoft Corporation">
+// <copyright file="SignalConfigurationControlViewModel.cs" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,14 +14,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     using System.Threading.Tasks;
     using System.Windows;
     using Microsoft.Azure.Monitoring.SmartSignals.Clients;
+    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls;
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Unity.Attributes;
 
     /// <summary>
-    /// An <see cref="ObservableObject"/> which encapsulates an asynchronous task.
+    /// The view model class for the <see cref="SignalConfigurationControl"/> control.
     /// </summary>
-    public class SignalsControlViewModel : ObservableObject
+    public class SignalConfigurationControlViewModel : ObservableObject
     {
         private readonly IAzureResourceManagerClient azureResourceManagerClient;
 
@@ -58,22 +59,22 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         #region Ctros
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SignalsControlViewModel"/> class for design time only.
+        /// Initializes a new instance of the <see cref="SignalConfigurationControlViewModel"/> class for design time only.
         /// </summary>
-        public SignalsControlViewModel()
+        public SignalConfigurationControlViewModel()
         {
             this.ShouldShowStatusControl = true;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SignalsControlViewModel"/> class.
+        /// Initializes a new instance of the <see cref="SignalConfigurationControlViewModel"/> class.
         /// </summary>
         /// <param name="azureResourceManagerClient">The Azure resources manager client.</param>
         /// <param name="tracer">The tracer.</param>
         /// <param name="smartSignalManifest">The smart signal manifest.</param>
         /// <param name="signalRunner">The smart signal runner.</param>
         [InjectionConstructor]
-        public SignalsControlViewModel(
+        public SignalConfigurationControlViewModel(
             IAzureResourceManagerClient azureResourceManagerClient,
             ITracer tracer,
             SmartSignalManifest smartSignalManifest,
