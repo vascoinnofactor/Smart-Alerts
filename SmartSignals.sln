@@ -88,10 +88,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartSignalsBuildTask", "src\SDK\SmartSignalsBuildTask\SmartSignalsBuildTask.csproj", "{1FEA53E4-D3BA-48AF-AA3E-D18E39C06098}"
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "SmartSignalsPackage", "src\SDK\SmartSignalsPackage\SmartSignalsPackage.nuproj", "{8FDC59D4-895C-41C3-B171-9CB75347AB88}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3617AC50-C6F9-4333-9611-E96DD82E02AA} = {3617AC50-C6F9-4333-9611-E96DD82E02AA}
-		{1FEA53E4-D3BA-48AF-AA3E-D18E39C06098} = {1FEA53E4-D3BA-48AF-AA3E-D18E39C06098}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartSignals.ProjectTemplate", "src\SDK\SmartSignals.ProjectTemplate\SmartSignals.ProjectTemplate.csproj", "{F4851875-9C13-4FDB-A2E1-D9F17A5E3644}"
 EndProject

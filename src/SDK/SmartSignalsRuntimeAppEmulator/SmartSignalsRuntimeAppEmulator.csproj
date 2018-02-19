@@ -10,7 +10,6 @@
     <LanguageTargets>$(MSBuildToolsPath)\Microsoft.CSharp.targets</LanguageTargets>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NuProj" Version="0.11.30" />
     <PackageReference Include="NuProj.Common" Version="0.11.30" />
     <PackageReference Include="Polly" Version="5.7.0" />
     <PackageReference Include="StyleCop.MSBuild" Version="5.0.0" />

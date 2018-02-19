@@ -37,14 +37,20 @@
     <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj">
+      <PackageDirectory>lib</PackageDirectory>
+    </ProjectReference>    
+    <ProjectReference Include="..\SmartSignalsBuildTask\SmartSignalsBuildTask.csproj">
+      <ExcludeFromNuPkg>true</ExcludeFromNuPkg>
+    </ProjectReference>
     <File Include="..\SmartSignalsBuildTask\build\**.*">
       <TargetPath>build\</TargetPath>
     </File>
     <File Include="..\SmartSignalsBuildTask\$(Outdir)\net461\**.*">
       <TargetPath>tools\net461\BuildTask</TargetPath>
     </File>
-    <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj">
-      <PackageDirectory>lib</PackageDirectory>
+    <ProjectReference Include="..\SmartSignalsRuntimeAppEmulator\SmartSignalsRuntimeAppEmulator.csproj">
+      <ExcludeFromNuPkg>true</ExcludeFromNuPkg>
     </ProjectReference>
     <File Include="..\SmartSignalsRuntimeAppEmulator\$(Outdir)\net461\**.*">
       <TargetPath>tools\net461\AppEmulator</TargetPath>
