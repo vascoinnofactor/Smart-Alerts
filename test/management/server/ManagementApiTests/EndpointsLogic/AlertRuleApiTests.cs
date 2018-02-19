@@ -37,14 +37,14 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenAddingSignalHappyFlow()
         {
-            var addSignalModel = new Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models.AlertRuleApiEntity()
+            var addSignalModel = new AlertRuleApiEntity()
             {
                 SignalId = Guid.NewGuid().ToString(),
                 ResourceId = "resourceId",
                 CadenceInMinutes = 1440
             };
 
-            this.alertRuleStoreMock.Setup(s => s.AddOrReplaceAlertRuleAsync(It.IsAny<Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules.AlertRule>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            this.alertRuleStoreMock.Setup(s => s.AddOrReplaceAlertRuleAsync(It.IsAny<AlertRule>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             // This shouldn't throw any exception
             await this.alertRuleApi.AddAlertRuleAsync(addSignalModel, CancellationToken.None);
@@ -53,7 +53,7 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenAddingSignalButModelIsInvalidBecauseSignalIdIsEmptyThenThrowException()
         {
-            var addSignalModel = new Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models.AlertRuleApiEntity()
+            var addSignalModel = new AlertRuleApiEntity()
             {
                 SignalId = string.Empty,
                 ResourceId = "resourceId",
@@ -76,7 +76,7 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenAddingSignalButCadenceValueIsInvalidCronValueThenThrowException()
         {
-            var addSignalModel = new Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models.AlertRuleApiEntity()
+            var addSignalModel = new AlertRuleApiEntity()
             {
                 SignalId = Guid.NewGuid().ToString(),
                 ResourceId = "resourceId",
@@ -99,7 +99,7 @@ namespace ManagementApiTests.EndpointsLogic
         [TestMethod]
         public async Task WhenAddingSignalButStoreThrowsExceptionThenThrowTheWrappedException()
         {
-            var addSignalModel = new Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models.AlertRuleApiEntity()
+            var addSignalModel = new AlertRuleApiEntity()
             {
                 SignalId = Guid.NewGuid().ToString(),
                 ResourceId = "resourceId",
