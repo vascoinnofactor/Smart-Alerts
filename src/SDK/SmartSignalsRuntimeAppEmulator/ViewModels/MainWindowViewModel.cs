@@ -16,6 +16,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     public class MainWindowViewModel : ObservableObject
     {
         private int numberOfResultsFound;
+        private SmartSignalRunner signalRunner;
         private string userName;
 
         /// <summary>
@@ -32,14 +33,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
         /// </summary>
         /// <param name="signalsResultsRepository">The signal results repository model.</param>
         /// <param name="authenticationServices">The authentication services to use.</param>
+        /// <param name="signalRunner">The smart signal runner.</param>
         [InjectionConstructor]
-        public MainWindowViewModel(SignalsResultsRepository signalsResultsRepository, AuthenticationServices authenticationServices)
+        public MainWindowViewModel(SignalsResultsRepository signalsResultsRepository, AuthenticationServices authenticationServices, SmartSignalRunner signalRunner)
         {
             this.NumberOfResultsFound = 0;
             signalsResultsRepository.Results.CollectionChanged +=
                 (sender, args) => { this.NumberOfResultsFound = args.NewItems.Count; };
 
             this.UserName = authenticationServices.AuthenticationResult.UserInfo.GivenName;
+            this.SignalRunner = signalRunner;
         }
 
         /// <summary>
@@ -52,6 +55,23 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
             private set
             {
                 this.numberOfResultsFound = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets the signal runner.
+        /// </summary>
+        public SmartSignalRunner SignalRunner
+        {
+            get
+            {
+                return this.signalRunner;
+            }
+
+            private set
+            {
+                this.signalRunner = value;
                 this.OnPropertyChanged();
             }
         }
