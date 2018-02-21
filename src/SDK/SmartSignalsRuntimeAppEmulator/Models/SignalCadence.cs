@@ -4,10 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Models
 {
     using System;
-    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Extensions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Extensions;
 
     /// <summary>
     /// Represents a time cadence for a signal run.

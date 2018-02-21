@@ -4,16 +4,16 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.AIClient
 {
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Extensions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Extensions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
     using Microsoft.Rest;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;

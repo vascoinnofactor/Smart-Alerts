@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.SignalLoader
+namespace Microsoft.Azure.Monitoring.SmartAlerts.SignalLoader
 {
     using System;
     using System.Runtime.Serialization;

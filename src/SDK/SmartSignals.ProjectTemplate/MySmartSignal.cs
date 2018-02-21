@@ -3,7 +3,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
 
     /// <summary>
     /// The base class for representing Smart Signal

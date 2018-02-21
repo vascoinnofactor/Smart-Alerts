@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Models
 {
     using System;
     using System.Collections.Generic;
@@ -13,8 +13,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
 
     /// <summary>
     /// An observable class that runs a smart signal.

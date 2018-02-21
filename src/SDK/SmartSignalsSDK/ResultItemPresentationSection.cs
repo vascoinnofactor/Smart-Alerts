@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals
+namespace Microsoft.Azure.Monitoring.SmartAlerts
 {
     /// <summary>
     /// An enumeration of possible section where Smart Signal result item properties can be presented.

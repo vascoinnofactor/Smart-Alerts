@@ -4,9 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.SignalLoader
+namespace Microsoft.Azure.Monitoring.SmartAlerts.SignalLoader
 {
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
 
     /// <summary>
     /// An interface used for loading a Smart Signal from its package

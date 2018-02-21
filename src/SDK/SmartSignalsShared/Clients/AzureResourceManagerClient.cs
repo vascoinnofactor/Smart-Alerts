@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Clients
 {
     using System;
     using System.Collections.Concurrent;
@@ -16,8 +16,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
     using System.Threading.Tasks;
     using Microsoft.Azure.Management.ResourceManager.Fluent;
     using Microsoft.Azure.Management.ResourceManager.Fluent.Models;
-    using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Extensions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
     using Microsoft.Rest;
     using Microsoft.Rest.Azure;
     using Microsoft.Rest.Azure.OData;

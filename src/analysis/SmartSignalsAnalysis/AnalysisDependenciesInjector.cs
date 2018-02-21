@@ -4,13 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Analysis
 {
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
-    using Microsoft.Azure.Monitoring.SmartSignals.Trace;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.ChildProcess;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalLoader;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Trace;
     using Unity;
 
     /// <summary>

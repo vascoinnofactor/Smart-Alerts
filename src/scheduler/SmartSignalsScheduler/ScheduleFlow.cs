@@ -4,19 +4,19 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
-    using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher;
-    using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AlertRules;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.Publisher;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.SignalRunTracker;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
 
     /// <summary>
     /// This class is responsible for discovering which signal should be executed and sends them to the analysis flow

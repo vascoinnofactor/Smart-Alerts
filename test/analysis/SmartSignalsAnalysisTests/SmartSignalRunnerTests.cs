@@ -11,14 +11,14 @@ namespace SmartSignalsAnalysisTests
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.Analysis;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Analysis;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalLoader;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 

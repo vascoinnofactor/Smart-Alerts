@@ -9,7 +9,7 @@ namespace TestSignalLibrary
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
 
     public class TestSignal : ISmartSignal
     {

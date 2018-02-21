@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Build
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Build
 {
     using System.IO;
     using System.Security;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
     using Microsoft.Build.Utilities;
 
     /// <summary>

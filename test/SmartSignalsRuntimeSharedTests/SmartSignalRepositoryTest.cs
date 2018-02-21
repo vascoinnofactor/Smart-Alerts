@@ -12,11 +12,11 @@ namespace SmartSignalsRuntimeSharedTests
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;

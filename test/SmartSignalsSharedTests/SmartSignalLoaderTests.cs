@@ -13,9 +13,9 @@ namespace SmartSignalsSharedTests
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalLoader;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 

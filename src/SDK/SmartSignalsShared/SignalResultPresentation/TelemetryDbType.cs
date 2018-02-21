@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation
+namespace Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation
 {
     /// <summary>
     /// An enum for the type of DB on which to run queries that are part of a smart signal result presentation

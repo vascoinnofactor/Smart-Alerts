@@ -4,12 +4,12 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.EndpointsLogic
 {
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Models;
 
     /// <summary>
     /// This class is the logic for the /alertRule endpoint.

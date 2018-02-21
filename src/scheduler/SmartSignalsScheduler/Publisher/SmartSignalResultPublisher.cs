@@ -4,19 +4,19 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.Publisher
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
-    using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
     using Newtonsoft.Json;

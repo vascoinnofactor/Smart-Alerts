@@ -4,12 +4,12 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared
 {
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Trace;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.ChildProcess;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Trace;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
     using Microsoft.Azure.WebJobs.Host;
     using Unity;
 

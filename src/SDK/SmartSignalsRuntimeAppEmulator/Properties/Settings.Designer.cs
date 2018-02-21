@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Properties {
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

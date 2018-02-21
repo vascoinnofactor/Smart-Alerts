@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Properties {
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Azure.Monitoring.SmartSignals.Emulator.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

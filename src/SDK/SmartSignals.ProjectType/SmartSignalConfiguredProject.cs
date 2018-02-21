@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------
 
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ProjectType
+namespace Microsoft.Azure.Monitoring.SmartAlerts.ProjectType
 {
     using System;
     using System.ComponentModel.Composition;

@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared
 {
     using System;
     using System.Linq;
-    using Microsoft.Azure.Monitoring.SmartSignals;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
     using Microsoft.Azure.WebJobs.Host;
 
     /// <summary>

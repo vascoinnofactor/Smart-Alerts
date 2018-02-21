@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared
 {
     using System;
     using System.Collections.Generic;
@@ -12,10 +12,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
     using Newtonsoft.Json.Linq;

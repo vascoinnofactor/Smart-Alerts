@@ -4,14 +4,14 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Models
 {
     using System;
     using System.Diagnostics;
     using System.IO;
     using System.IO.Compression;
     using System.Text;
-    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Emulator.ViewModels;
 
     /// <summary>
     /// Represents an Analytics query.

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Converters
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Converters
 {
     using System;
     using System.Globalization;

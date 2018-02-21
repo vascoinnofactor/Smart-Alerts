@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Responses
 {
     using System.Collections.Generic;
     using Models;

@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AlertRules;
 
     /// <summary>
     /// Signal execution information

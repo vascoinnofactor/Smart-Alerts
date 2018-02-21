@@ -4,12 +4,12 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.EndpointsLogic
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Responses;
 
     /// <summary>
     /// This class is the logic for the /signalResult endpoint.

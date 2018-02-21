@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
-  <UsingTask TaskName="Microsoft.Azure.Monitoring.SmartSignals.Build.PackageSmartSignal" AssemblyFile="$(_SmartAlertsTaskAssemblyFullPath)"/>
+  <UsingTask TaskName="Microsoft.Azure.Monitoring.SmartAlerts.Build.PackageSmartSignal" AssemblyFile="$(_SmartAlertsTaskAssemblyFullPath)"/>
   <Target Name="PackageSmartSignalAfterBuild" AfterTargets="AfterBuild">
     <PackageSmartSignal PackagePath="$(ProjectDir)$(OutDir)" PackageName="$(ProjectName).package"/>
   </Target>

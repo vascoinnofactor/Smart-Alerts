@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Models
 {
     using System;
     using System.Linq;

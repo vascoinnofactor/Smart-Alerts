@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Extensions
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Extensions
 {
     using System;
 

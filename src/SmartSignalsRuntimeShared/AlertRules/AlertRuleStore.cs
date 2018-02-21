@@ -4,15 +4,15 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AlertRules
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Exceptions;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Table;
     using Newtonsoft.Json;

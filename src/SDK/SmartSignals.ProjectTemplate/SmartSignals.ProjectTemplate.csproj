@@ -12,7 +12,7 @@
     <ProjectGuid>{F4851875-9C13-4FDB-A2E1-D9F17A5E3644}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Azure.Monitoring.SmartSignals.ProjectTemplate</RootNamespace>
+    <RootNamespace>Microsoft.Azure.Monitoring.SmartAlerts.ProjectTemplate</RootNamespace>
     <AssemblyName>SmartSignal</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>

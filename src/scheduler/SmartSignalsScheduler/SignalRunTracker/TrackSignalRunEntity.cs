@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.SignalRunTracker
 {
     using System;
     using Microsoft.WindowsAzure.Storage.Table;

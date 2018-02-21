@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.SampleSignal
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.SampleSignal
 {
     using System;
 

@@ -4,17 +4,17 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.FunctionApp
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
-    using Microsoft.Azure.Monitoring.SmartSignals.Scheduler;
-    using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher;
-    using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.SignalRunTracker;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AlertRules;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.Publisher;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.SignalRunTracker;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Host;
     using Unity;

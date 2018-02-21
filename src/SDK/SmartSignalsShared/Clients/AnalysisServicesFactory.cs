@@ -4,15 +4,15 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Clients
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
 
     /// <summary>
     /// An implementation of the <see cref="IAnalysisServicesFactory"/> interface.

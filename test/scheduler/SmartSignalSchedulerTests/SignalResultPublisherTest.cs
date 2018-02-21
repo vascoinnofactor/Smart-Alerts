@@ -10,11 +10,11 @@ namespace SmartSignalSchedulerTests
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
-    using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.Publisher;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;

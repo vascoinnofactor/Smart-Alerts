@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Microsoft.Azure.Monitoring.SmartSignals.Analysis</RootNamespace>
+    <RootNamespace>Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Analysis</RootNamespace>
     <TargetFramework>net461</TargetFramework>
 	<StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.AIClient
 {
     using System;
     using System.Collections.Generic;

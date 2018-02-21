@@ -4,16 +4,16 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Analysis
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.ChildProcess;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
 
     /// <summary>
     /// An implementation of <see cref="ISmartSignalRunner"/>, that runs the analysis in a separate process

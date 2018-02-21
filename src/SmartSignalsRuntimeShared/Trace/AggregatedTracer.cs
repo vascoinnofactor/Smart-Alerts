@@ -4,13 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Trace
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Trace
 {
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
 
     /// <summary>
     /// Implementation of the <see cref="ITracer"/> interface that traces to other <see cref="ITracer"/> objects.

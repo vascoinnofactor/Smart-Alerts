@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Trace
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Trace
 {
     using System;
     using System.Collections.Generic;
@@ -13,8 +13,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Trace
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
 
     /// <summary>
     /// Implementation of the <see cref="ITracer"/> interface that traces to AppInsights.

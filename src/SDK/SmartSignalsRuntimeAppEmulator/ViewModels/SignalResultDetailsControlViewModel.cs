@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.ViewModels
 {
     using System;
     using System.Collections.Generic;
@@ -14,8 +14,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
     using System.IO.Compression;
     using System.Linq;
     using System.Text;
-    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Models;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
     using Unity.Attributes;
 
     /// <summary>

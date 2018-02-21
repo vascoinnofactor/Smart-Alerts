@@ -9,7 +9,7 @@ namespace SmartSignalsSDKTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.Azure.Monitoring.SmartSignals;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
 

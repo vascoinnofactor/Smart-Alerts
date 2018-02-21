@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AzureStorage
 {
     /// <summary>
     /// An interface for an Azure Storage table client wrapper

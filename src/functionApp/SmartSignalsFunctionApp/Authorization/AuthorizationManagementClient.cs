@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.FunctionApp.Authorization
 {
     using System.Linq;
     using System.Net;
@@ -12,9 +12,9 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Extensions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
     using Newtonsoft.Json;
     using Polly;
 

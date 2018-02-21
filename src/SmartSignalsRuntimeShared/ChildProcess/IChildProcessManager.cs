@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.ChildProcess
 {
     using System;
     using System.Collections.Generic;

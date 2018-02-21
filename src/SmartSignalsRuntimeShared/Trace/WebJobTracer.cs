@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Trace
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Trace
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
     using Microsoft.Azure.WebJobs.Host;
 
     /// <summary>

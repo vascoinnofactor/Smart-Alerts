@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.FunctionApp.Authorization
 {
     using System.Collections.Generic;
     using Newtonsoft.Json;

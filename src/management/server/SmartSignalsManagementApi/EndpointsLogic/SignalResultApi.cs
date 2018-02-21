@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.EndpointsLogic
 {
     using System;
     using System.Collections.Generic;
@@ -12,10 +12,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.AIClient;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.AIClient;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Responses;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
     using Newtonsoft.Json;

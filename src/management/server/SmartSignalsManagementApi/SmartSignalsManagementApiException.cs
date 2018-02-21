@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi
 {
     using System;
     using System.Net;

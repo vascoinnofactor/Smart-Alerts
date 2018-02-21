@@ -15,7 +15,7 @@
     <ProjectGuid>{6D361361-3A0D-4168-B934-04A303C04636}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Azure.Monitoring.SmartSignals.ProjectType</RootNamespace>
+    <RootNamespace>Microsoft.Azure.Monitoring.SmartAlerts.ProjectType</RootNamespace>
     <AssemblyName>SmartSignal</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <SignAssembly>true</SignAssembly>

@@ -4,9 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Models
 {
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
     using Microsoft.Rest;
 
     /// <summary>

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.FunctionApp
 {
     using System;
     using System.Collections.Generic;
@@ -13,14 +13,14 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.FunctionApp.Authorization;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.EndpointsLogic;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Models;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Responses;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AlertRules;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AzureStorage;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Azure.WebJobs.Host;

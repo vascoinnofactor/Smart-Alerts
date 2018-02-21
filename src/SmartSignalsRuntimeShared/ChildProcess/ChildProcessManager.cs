@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.ChildProcess
 {
     using System;
     using System.Collections.Generic;
@@ -16,8 +16,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Trace;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Trace;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
     using Newtonsoft.Json;
 
     /// <summary>

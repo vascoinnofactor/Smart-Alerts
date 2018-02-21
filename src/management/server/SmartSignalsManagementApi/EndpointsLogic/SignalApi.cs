@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.EndpointsLogic
 {
     using System;
     using System.Collections.Generic;
@@ -12,11 +12,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Models;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Responses;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
 
     /// <summary>
     /// This class is the logic for the /signal endpoint.

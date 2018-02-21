@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
 
     /// <summary>
     /// An interface responsible for executing signals via the analysis flow

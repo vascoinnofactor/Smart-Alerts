@@ -1,6 +1,6 @@
 ﻿namespace $safeprojectname$
 {
-    using Microsoft.Azure.Monitoring.SmartSignals;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
 
     /// <summary>
     /// The base class for representing a specific item in the Smart Signal result.

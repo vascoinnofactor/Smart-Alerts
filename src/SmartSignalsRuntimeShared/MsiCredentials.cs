@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared
 {
     using System;
     using System.Net.Http;
@@ -13,8 +13,8 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Extensions;
     using Microsoft.Rest;
     using Newtonsoft.Json;
     using Polly;

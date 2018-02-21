@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Clients
 {
     using System.Collections.Generic;
     using System.Threading;

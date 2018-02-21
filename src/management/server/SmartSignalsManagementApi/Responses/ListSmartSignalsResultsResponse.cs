@@ -4,10 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Responses
 {
     using System.Collections.Generic;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
     using Newtonsoft.Json;
 
     /// <summary>

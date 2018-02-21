@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.ProjectSystem.Debug;
 using Microsoft.VisualStudio.ProjectSystem.Properties;
 using Microsoft.VisualStudio.ProjectSystem.VS.Debug;
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ProjectType
+namespace Microsoft.Azure.Monitoring.SmartAlerts.ProjectType
 {
     [ExportDebugger(SmartSignalsDebugger.SchemaName)]
     [AppliesTo(SmartSignalUnconfiguredProject.UniqueCapability)]

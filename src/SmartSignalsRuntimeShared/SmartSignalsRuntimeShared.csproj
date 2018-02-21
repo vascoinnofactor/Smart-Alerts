@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <RootNamespace>Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared</RootNamespace>
-    <AssemblyName>Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared</AssemblyName>
+    <RootNamespace>Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared</RootNamespace>
+    <AssemblyName>Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared</AssemblyName>
 	<StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -30,6 +30,10 @@
 	<PackageReference Include="WindowsAzure.Storage" Version="8.6.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SDK\SmartSignalsSDK\SmartSignalsSDK.csproj" />
+    <ProjectReference Include="..\SDK\SmartSignalsShared\SmartSignalsShared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -42,9 +46,5 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-  </ItemGroup>  
-  <ItemGroup>
-    <ProjectReference Include="..\SDK\SmartSignalsSDK\SmartSignalsSDK.csproj" />
-    <ProjectReference Include="..\SDK\SmartSignalsShared\SmartSignalsShared.csproj" />
   </ItemGroup>
 </Project>

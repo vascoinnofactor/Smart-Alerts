@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Analysis
 {
     using System;
     using System.Runtime.Serialization;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
 
     /// <summary>
     /// This exception is thrown when the requested resource type is not supported by the requested signal.

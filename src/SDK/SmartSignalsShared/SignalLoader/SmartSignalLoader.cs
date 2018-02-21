@@ -4,13 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.SignalLoader
+namespace Microsoft.Azure.Monitoring.SmartAlerts.SignalLoader
 {
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
 
     /// <summary>
     /// Implementation of the <see cref="ISmartSignalLoader"/> interface.

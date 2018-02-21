@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator
 {
     using System;
     using System.Windows;
-    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Emulator.ViewModels;
     using Unity;
 
     /// <summary>

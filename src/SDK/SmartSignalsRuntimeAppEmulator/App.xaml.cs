@@ -4,17 +4,17 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator
 {
     using System;
     using System.IO;
     using System.Windows;
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
-    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
-    using Microsoft.Azure.Monitoring.SmartSignals.Tools;
-    using Microsoft.Azure.Monitoring.SmartSignals.Trace;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Emulator.Models;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalLoader;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Tools;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Trace;
     using Microsoft.Win32;
     using Unity;
 

@@ -11,13 +11,13 @@ namespace ManagementApiTests.EndpointsLogic
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic;
-    using Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Responses;
-    using Microsoft.Azure.Monitoring.SmartSignals.Package;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.EndpointsLogic;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Responses;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.Exceptions;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Package;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation
+namespace Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation
 {
     using System;
     using System.Runtime.Serialization;

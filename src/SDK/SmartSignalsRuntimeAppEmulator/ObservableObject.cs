@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator
 {
     using System.ComponentModel;
     using System.Runtime.CompilerServices;

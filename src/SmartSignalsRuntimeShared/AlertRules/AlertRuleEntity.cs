@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AlertRules
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.AlertRules
 {
     using Microsoft.WindowsAzure.Storage.Table;
 

@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Clients
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Clients
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
     using Newtonsoft.Json.Linq;
 
     /// <summary>

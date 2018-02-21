@@ -3,7 +3,7 @@
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-namespace Microsoft.Azure.Monitoring.SmartSignals.SampleSignal
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.SampleSignal
 {
     using System;
     using System.Collections.Generic;

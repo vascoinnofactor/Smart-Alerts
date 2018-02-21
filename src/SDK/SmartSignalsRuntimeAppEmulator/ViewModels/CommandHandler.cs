@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Emulator.ViewModels
 {
     using System;
     using System.Windows.Input;

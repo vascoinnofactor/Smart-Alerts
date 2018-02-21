@@ -4,7 +4,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net461</TargetFramework>
-    <RootNamespace>Microsoft.Azure.Monitoring.SmartSignals.Emulator</RootNamespace>
+    <RootNamespace>Microsoft.Azure.Monitoring.SmartAlerts.Emulator</RootNamespace>
     <AssemblyName>SmartSignalsRuntimeAppEmulator</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <LanguageTargets>$(MSBuildToolsPath)\Microsoft.CSharp.targets</LanguageTargets>

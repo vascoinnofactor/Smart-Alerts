@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals
+namespace Microsoft.Azure.Monitoring.SmartAlerts
 {
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;

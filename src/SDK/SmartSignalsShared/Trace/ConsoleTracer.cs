@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Trace
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Trace
 {
     using System;
     using System.Collections.Generic;

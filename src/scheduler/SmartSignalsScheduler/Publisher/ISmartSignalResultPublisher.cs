@@ -4,11 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Publisher
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.Publisher
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartAlerts.SignalResultPresentation;
 
     /// <summary>
     /// An interface for publishing Smart Signal results

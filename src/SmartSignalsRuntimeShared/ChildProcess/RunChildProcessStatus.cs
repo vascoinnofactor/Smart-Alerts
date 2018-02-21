@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared.ChildProcess
 {
     /// <summary>
     /// Represents the status of running a child process. Used by the

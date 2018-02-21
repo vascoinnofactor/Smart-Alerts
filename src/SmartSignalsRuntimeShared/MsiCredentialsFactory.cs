@@ -4,9 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.RuntimeShared
 {
-    using Microsoft.Azure.Monitoring.SmartSignals.Clients;
+    using Microsoft.Azure.Monitoring.SmartAlerts.Clients;
     using Microsoft.Rest;
 
     /// <summary>

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <RootNamespace>Microsoft.Azure.Monitoring.SmartSignals</RootNamespace>
-    <AssemblyName>Microsoft.Azure.Monitoring.SmartSignals.Shared</AssemblyName>
+    <RootNamespace>Microsoft.Azure.Monitoring.SmartAlerts</RootNamespace>
+    <AssemblyName>Microsoft.Azure.Monitoring.SmartAlerts.Shared</AssemblyName>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>

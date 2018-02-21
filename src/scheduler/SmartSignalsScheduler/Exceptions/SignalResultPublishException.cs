@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.Scheduler.Exceptions
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.Scheduler.Exceptions
 {
     using System;
     using System.Runtime.Serialization;

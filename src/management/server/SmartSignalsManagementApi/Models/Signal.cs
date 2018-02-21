@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.Models
+namespace Microsoft.Azure.Monitoring.SmartAlerts.Appliance.ManagementApi.Models
 {
     using System.Collections.Generic;
     using Newtonsoft.Json;

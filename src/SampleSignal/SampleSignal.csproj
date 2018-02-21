@@ -1,11 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <RootNamespace>Microsoft.Azure.Monitoring.SmartSignals.SampleSignal</RootNamespace>
-    <AssemblyName>Microsoft.Azure.Monitoring.SmartSignals.SampleSignal</AssemblyName>
+    <RootNamespace>Microsoft.Azure.Monitoring.SmartAlerts.Appliance.SampleSignal</RootNamespace>
+    <AssemblyName>Microsoft.Azure.Monitoring.SmartAlerts.Appliance.SampleSignal</AssemblyName>
 	<StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SDK\SmartSignalsSDK\SmartSignalsSDK.csproj" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>  
@@ -13,8 +16,5 @@
     <None Update="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SDK\SmartSignalsSDK\SmartSignalsSDK.csproj" />
   </ItemGroup>
 </Project>

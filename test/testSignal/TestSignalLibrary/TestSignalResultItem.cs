@@ -6,7 +6,7 @@
 
 namespace TestSignalLibrary
 {
-    using Microsoft.Azure.Monitoring.SmartSignals;
+    using Microsoft.Azure.Monitoring.SmartAlerts;
 
     public class TestSignalResultItem : SmartSignalResultItem
     {
