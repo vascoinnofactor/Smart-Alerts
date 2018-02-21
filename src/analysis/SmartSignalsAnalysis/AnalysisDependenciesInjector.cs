@@ -8,6 +8,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
 {
     using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage.State;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.ChildProcess;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
