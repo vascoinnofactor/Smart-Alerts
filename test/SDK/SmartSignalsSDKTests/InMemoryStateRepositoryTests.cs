@@ -11,8 +11,8 @@ namespace SmartSignalsSDKTests
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.State;
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

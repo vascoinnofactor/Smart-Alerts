@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
+namespace Microsoft.Azure.Monitoring.SmartSignals.State
 {
     using System;
 

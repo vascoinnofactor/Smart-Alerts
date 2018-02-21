@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals
+namespace Microsoft.Azure.Monitoring.SmartSignals.State
 {
     /// <summary>
     /// Represents a factory for creating state repository for a signal.

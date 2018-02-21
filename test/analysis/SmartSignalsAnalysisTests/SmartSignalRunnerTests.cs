@@ -19,6 +19,7 @@ namespace SmartSignalsAnalysisTests
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using Unity;

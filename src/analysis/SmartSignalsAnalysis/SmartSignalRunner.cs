@@ -15,10 +15,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Analysis
     using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared;
-    using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
 
     /// <summary>

@@ -14,6 +14,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation;
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
 
     /// <summary>
     /// An observable class that runs a smart signal.

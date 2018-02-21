@@ -6,6 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage
 {
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
 
     /// <summary>

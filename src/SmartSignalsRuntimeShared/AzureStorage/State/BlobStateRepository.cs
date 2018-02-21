@@ -16,8 +16,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals.Extensions;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Microsoft.WindowsAzure.Storage;
+    using Microsoft.WindowsAzure.Storage.Blob;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -47,17 +49,21 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
         }
 
         /// <summary>
-        /// Creates or updates the state by key
+        /// Store <paramref name="state"/> in the repository with the specified <paramref name="key"/>. 
+        /// If there is already a state stored with the same key, it will be replaced by <paramref name="state"/>.
         /// </summary>
-        /// <typeparam name="T">Type type of the state</typeparam>
-        /// <param name="key">The key (case insensitive)</param>
-        /// <param name="state">The state</param>
+        /// <typeparam name="T">The type of the state. The repository will store the state in the repository as a JSON-serialized string.</typeparam>
+        /// <param name="key">The state's key (case insensitive).</param>
+        /// <param name="state">The state to store.</param>
         /// <param name="cancellationToken">The cancellation token</param>
-        /// <returns>A <see cref="Task{T}"/> to wait on</returns>
+        /// <returns>A <see cref="Task"/> object that represents the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">This exception is thrown if the key or the state are null.</exception>
+        /// <exception cref="StateSerializationException">This exception is thrown if state serialization fails.</exception>
+        /// <exception cref="StateTooBigException">This exception is thrown if serialized state exceeds allowed length.</exception>
+        /// <exception cref="StateStorageException">This exception is thrown if state was not stored due to storage issues.</exception>
         public Task StoreStateAsync<T>(string key, T state, CancellationToken cancellationToken)
         {
             Diagnostics.EnsureArgumentNotNull(() => key);
-
             if (state == null)
             {
                 throw new ArgumentNullException(nameof(state));
@@ -65,7 +71,16 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
 
             key = key.ToLowerInvariant();
 
-            string serializedState = JsonConvert.SerializeObject(state);
+            string serializedState = string.Empty;
+            try
+            {
+                serializedState = JsonConvert.SerializeObject(state);
+            }
+            catch (Exception ex)
+            {
+                throw new StateSerializationException(ex);
+            }
+
             if (serializedState.Length > MaxSerializedStateLength)
             {
                 throw new StateTooBigException(serializedState.Length, MaxSerializedStateLength);
@@ -82,16 +97,30 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
 
             string serializedBlobState = JsonConvert.SerializeObject(blobState);
 
-            return this.cloudBlobContainerWrapper.UploadBlobAsync(this.GenerateBlobName(key), serializedBlobState, cancellationToken);
+            Task<ICloudBlob> uploadBlobTask = null;
+            try
+            {
+                uploadBlobTask = this.cloudBlobContainerWrapper.UploadBlobAsync(this.GenerateBlobName(key), serializedBlobState, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new StateStorageException(ex);
+            }
+
+            return uploadBlobTask;
         }
 
         /// <summary>
-        /// Gets signal state by key
+        /// Gets signal's state that was saved with <paramref name="key"/>.
+        /// If state does not exist, returns default(<typeparamref name="T"/>).
         /// </summary>
-        /// <typeparam name="T">Type type of the state</typeparam>
-        /// <param name="key">The key (case insensitive)</param>
+        /// <typeparam name="T">The type of the state. The repository will try to JSON-deserialize the stored state to this type.</typeparam>
+        /// <param name="key">The key that was used to store the state (case insensitive).</param>
         /// <param name="cancellationToken">The cancellation token</param>
-        /// <returns>A state associated with the signal and the key wrapped in a <see cref="Task{T}"/></returns>
+        /// <returns>A <see cref="Task"/> object that represents the asynchronous operation, returning the requested state.</returns>
+        /// <exception cref="System.ArgumentNullException">This exception is thrown if the key is null.</exception>
+        /// <exception cref="StateSerializationException">This exception is thrown if state deserialization fails.</exception>
+        /// <exception cref="StateStorageException">This exception is thrown if state was not retrieved due to storage issues.</exception>
         public async Task<T> GetStateAsync<T>(string key, CancellationToken cancellationToken)
         {
             Diagnostics.EnsureArgumentNotNull(() => key);
@@ -107,6 +136,10 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
             {
                 this.tracer.TraceInformation("State not found in the repository, returning empty state");
                 return default(T);
+            }
+            catch (Exception ex)
+            {
+                throw new StateStorageException(ex);
             }
 
             BlobState blobState = JsonConvert.DeserializeObject<BlobState>(serializedBlobState);
@@ -125,22 +158,44 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
 
             string serializedState = DecompressString(compressedSerializedState);
 
-            return JsonConvert.DeserializeObject<T>(serializedState);
+            T state = default(T);
+            try
+            {
+                state = JsonConvert.DeserializeObject<T>(serializedState);
+            }
+            catch (Exception ex)
+            {
+                throw new StateSerializationException(ex);
+            }
+
+            return state;
         }
 
         /// <summary>
-        /// Clear the state by key
+        /// Deletes the state specified by <paramref name="key"/> from the repository.
         /// </summary>
-        /// <param name="key">The key (case insensitive)</param>
+        /// <param name="key">The key of the state to delete (case insensitive).</param>
         /// <param name="cancellationToken">The cancellation token</param>
-        /// <returns>A <see cref="Task{T}"/> to wait on</returns>
+        /// <returns>A <see cref="Task"/> object that represents the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">This exception is thrown if the key is null.</exception>
+        /// <exception cref="StateStorageException">This exception is thrown if state was not deleted due to storage issues.</exception>
         public Task DeleteStateAsync(string key, CancellationToken cancellationToken)
         {
             Diagnostics.EnsureArgumentNotNull(() => key);
 
             key = key.ToLowerInvariant();
 
-            return this.cloudBlobContainerWrapper.DeleteBlobIfExistsAsync(this.GenerateBlobName(key), cancellationToken);
+            Task deleteBlobTask = null;
+            try
+            {
+                deleteBlobTask = this.cloudBlobContainerWrapper.DeleteBlobIfExistsAsync(this.GenerateBlobName(key), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new StateStorageException(ex);
+            }
+
+            return deleteBlobTask;
         }
 
         /// <summary>

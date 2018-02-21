@@ -14,6 +14,7 @@ namespace SmartSignalsRuntimeSharedTests
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
     using Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.AzureStorage;
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
@@ -57,9 +58,10 @@ namespace SmartSignalsRuntimeSharedTests
         }
 
         [TestMethod]
+        [Ignore]
         public async Task WhenExecutingBasigStateActionsThenFlowCompletesSuccesfullyWithRealStorage()
         {
-            var storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=smartsignalssa;AccountKey=AeN7F8JxqHv87TPdFBb/frwzgKAifEROi4WmwNuTI/pSA95OBWiCWJCUhKNfgR8m2JuyBiCU3YqnxjUCLL6zvg==;EndpointSuffix=core.windows.net";
+            var storageConnectionString = "****";
             CloudBlobClient cloudBlobClient = CloudStorageAccount.Parse(storageConnectionString).CreateCloudBlobClient();
             CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference("tessignalstatecontainer");
             await cloudBlobContainer.CreateIfNotExistsAsync();

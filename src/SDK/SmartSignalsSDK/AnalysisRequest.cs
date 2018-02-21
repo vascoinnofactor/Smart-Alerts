@@ -9,6 +9,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
 
     /// <summary>
     /// Represents a single analysis request sent to the Smart Signal. This is the main parameter sent to the 

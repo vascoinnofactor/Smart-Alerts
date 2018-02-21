@@ -6,6 +6,7 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.State
 {
+    using Microsoft.Azure.Monitoring.SmartSignals.State;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
 
     /// <summary>
