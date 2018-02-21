@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace SmartSignalsSharedTests
+namespace SmartSignalsSDKTests
 {
     using System;
     using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace SmartSignalsSharedTests
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Monitoring.SmartSignals;
-    using Microsoft.Azure.Monitoring.SmartSignals.State;
+    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.State;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

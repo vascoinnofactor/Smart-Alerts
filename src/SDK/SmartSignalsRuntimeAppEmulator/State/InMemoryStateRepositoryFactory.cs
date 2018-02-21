@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.State
+namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.State
 {
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
 

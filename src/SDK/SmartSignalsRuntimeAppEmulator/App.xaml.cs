@@ -6,14 +6,13 @@
 
 namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator
 {
-    using System;
     using System.IO;
     using System.Windows;
     using Microsoft.Azure.Monitoring.SmartSignals.Clients;
     using Microsoft.Azure.Monitoring.SmartSignals.Emulator.Models;
+    using Microsoft.Azure.Monitoring.SmartSignals.Emulator.State;
     using Microsoft.Azure.Monitoring.SmartSignals.Package;
     using Microsoft.Azure.Monitoring.SmartSignals.SignalLoader;
-    using Microsoft.Azure.Monitoring.SmartSignals.State;
     using Microsoft.Azure.Monitoring.SmartSignals.Tools;
     using Microsoft.Azure.Monitoring.SmartSignals.Trace;
     using Microsoft.Win32;

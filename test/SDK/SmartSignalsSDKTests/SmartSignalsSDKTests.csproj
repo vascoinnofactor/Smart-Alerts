@@ -15,6 +15,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\SDK\SmartSignalsRuntimeAppEmulator\SmartSignalsRuntimeAppEmulator.csproj" />
     <ProjectReference Include="..\..\..\src\SDK\SmartSignalsSDK\SmartSignalsSDK.csproj" />
   </ItemGroup>
 </Project>
