@@ -202,12 +202,27 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels
             }
 
             // Compose the URI
-            string endpoint = this.SignalResult.ResourceIdentifier.ResourceType == ResourceType.ApplicationInsights ?
-                "analytics.applicationinsights.io" :
-                "portal.loganalytics.io";
+            string endpoint;
+            string resourceUrlParameterName;
+            if (this.SignalResult.ResourceIdentifier.ResourceType == ResourceType.ApplicationInsights)
+            {
+                endpoint = "analytics.applicationinsights.io";
+                resourceUrlParameterName = "components"; 
+            }
+            else
+            {
+                endpoint = "portal.loganalytics.io";
+                resourceUrlParameterName = "workspaces";
+            }
+
+            // Use the first resource ID from query run info for the query.
+            // It might not work for Log Analytics results - since there might be few resources.
+            // Anyway, this is temporary hack until there will be query visualizations in emulator.
+            string resultResourceId = this.SignalResult.ResultItemPresentation.QueryRunInfo.ResourceIds.First();
+            ResourceIdentifier resultResourceIdentifier = ResourceIdentifier.CreateFromResourceId(resultResourceId);
 
             Uri queryDeepLink =
-                new Uri($"https://{endpoint}/subscriptions/{this.SignalResult.ResourceIdentifier.SubscriptionId}/resourcegroups/{this.SignalResult.ResourceIdentifier.ResourceGroupName}/components/{this.SignalResult.ResourceIdentifier.ResourceName}?q={compressedQuery}");
+                new Uri($"https://{endpoint}/subscriptions/{resultResourceIdentifier.SubscriptionId}/resourcegroups/{resultResourceIdentifier.ResourceGroupName}/{resourceUrlParameterName}/{resultResourceIdentifier.ResourceName}?q={compressedQuery}");
 
             Process.Start(new ProcessStartInfo(queryDeepLink.AbsoluteUri));
         });
