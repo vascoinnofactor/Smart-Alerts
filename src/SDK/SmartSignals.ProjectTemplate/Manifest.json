@@ -1,0 +1,10 @@
+﻿{
+  "id": "$safeprojectname$",
+  "name": "$safeprojectname$",
+  "description": "Signal description",
+  "version": "1.0",
+  "assemblyName": "$safeprojectname$.dll",
+  "className": "$safeprojectname$.MySmartSignal",
+  "supportedResourceTypes": [ "VirtualMachine" ],
+  "supportedCadencesInMinutes": [ 5 ]
+}

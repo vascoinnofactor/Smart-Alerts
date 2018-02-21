@@ -7,7 +7,7 @@
              xmlns:viewModels="clr-namespace:Microsoft.Azure.Monitoring.SmartSignals.Emulator.ViewModels"
              xmlns:converters="clr-namespace:Microsoft.Azure.Monitoring.SmartSignals.Emulator.Converters"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=viewModels:SignalsControlViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=viewModels:SignalConfigurationControlViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="600" d:DesignWidth="1500">
     <UserControl.Resources>
         <converters:EmptyListToBooleanConverter x:Key="EmptyListToBooleanConverter"/>
@@ -27,7 +27,7 @@
         <Border Grid.Column="0" BorderBrush="#FFA5A5A5" BorderThickness="0,0,0.5,0" Padding="20,20,20,0">
             <StackPanel Orientation="Vertical">
                 <TextBlock Style="{StaticResource SectionHeader}" Text="SETTINGS"/>
-                <TextBlock Style="{StaticResource ControlText}" Text="Signal name" Margin="0,0,0,10"/>
+                <TextBlock Style="{StaticResource ControlText}" Text="Signal name" Margin="0,0,0,6"/>
                 <TextBlock Style="{StaticResource SignalNameTitle}" Text="{Binding SignalName}" />
                 <TextBlock Style="{StaticResource ControlText}" Text="Analysis period" Margin="0,0,0,10"/>
                 <ComboBox Margin="0,0,0,20" HorizontalAlignment="Left" MinWidth="100"

@@ -58,7 +58,7 @@ export default interface StoreState {
  */
 export interface ResourcesStoreState {
     isFetching: boolean;
-    resources: ReadonlyArray<AzureSubscriptionResources>;
+    azureSubscriptionsResources: ReadonlyArray<AzureSubscriptionResources>;
 }
 
 /**
@@ -96,6 +96,7 @@ export interface QueryResultStoreState {
  */
 export interface AlertRulesStoreState {
     isFetching: boolean;
+    isUpdating: boolean;
     items: ReadonlyArray<AlertRule>;
     lastUpdated: Moment | null;
     failureReason?: FailureReason;

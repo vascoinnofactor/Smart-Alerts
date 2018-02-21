@@ -103,6 +103,11 @@
           "use32BitWorkerProcess": false,
           "siteAuthEnabled": true,
           "AlwaysOn": true,
+          "cors": {
+            "allowedOrigins": [
+              "[concat('https://', variables('siteName'), '.azurewebsites.net')]"
+            ]
+          },
           "appSettings": [
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",

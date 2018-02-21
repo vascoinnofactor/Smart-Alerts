@@ -7,6 +7,7 @@
 namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
 {
     using System;
+    using System.Collections.Generic;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         /// <param name="addAlertRule">The model that contains all the require parameters for adding alert rule.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SmartSignalsManagementApiException">This exception is thrown when we failed to add the alert rule.</exception>
-        public async Task AddAlertRuleAsync(AddAlertRule addAlertRule, CancellationToken cancellationToken)
+        public async Task AddAlertRuleAsync(AlertRuleApiEntity addAlertRule, CancellationToken cancellationToken)
         {
             Diagnostics.EnsureArgumentNotNull(() => addAlertRule);
 
@@ -72,12 +73,29 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.ManagementApi.EndpointsLogic
         }
 
         /// <summary>
+        /// Get the alert rules from the alert rules store.
+        /// </summary>
+        /// <returns>The alert rules list.</returns>
+        /// <exception cref="SmartSignalsManagementApiException">This exception is thrown when we failed to get the alert rules.</exception>
+        public async Task<IList<AlertRule>> GetAlertRulesAsync()
+        {
+            try
+            {
+                return await this.alertRuleStore.GetAllAlertRulesAsync();
+            }
+            catch (AlertRuleStoreException e)
+            {
+                throw new SmartSignalsManagementApiException("Failed to get alert rules", e, HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
         /// Validates if the given model for adding alert rule is valid.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <param name="errorInformation">The error information which will be filled in case validation will fail.</param>
         /// <returns>True in case model is valid, else false.</returns>
-        private static bool IsAddAlertRuleModelValid(AddAlertRule model, out string errorInformation)
+        private static bool IsAddAlertRuleModelValid(AlertRuleApiEntity model, out string errorInformation)
         {
             if (string.IsNullOrWhiteSpace(model.SignalId))
             {

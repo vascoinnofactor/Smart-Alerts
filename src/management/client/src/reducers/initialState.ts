@@ -23,12 +23,13 @@ const defaultState: StoreState = {
     queryResults: new Map<string, QueryResultStoreState>(),
     alertRules: {
         isFetching: false,
+        isUpdating: false,
         items: [],
         lastUpdated: null
     },
     resources: {
         isFetching: false,
-        resources: [],
+        azureSubscriptionsResources: [],
     },
     isAuthenticated: false,
     userDetails: null

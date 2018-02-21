@@ -3,8 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-#Azure Functions local settings
+# Azure Functions local settings
 local.settings.json
+
+# Management UX development API url
+src/management/client/src/api/baseUrl.dev.ts
 
 # User-specific files
 *.suo
