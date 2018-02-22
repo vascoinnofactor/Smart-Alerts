@@ -19,7 +19,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization
     using Polly;
 
     /// <summary>
-    /// This class is responsible to manage authorization for the SARA
+    /// This class is responsible to manage authorization for the Smart Alerts Appliance
     /// </summary>
     public class AuthorizationManagementClient : IAuthorizationManagementClient
     {
@@ -45,11 +45,11 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization
         }
 
         /// <summary>
-        /// Verifying if the HTTP request message is authorized to access the SARA
+        /// Verifying if the HTTP request message is authorized to access the Smart Alerts Appliance
         /// </summary>
         /// <param name="req">The HTTP request message</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>True if the client is authorized to access the SARA, false otherwise</returns>
+        /// <returns>True if the client is authorized to access the Smart Alerts Appliance, false otherwise</returns>
         public async Task<bool> IsAuthorizedAsync(HttpRequestMessage req, CancellationToken cancellationToken)
         {
             string jwtToken = req.Headers.Authorization?.Parameter;
@@ -94,7 +94,7 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.FunctionApp.Authorization
                 return false;
             }
 
-            // For now, for every permission action allowed on the resource group we allow accessing the SARA.
+            // For now, for every permission action allowed on the resource group we allow accessing the Smart Alerts Appliance.
             return true;
         }
     }
