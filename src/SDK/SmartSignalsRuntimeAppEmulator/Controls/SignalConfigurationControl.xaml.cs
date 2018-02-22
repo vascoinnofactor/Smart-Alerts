@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SignalsControl.xaml.cs" company="Microsoft Corporation">
+// <copyright file="SignalConfigurationControl.xaml.cs" company="Microsoft Corporation">
 //        Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,15 +14,15 @@ namespace Microsoft.Azure.Monitoring.SmartSignals.Emulator.Controls
     /// <summary>
     /// Interaction logic for SignalsControl.xaml
     /// </summary>
-    public partial class SignalsControl : UserControl
+    public partial class SignalConfigurationControl : UserControl
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SignalsControl"/> class.
+        /// Initializes a new instance of the <see cref="SignalConfigurationControl"/> class.
         /// </summary>
-        public SignalsControl()
+        public SignalConfigurationControl()
         {
             this.InitializeComponent();
-            this.DataContext = App.Container.Resolve<SignalsControlViewModel>();
+            this.DataContext = App.Container.Resolve<SignalConfigurationControlViewModel>();
         }
     }
 }

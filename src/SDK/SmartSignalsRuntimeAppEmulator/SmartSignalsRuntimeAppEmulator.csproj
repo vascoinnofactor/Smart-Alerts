@@ -10,6 +10,7 @@
     <LanguageTargets>$(MSBuildToolsPath)\Microsoft.CSharp.targets</LanguageTargets>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="NuProj.Common" Version="0.11.30" />
     <PackageReference Include="Polly" Version="5.7.0" />
     <PackageReference Include="StyleCop.MSBuild" Version="5.0.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
@@ -42,7 +43,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\SignalsControl.xaml">
+    <Page Include="Controls\SignalConfigurationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SignalResultsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SignalResultDetailsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -63,9 +72,15 @@
     <Resource Include="Media\ic_settings_white_48dp_2x.png" />
     <Resource Include="Media\ic_power_settings_new_white_48dp_1x.png" />
     <Resource Include="Media\ic_power_settings_new_white_48dp_2x.png" />
+    <Resource Include="Media\ic_close.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartSignalsSDK\SmartSignalsSDK.csproj" />
     <ProjectReference Include="..\SmartSignalsShared\SmartSignalsShared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Controls\SignalConfigurationControl.xaml.cs">
+      <DependentUpon>SignalConfigurationControl.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

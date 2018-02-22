@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Azure.Monitoring.SmartSignals.RuntimeShared.Exceptions
+namespace Microsoft.Azure.Monitoring.SmartSignals.SignalResultPresentation
 {
     using System;
     using System.Runtime.Serialization;
