@@ -11,7 +11,7 @@ import { azureResourceManagementUrl } from './urls';
  * Execute a ARM query in order to get the Application Insights application id by a given resource id
  */
 export async function getApplicationId(applicationResourceId: string): Promise<string> {
-    let armResponse = await getResourceFromArmAsync(applicationResourceId);
+    let armResponse = await getResourceFromArmAsync(applicationResourceId, '2015-05-01');
 
     // tslint:disable-next-line:no-string-literal
     return armResponse['properties']['AppId'];
@@ -21,7 +21,7 @@ export async function getApplicationId(applicationResourceId: string): Promise<s
  * Execute a ARM query in order to get the Log Analytics workspace id by a given resource id
  */
 export async function getWorkspaceId(workspaceResourceId: string): Promise<string> {
-    let armResponse = await getResourceFromArmAsync(workspaceResourceId);
+    let armResponse = await getResourceFromArmAsync(workspaceResourceId, '2017-04-26-preview');
 
     // tslint:disable-next-line:no-string-literal
     return armResponse['properties']['customerId'];
@@ -31,14 +31,14 @@ export async function getWorkspaceId(workspaceResourceId: string): Promise<strin
  * By a given resource id, get the resource metadata from the ARM endpoint
  * @param resourceId The resource id
  */
-async function getResourceFromArmAsync(resourceId: string): Promise<{}> {
+async function getResourceFromArmAsync(resourceId: string, apiVersion: string): Promise<{}> {
     // 1. Get a resource token against ARM
     let activeDirectoryAuthenticator = ActiveDirectoryAuthenticatorFactory.getActiveDirectoryAuthenticator();
     let armResourceToken = await activeDirectoryAuthenticator
                                         .getResourceTokenAsync(azureResourceManagementUrl);
 
     // 2. Query ARM against the given application resource id
-    const requestUrl = `${azureResourceManagementUrl}${resourceId}?api-version=2014-04-01`;
+    const requestUrl = `${azureResourceManagementUrl}${resourceId}?api-version=${apiVersion}`;
 
     const headers = new Headers();
     headers.append('Authorization', 'Bearer ' + armResourceToken);
