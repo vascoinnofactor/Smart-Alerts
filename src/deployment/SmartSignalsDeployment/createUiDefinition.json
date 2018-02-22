@@ -5,9 +5,9 @@
   "parameters": {
     "basics": [
       {
-        "name": "saraPrefix",
+        "name": "smartAlertsAppliancePrefix",
         "type": "Microsoft.Common.TextBox",
-        "label": "The prefix of The SARA's name",
+        "label": "The prefix of The Smart Alerts Applicance's name",
         "defaultValue": "",
         "toolTip": "The SARA and all of its resources will have this prefix",
         "constraints": {
@@ -41,9 +41,9 @@
       }
     ],
     "outputs": {
-      "saraPrefix": "[basics('saraPrefix')]",
+      "smartAlertsAppliancePrefix": "[basics('smartAlertsAppliancePrefix')]",
       "sendgridApiKey": "[steps('emailSettings').sendgridApiKey]",
-      "applicationResourceName": "[concat(basics('saraPrefix'), 'SARA')]",
+      "applicationResourceName": "[concat(basics('smartAlertsAppliancePrefix'), 'SARA')]",
       "functionPackageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignals.zip",
       "sitePackageLink": "https://globalsmartsignals.blob.core.windows.net/managedapp/smartsignalssite.zip"
     }

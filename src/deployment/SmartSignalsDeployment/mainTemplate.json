@@ -12,7 +12,7 @@
         "Premium_LRS"
       ]
     },
-    "saraPrefix": { "type": "string" },
+    "smartAlertsAppliancePrefix": { "type": "string" },
     "functionPackageLink": { "type": "string" },
     "sitePackageLink": { "type": "string" },
     "sendgridApiKey": {
@@ -25,13 +25,13 @@
     }
   },
   "variables": {
-    "functionsAppName": "[concat(parameters('saraPrefix'), '-fa')]",
-    "siteName": "[concat(parameters('saraPrefix'), '-site')]",
-    "functionsHostingPlanName": "[concat(parameters('saraPrefix'), '-fa-sp')]",
-    "siteHostingPlanName": "[concat(parameters('saraPrefix'), '-site-sp')]",
-    "functionsLogsStorageAccountName": "[concat(parameters('saraPrefix'), 'logs')]",
-    "storageAccountName": "[concat(parameters('saraPrefix'), 'sa')]",
-    "applicationInsightsName": "[concat(parameters('saraPrefix'), '-ai')]",
+    "functionsAppName": "[concat(parameters('smartAlertsAppliancePrefix'), '-fa')]",
+    "siteName": "[concat(parameters('smartAlertsAppliancePrefix'), '-site')]",
+    "functionsHostingPlanName": "[concat(parameters('smartAlertsAppliancePrefix'), '-fa-sp')]",
+    "siteHostingPlanName": "[concat(parameters('smartAlertsAppliancePrefix'), '-site-sp')]",
+    "functionsLogsStorageAccountName": "[concat(parameters('smartAlertsAppliancePrefix'), 'logs')]",
+    "storageAccountName": "[concat(parameters('smartAlertsAppliancePrefix'), 'sa')]",
+    "applicationInsightsName": "[concat(parameters('smartAlertsAppliancePrefix'), '-ai')]",
     "functionsLogsStorageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('functionsLogsStorageAccountName'))]",
     "storageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
     "resourceGroupName": "[resourceGroup().name]",
