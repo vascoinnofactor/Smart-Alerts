@@ -6,7 +6,7 @@
 
 import ApiError from './apiError';
 import DataTable from '../models/DataTable';
-import { ConvertLogAnalyticsResponseToDataTable } from '../utils/KustoResponseParser';
+import { ConvertKustoResponseToDataTable } from '../utils/KustoResponseParser';
 import { getWorkspaceId } from './azureResourceManagementApi';
 import { logAnalyticsUrl } from './urls';
 
@@ -45,7 +45,7 @@ export async function executeQuery(resourceIds: string[], query: string, authent
     const response = await fetch(requestUrl, requestInit);
 
     if (response.ok) {
-        let dataTable = ConvertLogAnalyticsResponseToDataTable(await response.json());
+        let dataTable = ConvertKustoResponseToDataTable(await response.json());
         return dataTable;
     } else {
         throw new ApiError(response.status, response.statusText);
